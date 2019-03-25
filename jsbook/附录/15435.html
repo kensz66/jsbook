@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>严格模式</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">严格模式</h1>
+	<hr>
+		ECMAScript 5 最早引入了“严格模式”（strict mode）的概念。通过严格模式，可以在函数内部选择进行较为严格的全局或局部的错误条件检测。使用严格模式的好处是可以提早知道代码中存在的错误，及时捕获一些可能导致编程错误的ECMAScript 行为。<br />
+理解严格模式的规则非常重要，ECMAScript 的下一个版本将以严格模式为基础制定。支持严格模式的浏览器包括IE10+、Firefox 4+、Safari 5.1+和Chrome。<br />
+<h2>
+	B.1 选择使用
+</h2>
+要选择进入严格模式，可以使用严格模式的编译指示（pragma），实际上就是一个不会赋给任何变量的字符串：<br />
+<code>"use strict";</code><br />
+这种语法（从ECMAScript 3 开始支持）可以向后兼容那些不支持严格模式的JavaScript 引擎。支持严格模式的引擎会启动这种模式，而不支持该模式的引擎就当遇到了一个未赋值的字符串字面量，会忽略这个编译指示。<br />
+如果是在全局作用域中（函数外部）给出这个编译指示，则整个脚本都将使用严格模式。换句话说，如果把带有这个编译指示的脚本放到其他文件中，则该文件中的JavaScript 代码也将处于严格模式下。<br />
+也可以只在函数中打开严格模式，就像下面这样：<br />
+<pre>function doSomething() {
+	"use strict";
+	//其他代码
+}</pre>
+如果你没有控制页面中所有脚本的权力，建议只在需要测试的特定函数中开启严格模式。<br />
+<h2>
+	B.2 变量
+</h2>
+在严格模式下，什么时候创建变量以及怎么创建变量都是有限制的。首先，不允许意外创建全局变量。在非严格模式下，可以像下面这样创建全局变量：<br />
+<pre>//未声明变量
+//非严格模式：创建全局变量
+//严格模式：抛出ReferenceError
+message = "Hello world! ";</pre>
+即使message 前面没有var 关键字，即使没有将它定义为某个全局对象的属性，也能将message创建为全局变量。但在严格模式下，如果给一个没有声明的变量赋值，那代码在执行时就会抛出ReferenceError。<br />
+其次，不能对变量调用delete 操作符。非严格模式允许这样操作，但会静默失败（返回false）。而在严格模式下，删除变量也会导致错误。<br />
+<pre>//删除变量
+//非严格模式：静默失败
+//严格模式：抛出ReferenceError
+var color = "red";
+delete color;</pre>
+严格模式下对变量名也有限制。特别地，不能使用implements、interface、let、package、private、protected、public、static 和yield 作为变量名。这些都是保留字，将来的ECMAScript版本中可能会用到它们。在严格模式下，用以上标识符作为变量名会导致语法错误。<br />
+<h2>
+	B.3 对象
+</h2>
+在严格模式下操作对象比在非严格模式下更容易导致错误。一般来说，非严格模式下会静默失败的情形，在严格模式下就会抛出错误。因此，在开发中使用严格模式会加大早发现错误的可能性。在下列情形下操作对象的属性会导致错误：<br />
+<ul>
+	<li>
+		为只读属性赋值会抛出TypeError；
+	</li>
+	<li>
+		对不可配置的（nonconfigurable）的属性使用delete 操作符会抛出TypeError；
+	</li>
+	<li>
+		为不可扩展的（nonextensible）的对象添加属性会抛出TypeError。
+	</li>
+</ul>
+使用对象的另一个限制与通过对象字面量声明对象有关。在使用对象字面量时，属性名必须唯一。例如：<br />
+<pre>//重名属性
+//非严格模式：没有错误，以第二个属性为准
+//严格模式：抛出语法错误
+var person = {
+	name: "Nicholas",
+	name: "Greg"
+};</pre>
+这里的对象person 有两个属性，都叫name。在非严格模式下，person 对象的name 属性值是第二个，而在严格模式下，这样的代码会导致语法错误。<br />
+<h2>
+	B.4 函数
+</h2>
+首先，严格模式要求命名函数的参数必须唯一。以下面这个函数为例：<br />
+<pre>//重名参数
+//非严格模式：没有错误，只能访问第二个参数
+//严格模式：抛出语法错误
+function sum(num, num) {
+	//do something
+}</pre>
+在非严格模式下，这个函数声明不会抛出错误。通过参数名只能访问第二个参数，要访问第一个参数必须通过arguments 对象。<br />
+在严格模式下，arguments 对象的行为也有所不同。在非严格模式下，修改命名参数的值也会反映到arguments 对象中，而严格模式下这两个值是完全独立的。例如：<br />
+<pre>//修改命名参数的值
+//非严格模式：修改会反映到arguments 中
+//严格模式：修改不会反映到arguments 中
+function showValue(value) {
+	value = "Foo";
+	alert(value); //"Foo"
+	alert(arguments[0]); //非严格模式："Foo"
+	//严格模式："Hi"
+}
+showValue("Hi");</pre>
+以上代码中，函数showValue()只有一个命名参数value。调用这个函数时传入了一个参数"Hi"，这个值赋给了value。而在函数内部，value 被改为"Foo"。在非严格模式下，这个修改也会改变arguments[0]的值，但在严格模式下，arguments[0]的值仍然是传入的值。<br />
+另一个变化是淘汰了arguments.callee 和arguments.caller。在非严格模式下，这两个属性一个引用函数本身，一个引用调用函数。而在严格模式下，访问哪个属性都会抛出TypeError。例如：<br />
+<pre>//访问arguments.callee
+//非严格模式：没有问题
+//严格模式：抛出TypeError
+function factorial(num) {
+	if (num &lt;= 1) {
+		return 1;
+	} else {
+		return num * arguments.callee(num - 1)
+	}
+}
+var result=factorial(5);
+</pre>
+类似地，尝试读写函数的caller 属性，也会导致抛出TypeError。所以，对于上面的例子而言，访问factorial.caller 也会抛出错误。与变量类似，严格模式对函数名也做出了限制，不允许用implements、interface、let、package、private、protected、public、static 和yield 作为函数名。<br />
+对函数的最后一点限制，就是只能在脚本的顶级和在函数内部声明函数。也就是说，在if 语句中声明函数会导致语法错误：<br />
+<pre>//在if 语句中声明函数
+//非严格模式：将函数提升到if 语句外部
+//严格模式：抛出语法错误
+if (true) {
+	function doSomething() {
+		//...
+	}
+}</pre>
+在非严格模式下，以上代码能在所有浏览器中运行，但在严格模式下会导致语法错误。<br />
+<h2>
+	B.5 eval()
+</h2>
+饱受诟病的eval()函数在严格模式下也得到了提升。最大的变化就是它在包含上下文中不再创建变量或函数。例如：<br />
+<pre>//使用eval()创建变量
+//非严格模式：弹出对话框显示10
+//严格模式：调用alert(x)时会抛出ReferenceError
+function doSomething() {
+	eval("var x=10");
+	alert(x);
+}</pre>
+如果是在非严格模式下，以上代码会在函数doSomething()中创建一个局部变量x，然后alert()还会显示该变量的值。但在严格模式下，在doSomething()函数中调用eval()不会创建变量x，因此调用alert()会导致抛出ReferenceError，因为x 没有定义。<br />
+可以在eval()中声明变量和函数，但这些变量或函数只能在被求值的特殊作用域中有效，随后就将被销毁。因此，以下代码可以运行，没有问题：<br />
+<pre>"use strict";
+var result = eval("var x=10, y=11; x+y");
+alert(result); //21</pre>
+这里在eval()中声明了变量x 和y，然后将它们加在一起，返回了它们的和。于是，result 变量的值是21，即x 和y 相加的结果。而在调用alert()时，尽管x 和y 已经不存在了，result 变量的值仍然是有效的。<br />
+<h2>
+	B.6 eval与arguments
+</h2>
+严格模式已经明确禁止使用eval 和arguments 作为标识符，也不允许读写它们的值。例如：<br />
+<pre>//把eval 和arguments 作为变量引用
+//非严格模式：没问题，不出错
+//严格模式：抛出语法错误
+var eval = 10;
+var arguments = "Hello world!";</pre>
+在非严格模式下，可以重写eval，也可以给arguments 赋值。但在严格模式下，这样做会导致语法错误。不能将它们用作标识符，意味着以下几种使用方式都会抛出语法错误：<br />
+<ul>
+	<li>
+		使用var 声明；
+	</li>
+	<li>
+		赋予另一个值；
+	</li>
+	<li>
+		尝试修改包含的值，如使用++；
+	</li>
+	<li>
+		用作函数名；
+	</li>
+	<li>
+		用作命名的函数参数；
+	</li>
+	<li>
+		在try-catch 语句中用作例外名。
+	</li>
+</ul>
+<h2>
+	B.7 抑制this
+</h2>
+JavaScript 中一个最大的安全问题，也是最容易让人迷茫的地方，就是在某些情况下如何抑制this的值。在非严格模式下使用函数的apply()或call()方法时，null 或undefined 值会被转换为全局对象。而在严格模式下，函数的this 值始终是指定的值，无论指定的是什么值。例如：<br />
+<pre>//访问属性
+//非严格模式：访问全局属性
+//严格模式：抛出错误，因为this 的值为null
+var color = "red";
+function displayColor(){
+    alert(this.color);
+}
+displayColor.call(null);</pre>
+以上代码向displayColor.call()中传入了null，如果在是非严格模式下，这意味着函数的this值是全局对象。结果就是弹出对话框显示"red"。而在严格模式下，这个函数的this 的值是null，因此在访问null 的属性时就会抛出错误。<br />
+<h2>
+	B.8 其他变化
+</h2>
+严格模式还有其他一些变化，希望读者也能留意。首先是抛弃了with 语句。非严格模式下的with语句能够改变解析标识符的路径，但在严格模式下，with 被简化掉了。因此，在严格模式下使用with会导致语法错误。<br />
+<pre>//with 的语句用法
+//非严格模式：允许
+//严格模式：抛出语法错误
+with(location){
+    alert(href);
+}</pre>
+严格模式也去掉了JavaScript 中的八进制字面量。以0 开头的八进制字面量过去经常会导致很多错误。在严格模式下，八进制字面量已经成为无效的语法了。<br />
+<pre>//使用八进制字面量
+//非严格模式：值为8
+//严格模式：抛出语法错误
+var value = 010;</pre>
+本书前面提到过，ECMAScript 5 也修改了严格模式下parseInt()的行为。如今，八进制字面量在严格模式下会被当作以0 开头的十进制字面量。例如：<br />
+<pre>//使用parseInt()解析八进制字面量
+//非严格模式：值为8
+//严格模式：值为10
+var value = parseInt("010");</pre></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15435">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

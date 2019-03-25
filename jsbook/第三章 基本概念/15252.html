@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.8 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.8 小结</h1>
+	<hr>
+		JavaScript 的核心语言特性在 ECMA-262 中是以名为 ECMAScript 的伪语言的形式来定义的。<br />
+ECMAScript 中包含了所有基本的语法、操作符、数据类型以及完成基本的计算任务所必需的对象，但没有对取得输入和产生输出的机制作出规定。理解 ECMAScript 及其纷繁复杂的各种细节，是理解其在Web 浏览器中的实现——JavaScript 的关键。目前大多数实现所遵循的都是 ECMA-262 第 3 版，但很多也已经着手开始实现第 5 版了。以下简要总结了 ECMAScript 中基本的要素。<br />
+<ul>
+	<li>
+		ECMAScript 中的基本数据类型包括 Undefined、 Null、 Boolean、 Number 和 String。
+	</li>
+	<li>
+		与其他语言不同， ECMScript 没有为整数和浮点数值分别定义不同的数据类型， Number 类型可用于表示所有数值。
+	</li>
+	<li>
+		ECMAScript 中也有一种复杂的数据类型，即 Object 类型，该类型是这门语言中所有对象的基础类型。
+	</li>
+	<li>
+		严格模式为这门语言中容易出错的地方施加了限制。
+	</li>
+	<li>
+		ECMAScript 提供了很多与 C 及其他类 C 语言中相同的基本操作符，包括算术操作符、布尔操作符、关系操作符、相等操作符及赋值操作符等。
+	</li>
+	<li>
+		ECMAScript 从其他语言中借鉴了很多流控制语句，例如 if 语句、 for 语句和 switch 语句等。
+	</li>
+</ul>
+ECMAScript 中的函数与其他语言中的函数有诸多不同之处。<br />
+<ul>
+	<li>
+		无须指定函数的返回值，因为任何 ECMAScript 函数都可以在任何时候返回任何值。
+	</li>
+	<li>
+		实际上，未指定返回值的函数返回的是一个特殊的 undefined 值。
+	</li>
+	<li>
+		ECMAScript 中也没有函数签名的概念，因为其函数参数是以一个包含零或多个值的数组的形式传递的。
+	</li>
+	<li>
+		可以向 ECMAScript 函数传递任意数量的参数，并且可以通过 arguments 对象来访问这些参数。
+	</li>
+	<li>
+		由于不存在函数签名的特性， ECMAScript 函数不能重载
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15252">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

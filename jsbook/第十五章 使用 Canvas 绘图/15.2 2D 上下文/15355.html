@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.2.2 绘制矩形</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.2.2 绘制矩形</h1>
+	<hr>
+		矩形是唯一一种可以直接在2D 上下文中绘制的形状。与矩形有关的方法包括fillRect()、strokeRect()和clearRect()。这三个方法都能接收4 个参数：矩形的x 坐标、矩形的y 坐标、矩形宽度和矩形高度。这些参数的单位都是像素。<br />
+首先，fillRect()方法在画布上绘制的矩形会填充指定的颜色。填充的颜色通过fillStyle 属性指定，比如：<br />
+<pre>var drawing = document.getElementById("drawing");
+//确定浏览器支持&lt;canvas&gt;元素
+if (drawing.getContext) {
+	var context = drawing.getContext("2d");
+/*
+* 根据Mozilla 的文档
+* http://developer.mozilla.org/en/docs/Canvas_tutorial:Basic_usage
+*/
+	//绘制红色矩形
+	context.fillStyle = "#ff0000";
+	context.fillRect(10, 10, 50, 50);
+	//绘制半透明的蓝色矩形
+	context.fillStyle = "rgba(0,0,255,0.5)";
+	context.fillRect(30, 30, 50, 50);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8742" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	以上代码首先将fillStyle 设置为红色，然后从(10,10)处开始绘制矩形，矩形的宽和高均为50 像素。然后，通过rgba()格式再将fillStyle 设置为半透明的蓝色，在第一个矩形上面绘制第二个矩形。结果就是可以透过蓝色的矩形看到红色的矩形（见图15-1）。
+</p>
+<p>
+	<img src="../../image/16a483a5e1b.gif" alt="" />
+</p>
+strokeRect()方法在画布上绘制的矩形会使用指定的颜色描边。描边颜色通过strokeStyle 属性指定。比如：<br />
+<pre>var drawing = document.getElementById("drawing");
+//确定浏览器支持&lt;canvas&gt;元素
+if (drawing.getContext) {
+	var context = drawing.getContext("2d");
+/*
+* 根据Mozilla 的文档
+* http://developer.mozilla.org/en/docs/Canvas_tutorial:Basic_usage
+*/
+	//绘制红色描边矩形
+	context.strokeStyle = "#ff0000";
+	context.strokeRect(10, 10, 50, 50);
+	//绘制半透明的蓝色描边矩形
+	context.strokeStyle = "rgba(0,0,255,0.5)";
+	context.strokeRect(30, 30, 50, 50);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8743" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码绘制了两个重叠的矩形。不过，这两个矩形都只有框线，内部并没有填充颜色（见图15-2）。<br />
+<img src="../../image/539f4a42c4a.gif" alt="" /><br />
+<blockquote>
+	描边线条的宽度由lineWidth 属性控制，该属性的值可以是任意整数。另外，通过lineCap 属性可以控制线条末端的形状是平头、圆头还是方头（"butt"、"round"或"square"），通过lineJoin 属性可以控制线条相交的方式是圆交、斜交还是斜接（"round"、"bevel"或"miter"）。
+</blockquote>
+最后，clearRect()方法用于清除画布上的矩形区域。本质上，这个方法可以把绘制上下文中的某一矩形区域变透明。通过绘制形状然后再清除指定区域，就可以生成有意思的效果，例如把某个形状切掉一块。下面看一个例子。<br />
+<pre>var drawing = document.getElementById("drawing");
+//确定浏览器支持&lt;canvas&gt;元素
+if (drawing.getContext) {
+	var context = drawing.getContext("2d");
+/*
+* 根据Mozilla 的文档
+* http://developer.mozilla.org/en/docs/Canvas_tutorial:Basic_usage
+*/
+	//绘制红色矩形
+	context.fillStyle = "#ff0000";
+	context.fillRect(10, 10, 50, 50);
+	//绘制半透明的蓝色矩形
+	context.fillStyle = "rgba(0,0,255,0.5)";
+	context.fillRect(30, 30, 50, 50);
+	//在两个矩形重叠的地方清除一个小矩形
+	context.clearRect(40, 40, 10, 10);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8744" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	如图15-3 所示，两个填充矩形重叠在一起，而重叠的地方又被清除了一个小矩形区域。
+</p>
+<p>
+	<img src="../../image/3e4f0c9762e.gif" alt="" />
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15355">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

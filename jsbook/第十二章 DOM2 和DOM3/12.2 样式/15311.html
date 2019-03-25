@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>12.2 样式</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">12.2 样式</h1>
+	<hr>
+		在HTML 中定义样式的方式有3 种：通过&lt;link/&gt;元素包含外部样式表文件、使用&lt;style/&gt;元素定义嵌入式样式，以及使用style 特性定义针对特定元素的样式。“DOM2 级样式”模块围绕这3 种应用样式的机制提供了一套API。要确定浏览器是否支持DOM2 级定义的CSS 能力，可以使用下列代码。<br />
+<pre>var supportsDOM2CSS = document.implementation.hasFeature("CSS", "2.0");
+var supportsDOM2CSS2 = document.implementation.hasFeature("CSS2", "2.0");</pre></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15311">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

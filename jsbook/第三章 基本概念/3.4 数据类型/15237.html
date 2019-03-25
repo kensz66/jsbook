@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.4.6 String类型</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.4.6 String类型</h1>
+	<hr>
+		<p>
+	String 类型用于表示由零或多个 16 位 Unicode 字符组成的字符序列，即字符串。字符串可以由双引号（<code>"</code>）或单引号（<code>'</code>）表示，因此下面两种字符串的写法都是有效的：
+</p>
+<pre>var firstName = "Nicholas";
+var lastName = 'Zakas';</pre>
+<p>
+	与 PHP 中的双引号和单引号会影响对字符串的解释方式不同， ECMAScript 中的这两种语法形式没有什么区别。用双引号表示的字符串和用单引号表示的字符串完全相同。不过，以双引号开头的字符串也必须以双引号结尾，而以单引号开头的字符串必须以单引号结尾。例如，下面这种字符串表示法会导致语法错误：
+</p>
+<pre>var firstName = 'Nicholas"; // 语法错误（左右引号必须匹配）</pre>
+<h2>
+	1. 字符字面量
+</h2>
+<p>
+	String 数据类型包含一些特殊的字符字面量，也叫转义序列，用于表示非打印字符，或者具有其他用途的字符。这些字符字面量如下表所示：
+</p>
+<p>
+	<table style="width:100%;" cellspacing="0" cellpadding="2" bordercolor="#000000" border="1">
+		<tbody>
+			<tr>
+				<td>
+					<strong>字 </strong><strong>面</strong> <strong>量</strong><br />
+				</td>
+				<td>
+					<strong>含 义</strong><br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\n</code><br />
+				</td>
+				<td>
+					换行<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\t</code><br />
+				</td>
+				<td>
+					制表<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\b</code><br />
+				</td>
+				<td>
+					空格<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\r</code><br />
+				</td>
+				<td>
+					回车<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\f</code><br />
+				</td>
+				<td>
+					进纸<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\\ </code><br />
+				</td>
+				<td>
+					斜杠<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\'</code><br />
+				</td>
+				<td>
+					单引号（<code>'</code>），在用单引号表示的字符串中使用。例如： <code>'He said, \'hey.\</code>''<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\"</code><br />
+				</td>
+				<td>
+					双引号（<code>"</code>），在用双引号表示的字符串中使用。例如： "<code>He said, \"hey.\"</code>"<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\xnn</code><br />
+				</td>
+				<td>
+					以十六进制代码<code>n</code><code>n</code>表示的一个字符（其中n为0～F）。例如， <code>\x41</code>表示"<code>A</code>"<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<code>\unnnn</code><br />
+				</td>
+				<td>
+					以十六进制代码<code>nnnn</code>表示的一个Unicode字符（其中n为0～F）。例如， <code>\u03a3</code>表示希腊字符<code>Σ</code><br />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</p>
+<p>
+	这些字符字面量可以出现在字符串中的任意位置，而且也将被作为一个字符来解析，如下面的例子所示：
+</p>
+<pre>var text = "This is the letter sigma: \u03a3.";</pre>
+<p>
+	这个例子中的变量 text 有 28 个字符，其中 6 个字符长的转义序列表示 1 个字符。任何字符串的长度都可以通过访问其 length 属性取得，例如：
+</p>
+<pre>alert(text.length); // 输出 28</pre>
+<p>
+	这个属性返回的字符数包括 16 位字符的数目。如果字符串中包含双字节字符，那么 length 属性可能不会精确地返回字符串中的字符数目。
+</p>
+<h2>
+	2. 字符串的特点
+</h2>
+<p>
+	ECMAScript 中的字符串是不可变的，也就是说，字符串一旦创建，它们的值就不能改变。要改变某个变量保存的字符串，首先要销毁原来的字符串，然后再用另一个包含新值的字符串填充该变量，例如：
+</p>
+<pre>var lang = "Java";
+lang = lang + "Script";</pre>
+<p>
+	以上示例中的变量 lang 开始时包含字符串"Java"。而第二行代码把 lang 的值重新定义为"Java"与"Script"的组合，即"JavaScript"。实现这个操作的过程如下：首先创建一个能容纳 10 个字符的新字符串，然后在这个字符串中填充"Java"和"Script"，最后一步是销毁原来的字符串"Java"和字符串"Script"，因为这两个字符串已经没用了。这个过程是在后台发生的，而这也是在某些旧版本的浏览器（例如版本低于 1.0 的 Firefox、 IE6 等）中拼接字符串时速度很慢的原因所在。但这些浏览器后来的版本已经解决了这个低效率问题。
+</p>
+<h2>
+	3. 转换为字符串
+</h2>
+<p>
+	要把一个值转换为一个字符串有两种方式。第一种是使用几乎每个值都有的 toString()方法（第5 章将讨论这个方法的特点）。这个方法唯一要做的就是返回相应值的字符串表现。来看下面的例子：
+</p>
+<pre>var age = 11;
+var ageAsString = age.toString(); // 字符串"11"
+var found = true;
+var foundAsString = found.toString(); // 字符串"true"</pre>
+<a href="http://www.z-ai.net/study/api/s/8365" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	数值、布尔值、对象和字符串值（没错，每个字符串也都有一个 toString()方法，该方法返回字符串的一个副本）都有 toString()方法。但 null 和 undefined 值没有这个方法。
+</p>
+<p>
+	多数情况下，调用 toString()方法不必传递参数。但是，在调用数值的 toString()方法时，可以传递一个参数：输出数值的基数。默认情况下， toString()方法以十进制格式返回数值的字符串表示。而通过传递基数， toString()可以输出以二进制、八进制、十六进制，乃至其他任意有效进制格式表示的字符串值。下面给出几个例子：
+</p>
+<pre>alert(num.toString(8)); // "12"alert(num.toString(16)); // "a"</pre>
+<a href="http://www.z-ai.net/study/api/s/8366" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	通过这个例子可以看出，通过指定基数， toString()方法会改变输出的值。而数值 10 根据基数的不同，可以在输出时被转换为不同的数值格式。注意，默认的（没有参数的）输出值与指定基数 10 时的输出值相同。
+</p>
+<p>
+	在不知道要转换的值是不是 null 或 undefined 的情况下，还可以使用转型函数 String()，这个函数能够将任何类型的值转换为字符串。 String()函数遵循下列转换规则：
+</p>
+<pre>var num = 10;
+alert(num.toString()); // "10"
+alert(num.toString(2)); // "1010"
+alert(num.toString(8)); // "12"
+alert(num.toString(10)); // "10"
+alert(num.toString(16)); // "a"</pre>
+<ul>
+	<li>
+		如果值有 toString()方法，则调用该方法（没有参数）并返回相应的结果；
+	</li>
+	<li>
+		如果值是 null，则返回"null"；
+	</li>
+	<li>
+		如果值是 undefined，则返回"undefined"。
+	</li>
+</ul>
+下面再看几个例子：<br />
+<pre>var value1 = 10;
+var value2 = true;
+var value3 = null;
+var value4;
+alert(String(value1)); // "10"
+alert(String(value2)); // "true"
+alert(String(value3)); // "null"
+alert(String(value4)); // "undefined"</pre>
+<a href="http://www.z-ai.net/study/api/s/8367" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里先后转换了 4 个值：数值、布尔值、 null 和 undefined。数值和布尔值的转换结果与调用toString()方法得到的结果相同。因为 null 和 undefined 没有 toString()方法，所以 String()函数就返回了这两个值的字面量。<br />
+<blockquote>
+	要把某个值转换为字符串，可以使用加号操作符（3.5 节讨论）把它与一个字符串（""）加在一起。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15237">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>14.2.3 自动切换焦点</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">14.2.3 自动切换焦点</h1>
+	<hr>
+		使用JavaScript 可以从多个方面增强表单字段的易用性。其中，最常见的一种方式就是在用户填写完当前字段时，自动将焦点切换到下一个字段。通常，在自动切换焦点之前，必须知道用户已经输入了既定长度的数据（例如电话号码）。例如，美国的电话号码通常会分为三部分：区号、局号和另外4 位数字。为取得完整的电话号码，很多网页中都会提供下列3 个文本框：<br />
+<pre>&lt;input type="text" name="tel1" id="txtTel1" maxlength="3"&gt;
+&lt;input type="text" name="tel2" id="txtTel2" maxlength="3"&gt;
+&lt;input type="text" name="tel3" id="txtTel3" maxlength="4"&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8733" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+为增强易用性，同时加快数据输入，可以在前一个文本框中的字符达到最大数量后，自动将焦点切换到下一个文本框。换句话说，用户在第一个文本框中输入了3 个数字之后，焦点就会切换到第二个文本框，再输入3 个数字，焦点又会切换到第三个文本框。这种“自动切换焦点”的功能，可以通过下列代码实现：<br />
+<pre>(function() {
+	function tabForward(event) {
+		event = EventUtil.getEvent(event);
+		var target = EventUtil.getTarget(event);
+		if (target.value.length == target.maxLength) {
+			var form = target.form;
+			for (var i = 0,
+			len = form.elements.length; i &lt; len; i++) {
+				if (form.elements[i] == target) {
+					if (form.elements[i + 1]) {
+						form.elements[i + 1].focus();
+					}
+					return;
+				}
+			}
+		}
+	}
+	var textbox1 = document.getElementById("txtTel1");
+	var textbox2 = document.getElementById("txtTel2");
+	var textbox3 = document.getElementById("txtTel3");
+	EventUtil.addHandler(textbox1, "keyup", tabForward);
+	EventUtil.addHandler(textbox2, "keyup", tabForward);
+	EventUtil.addHandler(textbox3, "keyup", tabForward);
+})();</pre>
+<a href="http://www.z-ai.net/study/api/s/8733" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+开始的tabForward()函数是实现“自动切换焦点”的关键所在。这个函数通过比较用户输入的值与文本框的maxlength 特性，可以确定是否已经达到最大长度。如果这两个值相等（因为浏览器最终会强制它们相等，因此用户绝不会多输入字符），则需要查找表单字段集合，直至找到下一个文本框。<br />
+找到下一个文本框之后，则将焦点切换到该文本框。然后，我们把这个函数指定为每个文本框的onkeyup事件处理程序。由于keyup 事件会在用户输入了新字符之后触发，所以此时是检测文本框中内容长度的最佳时机。这样一来，用户在填写这个简单的表单时，就不必再通过按制表键切换表单字段和提交表单了。<br />
+不过请记住，这些代码只适用于前面给出的标记，而且没有考虑隐藏字段。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15345">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

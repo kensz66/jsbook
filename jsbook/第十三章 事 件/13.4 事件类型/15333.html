@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>13.4.9 触摸与手势事件</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">13.4.9 触摸与手势事件</h1>
+	<hr>
+		iOS 版Safari 为了向开发人员传达一些特殊信息，新增了一些专有事件。因为iOS 设备既没有鼠标也没有键盘，所以在为移动Safari 开发交互性网页时，常规的鼠标和键盘事件根本不够用。随着Android中的WebKit 的加入，很多这样的专有事件变成了事实标准，导致W3C 开始制定Touch Events 规范（参见https://dvcs.w3.org/hg/webevents/raw-file/tip/touchevents.html）。以下介绍的事件只针对触摸设备。<br />
+<h2>
+	1. 触摸事件
+</h2>
+包含iOS 2.0 软件的iPhone 3G 发布时，也包含了一个新版本的Safari 浏览器。这款新的移动Safari提供了一些与触摸（touch）操作相关的新事件。后来，Android 上的浏览器也实现了相同的事件。触摸事件会在用户手指放在屏幕上面时、在屏幕上滑动时或从屏幕上移开时触发。具体来说，有以下几个触摸事件。<br />
+<ul>
+	<li>
+		touchstart：当手指触摸屏幕时触发；即使已经有一个手指放在了屏幕上也会触发。
+	</li>
+	<li>
+		touchmove：当手指在屏幕上滑动时连续地触发。在这个事件发生期间，调用preventDefault()可以阻止滚动。
+	</li>
+	<li>
+		touchend：当手指从屏幕上移开时触发。
+	</li>
+	<li>
+		touchcancel：当系统停止跟踪触摸时触发。关于此事件的确切触发时间，文档中没有明确说明。
+	</li>
+</ul>
+上面这几个事件都会冒泡，也都可以取消。虽然这些触摸事件没有在DOM 规范中定义，但它们却是以兼容DOM 的方式实现的。因此，每个触摸事件的event 对象都提供了在鼠标事件中常见的属性：<br />
+bubbles、cancelable、view、clientX、clientY、screenX、screenY、detail、altKey、shiftKey、ctrlKey 和metaKey。<br />
+除了常见的DOM属性外，触摸事件还包含下列三个用于跟踪触摸的属性。<br />
+<ul>
+	<li>
+		touches：表示当前跟踪的触摸操作的Touch 对象的数组。
+	</li>
+	<li>
+		targetTouchs：特定于事件目标的Touch 对象的数组。
+	</li>
+	<li>
+		changeTouches：表示自上次触摸以来发生了什么改变的Touch 对象的数组。
+	</li>
+</ul>
+每个Touch 对象包含下列属性。<br />
+<ul>
+	<li>
+		clientX：触摸目标在视口中的x 坐标。
+	</li>
+	<li>
+		clientY：触摸目标在视口中的y 坐标。
+	</li>
+	<li>
+		identifier：标识触摸的唯一ID。
+	</li>
+	<li>
+		pageX：触摸目标在页面中的x 坐标。
+	</li>
+	<li>
+		pageY：触摸目标在页面中的y 坐标。
+	</li>
+	<li>
+		screenX：触摸目标在屏幕中的x 坐标。
+	</li>
+	<li>
+		screenY：触摸目标在屏幕中的y 坐标。
+	</li>
+	<li>
+		target：触摸的DOM 节点目标。
+	</li>
+</ul>
+使用这些属性可以跟踪用户对屏幕的触摸操作。来看下面的例子。<br />
+<pre>function handleTouchEvent(event) {
+	//只跟踪一次触摸
+	if (event.touches.length == 1) {
+		var output = document.getElementById("output");
+		switch (event.type) {
+		case "touchstart":
+			output.innerHTML = "Touch started (" + event.touches[0].clientX + "," + event.touches[0].clientY + ")";
+			break;
+		case "touchend":
+			output.innerHTML += "&lt;br&gt;Touch ended (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY + ")";
+			break;
+		case "touchmove":
+			event.preventDefault(); //阻止滚动
+			output.innerHTML += "&lt;br&gt;Touch moved (" + event.changedTouches[0].clientX + "," + event.changedTouches[0].clientY + ")";
+			break;
+		}
+	}
+}
+EventUtil.addHandler(document, "touchstart", handleTouchEvent);
+EventUtil.addHandler(document, "touchend", handleTouchEvent);
+EventUtil.addHandler(document, "touchmove", handleTouchEvent);</pre>
+<a href="http://www.z-ai.net/study/api/s/8714" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码会跟踪屏幕上发生的一次触摸操作。为简单起见，只会在有一次活动触摸操作的情况下输出信息。当touchstart 事件发生时，会将触摸的位置信息输出到&lt;div&gt;元素中。当touchmove 事件发生时，会取消其默认行为，阻止滚动（触摸移动的默认行为是滚动页面），然后输出触摸操作的变化信息。而touchend 事件则会输出有关触摸操作的最终信息。注意，在touchend 事件发生时，touches集合中就没有任何Touch 对象了，因为不存在活动的触摸操作；此时，就必须转而使用changeTouchs集合。<br />
+这些事件会在文档的所有元素上面触发，因而可以分别操作页面的不同部分。在触摸屏幕上的元素时，这些事件（包括鼠标事件）发生的顺序如下：<br />
+<ul>
+	<li>
+		(1) touchstart
+	</li>
+	<li>
+		(2) mouseover
+	</li>
+	<li>
+		(3) mousemove（一次）
+	</li>
+	<li>
+		(4) mousedown
+	</li>
+	<li>
+		(5) mouseup
+	</li>
+	<li>
+		(6) click
+	</li>
+	<li>
+		(7) touchend
+	</li>
+</ul>
+支持触摸事件的浏览器包括iOS 版Safari、Android 版WebKit、bada 版Dolfin、OS6+中的BlackBerryWebKit、Opera Mobile 10.1+和LG 专有OS 中的Phantom 浏览器。目前只有iOS 版Safari 支持多点触摸。桌面版Firefox 6+和Chrome 也支持触摸事件。<br />
+<h2>
+	2. 手势事件
+</h2>
+iOS 2.0 中的Safari 还引入了一组手势事件。当两个手指触摸屏幕时就会产生手势，手势通常会改变显示项的大小，或者旋转显示项。有三个手势事件，分别介绍如下。<br />
+<ul>
+	<li>
+		gesturestart：当一个手指已经按在屏幕上而另一个手指又触摸屏幕时触发。
+	</li>
+	<li>
+		gesturechange：当触摸屏幕的任何一个手指的位置发生变化时触发。
+	</li>
+	<li>
+		gestureend：当任何一个手指从屏幕上面移开时触发。
+	</li>
+</ul>
+只有两个手指都触摸到事件的接收容器时才会触发这些事件。在一个元素上设置事件处理程序，意味着两个手指必须同时位于该元素的范围之内，才能触发手势事件（这个元素就是目标）。由于这些事件冒泡，所以将事件处理程序放在文档上也可以处理所有手势事件。此时，事件的目标就是两个手指都位于其范围内的那个元素。<br />
+触摸事件和手势事件之间存在某种关系。当一个手指放在屏幕上时，会触发touchstart 事件。如果另一个手指又放在了屏幕上，则会先触发gesturestart 事件，随后触发基于该手指的touchstart事件。如果一个或两个手指在屏幕上滑动，将会触发gesturechange 事件。但只要有一个手指移开，就会触发gestureend 事件，紧接着又会触发基于该手指的touchend 事件。<br />
+与触摸事件一样，每个手势事件的event 对象都包含着标准的鼠标事件属性：bubbles、cancelable、view、clientX、clientY、screenX、screenY、detail、altKey、shiftKey、ctrlKey 和metaKey。此外，还包含两个额外的属性：rotation 和scale。其中，rotation 属性表示手指变化引起的旋转角度，负值表示逆时针旋转，正值表示顺时针旋转（该值从0 开始）。而scale属性表示两个手指间距离的变化情况（例如向内收缩会缩短距离）；这个值从1 开始，并随距离拉大而增长，随距离缩短而减小。<br />
+下面是使用手势事件的一个示例。<br />
+<pre>function handleGestureEvent(event) {
+	var output = document.getElementById("output");
+	switch (event.type) {
+	case "gesturestart":
+		output.innerHTML = "Gesture started (rotation=" + event.rotation + ",scale=" + event.scale + ")";
+		break;
+	case "gestureend":
+		output.innerHTML += "&lt;br&gt;Gesture ended (rotation=" + event.rotation + ",scale=" + event.scale + ")";
+		break;
+	case "gesturechange":
+		output.innerHTML += "&lt;br&gt;Gesture changed (rotation=" + event.rotation + ",scale=" + event.scale + ")";
+		break;
+	}
+}
+document.addEventListener("gesturestart", handleGestureEvent, false);
+document.addEventListener("gestureend", handleGestureEvent, false);
+document.addEventListener("gesturechange", handleGestureEvent, false);</pre>
+<a href="http://www.z-ai.net/study/api/s/8715" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+与前面演示触摸事件的例子一样，这里的代码只是将每个事件都关联到同一个函数中，然后通过该函数输出每个事件的相关信息。<br />
+<blockquote>
+	触摸事件也会返回rotation 和scale 属性，但这两个属性只会在两个手指与屏幕保持接触时才会发生变化。一般来说，使用基于两个手指的手势事件，要比管理触摸事件中的所有交互要容易得多。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15333">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

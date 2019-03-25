@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>24.1 可维护性</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">24.1 可维护性</h1>
+	<hr>
+		<p>
+	在早期的网站中，JavaScript 主要是用于小特效或者是表单验证。而今天的Web 应用则会有成千上万行JavaScript 代码，执行各种复杂的过程。这种演化让开发者必须得考虑到可维护性。除了秉承较传统理念的软件工程师外，还要雇佣JavaScript 开发人员为公司创造价值，而他们并非仅仅按时交付产品，同时还要开发智力成果在之后不断地增加价值。
+</p>
+<p>
+	编写可维护的代码很重要，因为大部分开发人员都花费大量时间维护他人代码。很难从头开始开发新代码的，很多情况下是以他人的工作成果为基础的。确保自己代码的可维护性，以便其他开发人员在此基础上更好的开展工作。
+</p>
+<blockquote>
+	注意可维护的代码的概念并不是JavaScript 特有的。这里的很多概念都可以广泛应用于各种编程语言，当然也有某些特定于JavaScript 的概念。
+</blockquote>
+<h2>
+	24.1.1 什么是可维护的代码
+</h2>
+可维护的代码有一些特征。一般来说，如果说代码是可维护的，它需要遵循以下特点。<br />
+<ul>
+	<li>
+		可理解性——其他人可以接手代码并理解它的意图和一般途径，而无需原开发人员的完整解释。
+	</li>
+	<li>
+		直观性——代码中的东西一看就能明白，不管其操作过程多么复杂。
+	</li>
+	<li>
+		可适应性——代码以一种数据上的变化不要求完全重写的方法撰写。
+	</li>
+	<li>
+		可扩展性——在代码架构上已考虑到在未来允许对核心功能进行扩展。
+	</li>
+	<li>
+		可调试性——当有地方出错时，代码可以给予你足够的信息来尽可能直接地确定问题所在。
+	</li>
+</ul>
+对于专业人士而言，能写出可维护的JavaScript 代码是非常重要的技能。这正是周末改改网站的爱好者和真正理解自己作品的开发人员之间的区别。<br />
+<h2>
+	24.1.2 代码约定
+</h2>
+<p>
+	一种让代码变得可维护的简单途径是形成一套JavaScript 代码的书写约定。绝大多数语言都开发出了各自的代码约定，只要在网上一搜就能找到大量相关文档。专业的组织为开发人员制定了详尽的代码约定试图让代码对任何人都可维护。杰出的开放源代码项目有着严格的代码约定要求，这让社区中的任何人都可以轻松地理解代码是如何组织的。
+</p>
+<p>
+	由于JavaScript 的可适应性，代码约定对它也很重要。由于和大多数面向对象语言不同，JavaScript并不强制开发人员将所有东西都定义为对象。语言可以支持各种编程风格，从传统面向对象式到声明式到函数式。只要快速浏览一下一些开源JavaScript 库，就能发现好几种创建对象、定义方法和管理环境的途径。
+</p>
+<p>
+	以下小节将讨论代码约定的概论。对这些主题的解说非常重要，虽然可能的解说方式会有区别，这取决于个人需求。
+</p>
+<h3>
+	1. 可读性
+</h3>
+<p>
+	要让代码可维护，首先它必须可读。可读性与代码作为文本文件的格式化方式有关。可读性的大部分内容都是和代码的缩进相关的。当所有人都使用一样的缩进方式时，整个项目中的代码都会更加易于阅读。通常会使用若干空格而非制表符来进行缩进，这是因为制表符在不同的文本编辑器中显示效果不同。一种不错的、很常见的缩进大小为4 个空格，当然你也可以使用其他数量。
+</p>
+<p>
+	可读性的另一方面是注释。在大多数编程语言中，对每个方法的注释都视为一个可行的实践。因为JavaScript 可以在代码的任何地方创建函数，所以这点常常被忽略了。然而正因如此，在JavaScript 中为每个函数编写文档就更加重要了。一般而言，有如下一些地方需要进行注释。
+</p>
+<ul>
+	<li>
+		函数和方法——每个函数或方法都应该包含一个注释，描述其目的和用于完成任务所可能使用的算法。陈述事先的假设也非常重要，如参数代表什么，函数是否有返回值（因为这不能从函数定义中推断出来）。
+	</li>
+	<li>
+		大段代码——用于完成单个任务的多行代码应该在前面放一个描述任务的注释。
+	</li>
+	<li>
+		复杂的算法——如果使用了一种独特的方式解决某个问题，则要在注释中解释你是如何做的。这不仅仅可以帮助其他浏览你代码的人，也能在下次你自己查阅代码的时候帮助理解。
+	</li>
+	<li>
+		Hack——因为存在浏览器差异，JavaScript 代码一般会包含一些hack。不要假设其他人在看代
+	</li>
+</ul>
+码的时候能够理解hack 所要应付的浏览器问题。如果因为某种浏览器无法使用普通的方法，所以你需要用一些不同的方法，那么请将这些信息放在注释中。这样可以减少出现这种情况的可能性：有人偶然看到你的hack，然后“修正”了它，最后重新引入了你本来修正了的错误。缩进和注释可以带来更可读的代码，在未来则更容易维护。<br />
+<h3>
+	2. 变量和函数命名
+</h3>
+适当给变量和函数起名字对于增加代码可理解性和可维护性是非常重要的。由于很多JavaScript 开发人员最初都只是业余爱好者，所以有一种使用无意义名字的倾向，诸如给变量起"foo"、"bar"等名字，给函数起"doSomething"这样的名字。专业JavaScript 开发人员必须克服这些恶习以创建可维护的代码。命名的一般规则如下所示。<br />
+<ul>
+	<li>
+		变量名应为名词如car 或person。
+	</li>
+	<li>
+		函数名应该以动词开始，如getName()。返回布尔类型值的函数一般以is 开头，如isEnable()。
+	</li>
+	<li>
+		变量和函数都应使用合乎逻辑的名字，不要担心长度。长度问题可以通过后处理和压缩（本章后面会讲到）来缓解。
+	</li>
+</ul>
+必须避免出现无法表示所包含的数据类型的无用变量名。有了合适的命名，代码阅读起来就像讲述故事一样，更容易理解。<br />
+<h3>
+	3. 变量类型透明
+</h3>
+<p>
+	由于在JavaScript 中变量是松散类型的，很容易就忘记变量所应包含的数据类型。合适的命名方式可以一定程度上缓解这个问题，但放到所有的情况下看，还不够。有三种表示变量数据类型的方式。
+</p>
+<p>
+	第一种方式是初始化。当定义了一个变量后，它应该被初始化为一个值，来暗示它将来应该如何应用。例如，将来保存布尔类型值的变量应该初始化为true 或者false，将来保存数字的变量就应该初始化为一个数字，如以下例子所示：
+</p>
+<pre>//通过初始化指定变量类型
+var found = false; //布尔型
+var count = -1; //数字
+var name = ""; //字符串
+var person = null; //对象</pre>
+<p>
+	初始化为一个特定的数据类型可以很好的指明变量的类型。但缺点是它无法用于函数声明中的函数参数。
+</p>
+<p>
+	第二种方法是使用匈牙利标记法来指定变量类型。匈牙利标记法在变量名之前加上一个或多个字符来表示数据类型。这个标记法在脚本语言中很流行，曾经很长时间也是JavaScript 所推崇的方式。
+</p>
+<p>
+	JavaScript 中最传统的匈牙利标记法是用单个字符表示基本类型："o"代表对象，"s"代表字符串，"i"代表整数，"f"代表浮点数，"b"代表布尔型。如下所示：
+</p>
+<pre>//用于指定数据类型的匈牙利标记法
+var bFound; //布尔型
+var iCount; //整数
+var sName; //字符串
+var oPerson; //对象</pre>
+<p>
+	JavaScript 中用匈牙利标记法的好处是函数参数一样可以使用。但它的缺点是让代码某种程度上难以阅读，阻碍了没有用它时代码的直观性和句子式的特质。因此，匈牙利标记法失去了一些开发者的宠爱。
+</p>
+<p>
+	最后一种指定变量类型的方式是使用类型注释。类型注释放在变量名右边，但是在初始化前面。这种方式是在变量旁边放一段指定类型的注释，如下所示：
+</p>
+<pre>//用于指定类型的类型注释
+var found /*:Boolean*/ = false;
+var count /*:int*/ = 10;
+var name /*:String*/ = "Nicholas";
+var person /*:Object*/ = null;</pre>
+类型注释维持了代码的整体可读性，同时注入了类型信息。类型注释的缺点是你不能用多行注释一次注释大块的代码，因为类型注释也是多行注释，两者会冲突，如下例所示所示：<br />
+<pre>//以下代码不能正确运行
+/*
+var found /*:Boolean*/ = false;
+var count /*:int*/ = 10;
+var name /*:String*/ = "Nicholas";
+var person /*:Object*/ = null;
+*/</pre>
+<p>
+	这里，试图通过多行注释注释所有变量。类型注释与其相冲突，因为第一次出现的 /* （第二行）匹配了第一次出现的*/（第3 行），这会造成一个语法错误。如果你想注释掉这些使用类型注释的代码行，最好在每一行上使用单行注释（很多编辑器可以帮你完成）。
+</p>
+<p>
+	这就是最常见的三种指定变量数据类型的方法。每种都有各自的优势和劣势，要自己在使用之前进行评估。最重要的是要确定哪种最适合你的项目并一致使用。
+</p>
+<h2>
+	24.1.3 松散耦合
+</h2>
+<p>
+	只要应用的某个部分过分依赖于另一部分，代码就是耦合过紧，难于维护。典型的问题如：对象直接引用另一个对象，并且当修改其中一个的同时需要修改另外一个。紧密耦合的软件难于维护并且需要经常重写。
+</p>
+因为Web 应用所涉及的技术，有多种情况会使它变得耦合过紧。必须小心这些情况，并尽可能维护弱耦合的代码。<br />
+<h3>
+	1. 解耦HTML/JavaScript
+</h3>
+<p>
+	一种最常见的耦合类型是HTML/JavaScript 耦合。在Web 上，HTML 和JavaScript 各自代表了解决方案中的不同层次：HTML 是数据，JavaScript 是行为。因为它们天生就需要交互，所以有多种不同的方法将这两个技术关联起来。但是，有一些方法会将HTML 和JavaScript 过于紧密地耦合在一起。
+</p>
+<p>
+	直接写在HTML 中的JavaScript，使用包含内联代码的&lt;script&gt;元素或者是使用HTML 属性来分配事件处理程序，都是过于紧密的耦合。请看以下代码。
+</p>
+<pre>&lt;!-- 使用了 &lt;script&gt; 的紧密耦合的 HTML/JavaScript --&gt;
+&lt;script type="text/javascript"&gt;
+document.write("Hello world!");
+&lt;/script&gt;
+&lt;!-- 使用事件处理程序属性值的紧密耦合的 HTML/JavaScript --&gt;
+&lt;input type="button" value="Click Me" onclick="doSomething()" /&gt;</pre>
+<p>
+	虽然这些从技术上来说都是正确的，但是实践中，它们将表示数据的HTML 和定义行为的JavaScript紧密耦合在了一起。理想情况是，HTML 和JavaScript 应该完全分离，并通过外部文件和使用DOM 附加行为来包含JavaScript。
+</p>
+<p>
+	当HTML 和JavaScript 过于紧密的耦合在一起时，出现JavaScript 错误时就要先判断错误是出现在HTML 部分还是在JavaScript 文件中。它还会引入和代码是否可用的相关新问题。在这个例子中，可能在doSomething()函数可用之前，就已经按下了按钮，引发了一个JavaScript 错误。因为任何对按钮行为的更改要同时触及HTML 和JavaScript，因此影响了可维护性。而这些更改本该只在JavaScript 中进行。
+</p>
+<p>
+	HTML 和JavaScript 的紧密耦合也可以在相反的关系上成立：JavaScript 包含了HTML。这通常会出现在使用innerHTML 来插入一段HTML 文本到页面上这种情况中，如下面的例子所示：
+</p>
+<pre>//将HTML 紧密耦合到JavaScript
+function insertMessage(msg) {
+	var container = document.getElementById("container");
+	container.innerHTML = "&lt;div class=\"msg\"&gt;&lt;p class=\"post\"&gt;" + msg + "&lt;/p&gt;" + "&lt;p&gt;&lt;em&gt;Latest message above.&lt;/em&gt;&lt;/p&gt;&lt;/div&gt;";
+}</pre>
+<p>
+	一般来说，你应该避免在JavaScript 中创建大量HTML。再一次重申要保持层次的分离，这样可以很容易的确定错误来源。当使用上面这个例子的时候，有一个页面布局的问题，可能和动态创建的HTML没有被正确格式化有关。不过，要定位这个错误可能非常困难，因为你可能一般先看页面的源代码来查找那段烦人的HTML，但是却没能找到，因为它是动态生成的。对数据或者布局的更改也会要求更改JavaScript，这也表明了这两个层次过于紧密地耦合了。
+</p>
+<p>
+	HTML 呈现应该尽可能与JavaScript 保持分离。当JavaScript 用于插入数据时，尽量不要直接插入标记。一般可以在页面中直接包含并隐藏标记，然后等到整个页面渲染好之后，就可以用JavaScript 显示该标记，而非生成它。另一种方法是进行Ajax 请求并获取更多要显示的HTML，这个方法可以让同样的渲染层（PHP、JSP、Ruby 等等）来输出标记，而不是直接嵌在JavaScript 中。
+</p>
+<p>
+	将HTML 和JavaScript 解耦可以在调试过程中节省时间，更加容易确定错误的来源，也减轻维护的难度：更改行为只需要在JavaScript 文件中进行，而更改标记则只要在渲染文件中。
+</p>
+<h3>
+	2. 解耦CSS/JavaScript
+</h3>
+另一个Web 层则是CSS，它主要负责页面的显示。JavaScript 和CSS 也是非常紧密相关的：他们都是HTML 之上的层次，因此常常一起使用。但是，和HTML 与JavaScript 的情况一样，CSS 和JavaScript也可能会过于紧密地耦合在一起。最常见的紧密耦合的例子是使用JavaScript 来更改某些样式，如下所示：<br />
+<pre>//CSS 对JavaScript 的紧密耦合
+element.style.color = "red";
+element.style.backgroundColor = "blue";</pre>
+<p>
+	由于CSS 负责页面的显示，当显示出现任何问题时都应该只是查看CSS 文件来解决。然而，当使用了JavaScript 来更改某些样式的时候，比如颜色，就出现了第二个可能已更改和必须检查的地方。结果是JavaScript 也在某种程度上负责了页面的显示，并与CSS 紧密耦合了。如果未来需要更改样式表，CSS 和JavaScript 文件可能都需要修改。这就给开发人员造成了维护上的噩梦。所以在这两个层次之间必须有清晰的划分。
+</p>
+<p>
+	现代Web 应用常常要使用JavaScript 来更改样式，所以虽然不可能完全将CSS 和JavaScript 解耦，但是还是能让耦合更松散的。这是通过动态更改样式类而非特定样式来实现的，如下例所示：
+</p>
+<pre>//CSS 对 JavaScript 的松散耦合
+element.className = "edit";</pre>
+<p>
+	通过只修改某个元素的CSS 类，就可以让大部分样式信息严格保留在CSS 中。JavaScript 可以更改样式类，但并不会直接影响到元素的样式。只要应用了正确的类，那么任何显示问题都可以直接追溯到CSS 而非JavaScript。
+</p>
+<p>
+	第二类紧密耦合仅会在IE 中出现（但运行于标准模式下的IE8 不会出现），它可以在CSS 中通过表达式嵌入JavaScript，如下例所示：
+</p>
+<pre>/* JavaScript 对CSS 的紧密耦合 */
+div {
+    width: expression(document.body.offsetWidth - 10 + "px");
+}</pre>
+<p>
+	通常要避免使用表达式，因为它们不能跨浏览器兼容，还因为它们所引入的JavaScript 和CSS 之间的紧密耦合。如果使用了表达式，那么可能会在CSS 中出现JavaScript 错误。由于CSS 表达式而追踪过JavaScript 错误的开发人员，会告诉你在他们决定看一下CSS 之前花了多长时间来查找错误。
+</p>
+<p>
+	再次提醒，好的层次划分是非常重要的。显示问题的唯一来源应该是CSS，行为问题的唯一来源应该是JavaScript。在这些层次之间保持松散耦合可以让你的整个应用更加易于维护。
+</p>
+<h3>
+	3. 解耦应用逻辑／事件处理程序
+</h3>
+每个Web 应用一般都有相当多的事件处理程序，监听着无数不同的事件。然而，很少有能仔细得将应用逻辑从事件处理程序中分离的。请看以下例子：<br />
+<pre>function handleKeyPress(event) {
+	event = EventUtil.getEvent(event);
+	if (event.keyCode == 13) {
+		var target = EventUtil.getTarget(event);
+		var value = 5 * parseInt(target.value);
+		if (value &gt; 10) {
+			document.getElementById("error-msg").style.display = "block";
+		}
+	}
+}</pre>
+<p>
+	这个事件处理程序除了包含了应用逻辑，还进行了事件的处理。这种方式的问题有其双重性。首先，除了通过事件之外就再没有方法执行应用逻辑，这让调试变得困难。如果没有发生预想的结果怎么办？是不是表示事件处理程序没有被调用还是指应用逻辑失败？其次，如果一个后续的事件引发同样的应用逻辑，那就必须复制功能代码或者将代码抽取到一个单独的函数中。无论何种方式，都要作比实际所需更多的改动。
+</p>
+<p>
+	较好的方法是将应用逻辑和事件处理程序相分离，这样两者分别处理各自的东西。一个事件处理程序应该从事件对象中提取相关信息，并将这些信息传送到处理应用逻辑的某个方法中。例如，前面的代码可以被重写为：
+</p>
+<pre>function validateValue(value) {
+	value = 5 * parseInt(value);
+	if (value &gt; 10) {
+		document.getElementById("error-msg").style.display = "block";
+	}
+}
+function handleKeyPress(event) {
+	event = EventUtil.getEvent(event);
+	if (event.keyCode == 13) {
+		var target = EventUtil.getTarget(event);
+		validateValue(target.value);
+	}
+}</pre>
+<p>
+	改动过的代码合理将应用逻辑从事件处理程序中分离了出来。handleKeyPress() 函数确认是按下了Enter 键（event.keyCode 为13），取得了事件的目标并将value 属性传递给validateValue()函数，这个函数包含了应用逻辑。注意validateValue()中没有任何东西会依赖于任何事件处理程序逻辑，它只是接收一个值，并根据该值进行其他处理。
+</p>
+<p>
+	从事件处理程序中分离应用逻辑有几个好处。首先，可以让你更容易更改触发特定过程的事件。如果最开始由鼠标点击事件触发过程，但现在按键也要进行同样处理，这种更改就很容易。其次，可以在不附加到事件的情况下测试代码，使其更易创建单元测试或者是自动化应用流程。以下是要牢记的应用和业务逻辑之间松散耦合的几条原则：
+</p>
+<ul>
+	<li>
+		勿将event 对象传给其他方法；只传来自event 对象中所需的数据；
+	</li>
+	<li>
+		任何可以在应用层面的动作都应该可以在不执行任何事件处理程序的情况下进行；
+	</li>
+	<li>
+		任何事件处理程序都应该处理事件，然后将处理转交给应用逻辑。
+	</li>
+</ul>
+牢记这几条可以在任何代码中都获得极大的可维护性的改进，并且为进一步的测试和开发制造了很多可能。<br />
+<h2>
+	24.1.4 编程实践
+</h2>
+书写可维护的JavaScript 并不仅仅是关于如何格式化代码；它还关系到代码做什么的问题。在企业环境中创建的Web 应用往往同时由大量人员一同创作。这种情况下的目标是确保每个人所使用的浏览器环境都有一致和不变的规则。因此，最好坚持以下一些编程实践。<br />
+<h3>
+	1. 尊重对象所有权
+</h3>
+<p>
+	JavaScript 的动态性质使得几乎任何东西在任何时间都可以修改。有人说在JavaScript 没有什么神圣的东西，因为无法将某些东西标记为最终或恒定状态。这种状况在ECMAScript 5 中通过引入防篡改对象（第22 章讨论过）得以改变；不过，默认情况下所有对象都是可以修改的。在其他语言中，当没有实际的源代码的时候，对象和类是不可变的。JavaScript 可以在任何时候修改任意对象，这样就可以以不可预计的方式覆写默认的行为。因为这门语言没有强行的限制，所以对于开发者来说，这是很重要的，也是必要的。
+</p>
+<p>
+	也许在企业环境中最重要的编程实践就是尊重对象所有权，它的意思是你不能修改不属于你的对象。简单地说，如果你不负责创建或维护某个对象、它的对象或者它的方法，那么你就不能对它们进行修改。更具体地说：
+</p>
+<ul>
+	<li>
+		不要为实例或原型添加属性；
+	</li>
+	<li>
+		不要为实例或原型添加方法；
+	</li>
+	<li>
+		不要重定义已存在的方法。
+	</li>
+</ul>
+<p>
+	问题在于开发人员会假设浏览器环境按照某个特定方式运行，而对于多个人都用到的对象进行改动就会产生错误。如果某人期望叫做stopEvent()的函数能取消某个事件的默认行为，但是你对其进行了更改，然后它完成了本来的任务，后来还追加了另外的事件处理程序，那肯定会出现问题了。其他开发人员会认为函数还是按照原来的方式执行，所以他们的用法会出错并有可能造成危害，因为他们并不知道有副作用。
+</p>
+<p>
+	这些规则不仅仅适用于自定义类型和对象，对于诸如Object、String、document、window 等原生类型和对象也适用。此处潜在的问题可能更加危险，因为浏览器提供者可能会在不做宣布或者是不可预期的情况下更改这些对象。
+</p>
+<p>
+	著名的Prototype JavaScript 库就出现过这种例子：它为document 对象实现了getElements-ByClassName()方法，返回一个Array 的实例并增加了一个each()方法。John Resig 在他的博客上叙述了产生这个问题的一系列事件。他在帖子（http://ejohn.org/blog/getelementsbyclassname-pre-prototype-16/）中说，他发现当浏览器开始内部实现getElementsByClassName()的时候就出现问题了，这个方法并不返回一个Array 而是返回一个并不包含each()方法的NodeList。使用Prototype 库的开发人员习惯于写这样的代码：
+</p>
+<pre>document.getElementsByClassName("selected").each(Element.hide);</pre>
+<p>
+	虽然在没有原生实现getElementsByClassName()的浏览器中可以正常运行，但对于支持的了浏览器就会产生错误，因为返回的值不同。你不能预测浏览器提供者在未来会怎样更改原生对象，所以不管用任何方式修改他们，都可能会导致将来你的实现和他们的实现之间的冲突。
+</p>
+所以，最佳的方法便是永远不修改不是由你所有的对象。所谓拥有对象，就是说这个对象是你创建的，比如你自己创建的自定义类型或对象字面量。而Array、document 这些显然不是你的，它们在你的代码执行前就存在了。你依然可以通过以下方式为对象创建新的功能：<br />
+<ul>
+	<li>
+		创建包含所需功能的新对象，并用它与相关对象进行交互；
+	</li>
+	<li>
+		创建自定义类型，继承需要进行修改的类型。然后可以为自定义类型添加额外功能。
+	</li>
+</ul>
+现在很多JavaScript 库都赞同并遵守这条开发原理，这样即使浏览器频繁更改，库本身也能继续成长和适应。<br />
+<h3>
+	2. 避免全局量
+</h3>
+与尊重对象所有权密切相关的是尽可能避免全局变量和函数。这也关系到创建一个脚本执行的一致的和可维护的环境。最多创建一个全局变量，让其他对象和函数存在其中。请看以下例子：<br />
+<pre>//两个全局量——避免！！
+var name = "Nicholas";
+function sayName() {
+	alert(name);
+}</pre>
+这段代码包含了两个全局量：变量name 和函数sayName()。其实可以创建一个包含两者的对象，如下例所示：<br />
+<pre>//一个全局量——推荐
+var MyApplication = {
+	name: "Nicholas",
+	sayName: function() {
+		alert(this.name);
+	}
+};</pre>
+<p>
+	这段重写的代码引入了一个单一的全局对象MyApplication，name 和sayName()都附加到其上。这样做消除了一些存在于前一段代码中的一些问题。首先，变量name 覆盖了window.name 属性，可能会与其他功能产生冲突；其次，它有助消除功能作用域之间的混淆。调用MyApplication.sayName()在逻辑上暗示了代码的任何问题都可以通过检查定义MyApplication 的代码来确定。
+</p>
+<p>
+	单一的全局量的延伸便是命名空间的概念，由YUI（Yahoo! User Interface）库普及。命名空间包括创建一个用于放置功能的对象。在YUI 的2.x 版本中，有若干用于追加功能的命名空间。比如：
+</p>
+<ul>
+	<li>
+		YAHOO.util.Dom —— 处理DOM 的方法；
+	</li>
+	<li>
+		YAHOO.util.Event —— 与事件交互的方法；
+	</li>
+	<li>
+		YAHOO.lang —— 用于底层语言特性的方法。
+	</li>
+</ul>
+<p>
+	对于YUI，单一的全局对象YAHOO 作为一个容器，其中定义了其他对象。用这种方式将功能组合在一起的对象，叫做命名空间。整个YUI 库便是构建在这个概念上的，让它能够在同一个页面上与其他的JavaScript 库共存。
+</p>
+<p>
+	命名空间很重要的一部分是确定每个人都同意使用的全局对象的名字，并且尽可能唯一，让其他人不太可能也使用这个名字。在大多数情况下，可以是开发代码的公司的名字，例如YAHOO 或者Wrox。你可以如下例所示开始创建命名空间来组合功能。
+</p>
+<pre>//创建全局对象
+var Wrox = {};
+//为 Professional JavaScript 创建命名空间
+Wrox.ProJS = {};
+//将书中用到的对象附加上去
+Wrox.ProJS.EventUtil = { ... };
+Wrox.ProJS.CookieUtil = { ... };</pre>
+在这个例子中，Wrox 是全局量，其他命名空间在此之上创建。如果本书所有代码都放在Wrox.ProJS命名空间，那么其他作者也应把自己的代码添加到Wrox 对象中。只要所有人都遵循这个规则，那么就不用担心其他人也创建叫做EventUtil 或者CookieUtil 的对象，因为它会存在于不同的命名空间中。请看以下例子：<br />
+<pre>//为Professional Ajax 创建命名空间
+Wrox.ProAjax = {};
+//附加该书中所使用的其他对象
+Wrox.ProAjax.EventUtil = { ... };
+Wrox.ProAjax.CookieUtil = { ... };
+//ProJS 还可以继续分别访问
+Wrox.ProJS.EventUtil.addHandler( ... );
+//以及ProAjax
+Wrox.ProAjax.EventUtil.addHandler( ... );</pre>
+<br />
+虽然命名空间会需要多写一些代码，但是对于可维护的目的而言是值得的。命名空间有助于确保代码可以在同一个页面上与其他代码以无害的方式一起工作。<br />
+<h3>
+	3.避免与null 进行比较
+</h3>
+由于JavaScript 不做任何自动的类型检查，所有它就成了开发人员的责任。因此，在JavaScript 代码中其实很少进行类型检测。最常见的类型检测就是查看某个值是否为null。但是，直接将值与null比较是使用过度的，并且常常由于不充分的类型检查导致错误。看以下例子：<br />
+<pre>function sortArray(values) {
+	if (values != null) { //避免！
+		values.sort(comparator);
+	}
+}</pre>
+<p>
+	该函数的目的是根据给定的比较子对一个数组进行排序。为了函数能正确执行，values 参数必需是数组，但这里的if 语句仅仅检查该values 是否为null。还有其他的值可以通过if 语句，包括字符串、数字，它们会导致函数抛出错误。
+</p>
+<p>
+	现实中，与null 比较很少适合情况而被使用。必须按照所期望的对值进行检查，而非按照不被期望的那些。例如，在前面的范例中，values 参数应该是一个数组，那么就要检查它是不是一个数组，而不是检查它是否非null。函数按照下面的方式修改会更加合适：
+</p>
+<pre>function sortArray(values) {
+	if (values instanceof Array) { //推荐
+		values.sort(comparator);
+	}
+}</pre>
+该函数的这个版本可以阻止所有非法值，而且完全用不着null。
+<blockquote>
+	这种验证数组的技术在多框架的网页中不一定正确工作，因为每个框架都有其自己的全局对象，因此，也有自己的Array 构造函数。如果你是从一个框架将数组传送到另一个框架，那么就要另外检查是否存在sort()方法。
+</blockquote>
+如果看到了与null 比较的代码，尝试使用以下技术替换：<br />
+<ul>
+	<li>
+		如果值应为一个引用类型，使用instanceof 操作符检查其构造函数；
+	</li>
+	<li>
+		如果值应为一个基本类型，使用typeof 检查其类型；
+	</li>
+	<li>
+		如果是希望对象包含某个特定的方法名，则使用typeof 操作符确保指定名字的方法存在于对象上。
+	</li>
+</ul>
+代码中的null 比较越少，就越容易确定代码的目的，并消除不必要的错误。<br />
+<h3>
+	4. 使用常量
+</h3>
+尽管JavaScript 没有常量的正式概念，但它还是很有用的。这种将数据从应用逻辑分离出来的思想，可以在不冒引入错误的风险的同时，就改变数据。请看以下例子：<br />
+<pre>function validate(value) {
+	if (!value) {
+		alert("Invalid value!");
+		location.href = "/errors/invalid.php";
+	} }</pre>
+<p>
+	在这个函数中有两段数据：要显示给用户的信息以及URL。显示在用户界面上的字符串应该以允许进行语言国际化的方式抽取出来。URL 也应被抽取出来，因为它们有随着应用成长而改变的倾向。基本上，有着可能由于这样那样原因会变化的这些数据，那么都会需要找到函数并在其中修改代码 。而每次修改应用逻辑的代码，都可能会引入错误。可以通过将数据抽取出来变成单独定义的常量的方式，将应用逻辑与数据修改隔离开来。请看以下例子：
+</p>
+<pre>var Constants = {
+	INVALID_VALUE_MSG: "Invalid value!",
+	INVALID_VALUE_URL: "/errors/invalid.php"
+};
+function validate(value) {
+	if (!value) {
+		alert(Constants.INVALID_VALUE_MSG);
+		location.href = Constants.INVALID_VALUE_URL;
+	}
+}</pre>
+<p>
+	在这段重写过的代码中，消息和URL 都被定义于Constants 对象中，然后函数引用这些值。这些设置允许数据在无须接触使用它的函数的情况下进行变更。Constants 对象甚至可以完全在单独的文件中进行定义，同时该文件可以由包含正确值的其他过程根据国际化设置来生成。
+</p>
+关键在于将数据和使用它的逻辑进行分离。要注意的值的类型如下所示。<br />
+<ul>
+	<li>
+		重复值——任何在多处用到的值都应抽取为一个常量。这就限制了当一个值变了而另一个没变的时候会造成的错误。这也包含了CSS 类名。
+	</li>
+	<li>
+		用户界面字符串 —— 任何用于显示给用户的字符串，都应被抽取出来以方便国际化。
+	</li>
+	<li>
+		URLs —— 在Web 应用中，资源位置很容易变更，所以推荐用一个公共地方存放所有的URL。
+	</li>
+	<li>
+		任意可能会更改的值 —— 每当你在用到字面量值的时候，你都要问一下自己这个值在未来是不是会变化。如果答案是“是”，那么这个值就应该被提取出来作为一个常量。
+	</li>
+</ul>
+对于企业级的JavaScript 开发而言，使用常量是非常重要的技巧，因为它能让代码更容易维护，并且在数据更改的同时保护代码。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15421">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

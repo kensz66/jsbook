@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>13.4.1 UI事件</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">13.4.1 UI事件</h1>
+	<hr>
+		UI 事件指的是那些不一定与用户操作有关的事件。这些事件在DOM规范出现之前，都是以这种或那种形式存在的，而在DOM 规范中保留是为了向后兼容。现有的UI 事件如下。<br />
+<ul>
+	<li>
+		DOMActivate：表示元素已经被用户操作（通过鼠标或键盘）激活。这个事件在DOM3 级事件中被废弃，但Firefox 2+和Chrome 支持它。考虑到不同浏览器实现的差异，不建议使用这个事件。
+	</li>
+	<li>
+		load：当页面完全加载后在window 上面触发，当所有框架都加载完毕时在框架集上面触发，当图像加载完毕时在&lt;img&gt;元素上面触发，或者当嵌入的内容加载完毕时在&lt;object&gt;元素上面触发。
+	</li>
+	<li>
+		unload：当页面完全卸载后在window 上面触发，当所有框架都卸载后在框架集上面触发，或者当嵌入的内容卸载完毕后在&lt;object&gt;元素上面触发。
+	</li>
+	<li>
+		abort：在用户停止下载过程时，如果嵌入的内容没有加载完，则在&lt;object&gt;元素上面触发。
+	</li>
+	<li>
+		error：当发生JavaScript 错误时在window 上面触发，当无法加载图像时在&lt;img&gt;元素上面触发，当无法加载嵌入内容时在&lt;object&gt;元素上面触发，或者当有一或多个框架无法加载时在框架集上面触发。第17 章将继续讨论这个事件。
+	</li>
+	<li>
+		select：当用户选择文本框（&lt;input&gt;或&lt;texterea&gt;）中的一或多个字符时触发。第14 章将继续讨论这个事件。
+	</li>
+	<li>
+		resize：当窗口或框架的大小变化时在window 或框架上面触发。
+	</li>
+	<li>
+		scroll：当用户滚动带滚动条的元素中的内容时，在该元素上面触发。&lt;body&gt;元素中包含所加载页面的滚动条。
+	</li>
+</ul>
+多数这些事件都与window 对象或表单控件相关。<br />
+除了DOMActivate 之外，其他事件在DOM2 级事件中都归为HTML 事件（DOMActivate 在DOM2级中仍然属于UI 事件）。要确定浏览器是否支持DOM2 级事件规定的HTML 事件，可以使用如下代码：<br />
+<pre>var isSupported = document.implementation.hasFeature("HTMLEvents", "2.0");</pre>
+注意，只有根据“DOM2 级事件”实现这些事件的浏览器才会返回true。而以非标准方式支持这些事件的浏览器则会返回false。要确定浏览器是否支持“DOM3 级事件”定义的事件，可以使用如下代码：<br />
+<pre>var isSupported = document.implementation.hasFeature("UIEvent", "3.0");</pre>
+<h2>
+	1. load 事件
+</h2>
+JavaScript 中最常用的一个事件就是load。当页面完全加载后（包括所有图像、JavaScript 文件、CSS 文件等外部资源），就会触发window 上面的load 事件。有两种定义onload 事件处理程序的方式。<br />
+第一种方式是使用如下所示的JavaScript 代码：<br />
+<pre>EventUtil.addHandler(window, "load", function(event){
+    alert("Loaded!");
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8678" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这是通过JavaScript 来指定事件处理程序的方式，使用了本章前面定义的跨浏览器的EventUtil对象。与添加其他事件一样，这里也给事件处理程序传入了一个event 对象。这个event 对象中不包含有关这个事件的任何附加信息，但在兼容DOM 的浏览器中，event.target 属性的值会被设置为document，而IE 并不会为这个事件设置srcElement 属性。<br />
+第二种指定onload 事件处理程序的方式是为&lt;body&gt;元素添加一个onload 特性，如下面的例子<br />
+所示：<br />
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Load Event Example&lt;/title&gt;
+&lt;/head&gt;
+&lt;body onload="alert('Loaded!')"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8679" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+一般来说，在window 上面发生的任何事件都可以在&lt;body&gt;元素中通过相应的特性来指定，因为在HTML 中无法访问window 元素。实际上，这只是为了保证向后兼容的一种权宜之计，但所有浏览器都能很好地支持这种方式。我们建议读者尽可能使用JavaScript 方式。<br />
+<blockquote>
+	根据“DOM2 级事件”规范，应该在document 而非window 上面触发load 事件。但是，所有浏览器都在window 上面实现了该事件，以确保向后兼容。
+</blockquote>
+图像上面也可以触发load 事件，无论是在DOM 中的图像元素还是HTML 中的图像元素。因此，可以在HTML 中为任何图像指定onload 事件处理程序，例如：<br />
+<pre>&lt;img src="smile.gif" onload="alert('Image loaded.')"&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8680" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这样，当例子中的图像加载完毕后就会显示一个警告框。同样的功能也可以使用JavaScript 来实现，例如：<br />
+<pre>var image = document.getElementById("myImage");
+EventUtil.addHandler(image, "load", function(event){
+    event = EventUtil.getEvent(event);
+    alert(EventUtil.getTarget(event).src);
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8681" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里，使用JavaScript 指定了onload 事件处理程序。同时也传入了event 对象，尽管它也不包含什么有用的信息。不过，事件的目标是&lt;img&gt;元素，因此可以通过src 属性访问并显示该信息。<br />
+在创建新的&lt;img&gt;元素时，可以为其指定一个事件处理程序，以便图像加载完毕后给出提示。此时，最重要的是要在指定src 属性之前先指定事件，如下面的例子所示。<br />
+<pre>EventUtil.addHandler(window, "load",
+function() {
+	var image = document.createElement("img");
+	EventUtil.addHandler(image, "load",
+	function(event) {
+		event = EventUtil.getEvent(event);
+		alert(EventUtil.getTarget(event).src);
+	});
+	document.body.appendChild(image);
+	image.src = "smile.gif";
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8682" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，首先为window 指定了onload 事件处理程序。原因在于，我们是想向DOM中添加一个新元素，所以必须确定页面已经加载完毕——如果在页面加载前操作document.body 会导致错误。然后，创建了一个新的图像元素，并设置了其onload 事件处理程序。最后又将这个图像添加到页面中，还设置了它的src 属性。这里有一点需要格外注意：新图像元素不一定要从添加到文档后才开始下载，只要设置了src 属性就会开始下载。<br />
+同样的功能也可以通过使用DOM0 级的Image 对象实现。在DOM出现之前，开发人员经常使用Image 对象在客户端预先加载图像。可以像使用&lt;img&gt;元素一样使用Image 对象，只不过无法将其添加到DOM 树中。下面来看一个例子。<br />
+<pre>EventUtil.addHandler(window, "load",
+function() {
+	var image = new Image();
+	EventUtil.addHandler(image, "load",
+	function(event) {
+		alert("Image loaded!");
+	});
+	image.src = "smile.gif";
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8683" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在此，我们使用Image 构造函数创建了一个新图像的实例，然后又为它指定了事件处理程序。有的浏览器将Image 对象实现为&lt;img&gt;元素，但并非所有浏览器都如此，所以最好将它们区别对待。<br />
+<blockquote>
+	在不属于DOM 文档的图像（包括未添加到文档的&lt;img&gt;元素和Image 对象）上触发load 事件时，IE8 及之前版本不会生成event 对象。IE9 修复了这个问题。
+</blockquote>
+还有一些元素也以非标准的方式支持load 事件。在IE9+、Firefox、Opera、Chrome 和Safari 3+及更高版本中，&lt;script&gt;元素也会触发load 事件，以便开发人员确定动态加载的JavaScript 文件是否加载完毕。与图像不同，只有在设置了&lt;script&gt;元素的src 属性并将该元素添加到文档后，才会开始下载JavaScript 文件。换句话说，对于&lt;script&gt;元素而言，指定src 属性和指定事件处理程序的先后顺序就不重要了。以下代码展示了怎样为&lt;script&gt;元素指定事件处理程序。<br />
+<pre>EventUtil.addHandler(window, "load",
+function() {
+	var script = document.createElement("script");
+	EventUtil.addHandler(script, "load",
+	function(event) {
+		alert("Loaded");
+	});
+	script.src = "example.js";
+	document.body.appendChild(script);
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8684" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子使用了跨浏览器的EventUtil 对象为新创建的&lt;script&gt;元素指定了onload 事件处理程序。此时，大多数浏览器中event 对象的target 属性引用的都是&lt;script&gt;节点，而在Firefox 3 之前的版本中，引用的则是document。IE8 及更早版本不支持&lt;script&gt;元素上的load 事件。<br />
+IE 和Opera 还支持&lt;link&gt;元素上的load 事件，以便开发人员确定样式表是否加载完毕。例如：<br />
+<pre>EventUtil.addHandler(window, "load",
+function() {
+	var link = document.createElement("link");
+	link.type = "text/css";
+	link.rel = "stylesheet";
+	EventUtil.addHandler(link, "load",
+	function(event) {
+		alert("css loaded");
+	});
+	link.href = "example.css";
+	document.getElementsByTagName("head")[0].appendChild(link);
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8684" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+与&lt;script&gt;节点类似，在未指定href 属性并将&lt;link&gt;元素添加到文档之前也不会开始下载样式表。<br />
+<h2>
+	2. unload 事件
+</h2>
+与load 事件对应的是unload 事件，这个事件在文档被完全卸载后触发。只要用户从一个页面切换到另一个页面，就会发生unload 事件。而利用这个事件最多的情况是清除引用，以避免内存泄漏。<br />
+与load 事件类似，也有两种指定onunload 事件处理程序的方式。第一种方式是使用JavaScript，如下所示：<br />
+<pre>EventUtil.addHandler(window, "unload", function(event){
+    alert("Unloaded");
+});</pre>
+此时生成的event 对象在兼容DOM 的浏览器中只包含target 属性（值为document）。IE8 及之前版本则为这个事件对象提供了srcElement 属性。<br />
+指定事件处理程序的第二种方式，也是为&lt;body&gt;元素添加一个特性（与load 事件相似），如下面的例子所示：<br />
+<pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;title&gt;Unload Event Example&lt;/title&gt;
+&lt;/head&gt;
+&lt;body onunload="alert('Unloaded!')"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8685" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+无论使用哪种方式，都要小心编写onunload 事件处理程序中的代码。既然unload 事件是在一切都被卸载之后才触发，那么在页面加载后存在的那些对象，此时就不一定存在了。此时，操作DOM节点或者元素的样式就会导致错误。<br />
+<blockquote>
+	根据“DOM2 级事件”，应该在&lt;body&gt;元素而非window 对象上面触发unload事件。不过，所有浏览器都在window 上实现了unload 事件，以确保向后兼容。
+</blockquote>
+<h2>
+	3. resize 事件
+</h2>
+当浏览器窗口被调整到一个新的高度或宽度时，就会触发resize 事件。这个事件在window（窗口）上面触发，因此可以通过JavaScript 或者&lt;body&gt;元素中的onresize 特性来指定事件处理程序。如前所述，我们还是推荐使用如下所示的JavaScript 方式：<br />
+<pre>EventUtil.addHandler(window, "resize", function(event){
+    alert("Resized");
+});</pre>
+与其他发生在window 上的事件类似，在兼容DOM 的浏览器中，传入事件处理程序中的event 对象有一个target 属性，值为document；而IE8 及之前版本则未提供任何属性。<br />
+关于何时会触发resize 事件，不同浏览器有不同的机制。IE、Safari、Chrome 和Opera 会在浏览器窗口变化了1 像素时就触发resize 事件，然后随着变化不断重复触发。Firefox 则只会在用户停止调整窗口大小时才会触发resize 事件。由于存在这个差别，应该注意不要在这个事件的处理程序中加入大计算量的代码，因为这些代码有可能被频繁执行，从而导致浏览器反应明显变慢。<br />
+<blockquote>
+	浏览器窗口最小化或最大化时也会触发resize 事件。
+</blockquote>
+<h2>
+	4. scroll 事件
+</h2>
+虽然scroll 事件是在window 对象上发生的，但它实际表示的则是页面中相应元素的变化。在混杂模式下，可以通过&lt;body&gt;元素的scrollLeft 和scrollTop 来监控到这一变化；而在标准模式下，除Safari 之外的所有浏览器都会通过&lt;html&gt;元素来反映这一变化（Safari 仍然基于&lt;body&gt;跟踪滚动位置），如下面的例子所示：<br />
+<pre>EventUtil.addHandler(window, "scroll",
+function(event) {
+	if (document.compatMode == "CSS1Compat") {
+		alert(document.documentElement.scrollTop);
+	} else {
+		alert(document.body.scrollTop);
+	}
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8686" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码指定的事件处理程序会输出页面的垂直滚动位置——根据呈现模式不同使用了不同的元素。由于Safari 3.1 之前的版本不支持document.compatMode，因此旧版本的浏览器就会满足第二个条件。<br />
+与resize 事件类似，scroll 事件也会在文档被滚动期间重复被触发，所以有必要尽量保持事件处理程序的代码简单。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15325">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

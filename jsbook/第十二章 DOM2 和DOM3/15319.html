@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>12.5 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">12.5 小结</h1>
+	<hr>
+		DOM2 级规范定义了一些模块，用于增强DOM1 级。“DOM2 级核心”为不同的DOM类型引入了一些与XML 命名空间有关的方法。这些变化只在使用XML 或XHTML 文档时才有用；对于HTML 文档没有实际意义。除了与XML 命名空间有关的方法外，“DOM2 级核心”还定义了以编程方式创建Document 实例的方法，也支持了创建DocumentType 对象。<br />
+“DOM2 级样式”模块主要针对操作元素的样式信息而开发，其特性简要总结如下。<br />
+<ul>
+	<li>
+		每个元素都有一个关联的style 对象，可以用来确定和修改行内的样式。
+	</li>
+	<li>
+		要确定某个元素的计算样式（包括应用给它的所有CSS 规则），可以使用getComputedStyle()方法。
+	</li>
+	<li>
+		IE 不支持getComputedStyle()方法，但为所有元素都提供了能够返回相同信息currentStyle属性。
+	</li>
+	<li>
+		可以通过document.styleSheets 集合访问样式表。
+	</li>
+	<li>
+		除IE 之外的所有浏览器都支持针对样式表的这个接口，IE 也为几乎所有相应的DOM功能提供了自己的一套属性和方法。
+	</li>
+</ul>
+“DOM2 级遍历和范围”模块提供了与DOM结构交互的不同方式，简要总结如下。<br />
+<ul>
+	<li>
+		遍历即使用NodeIterator 或TreeWalker 对DOM 执行深度优先的遍历。
+	</li>
+	<li>
+		NodeIterator 是一个简单的接口，只允许以一个节点的步幅前后移动。而TreeWalker 在提供相同功能的同时，还支持在DOM 结构的各个方向上移动，包括父节点、同辈节点和子节点等方向。
+	</li>
+	<li>
+		范围是选择DOM结构中特定部分，然后再执行相应操作的一种手段。
+	</li>
+	<li>
+		使用范围选区可以在删除文档中某些部分的同时，保持文档结构的格式良好，或者复制文档中的相应部分。
+	</li>
+	<li>
+		IE8 及更早版本不支持“DOM2 级遍历和范围”模块，但它提供了一个专有的文本范围对象，可以用来完成简单的基于文本的范围操作。IE9 完全支持DOM遍历。
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15319">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

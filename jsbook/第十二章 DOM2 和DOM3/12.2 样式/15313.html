@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>12.2.2 操作样式表</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">12.2.2 操作样式表</h1>
+	<hr>
+		CSSStyleSheet 类型表示的是样式表，包括通过&lt;link&gt;元素包含的样式表和在&lt;style&gt;元素中定义的样式表。有读者可能记得，这两个元素本身分别是由HTMLLinkElement 和HTMLStyleElement 类型表示的。但是，CSSStyleSheet 类型相对更加通用一些，它只表示样式表，而不管这些样式表在HTML中是如何定义的。此外，上述两个针对元素的类型允许修改HTML 特性，但CSSStyleSheet 对象则是一套只读的接口（有一个属性例外）。使用下面的代码可以确定浏览器是否支持DOM2 级样式表。<br />
+<pre>var supportsDOM2StyleSheets =document.implementation.hasFeature("StyleSheets", "2.0");</pre>
+CSSStyleSheet 继承自StyleSheet，后者可以作为一个基础接口来定义非CSS 样式表。从StyleSheet 接口继承而来的属性如下。<br />
+<ul>
+	<li>
+		disabled：表示样式表是否被禁用的布尔值。这个属性是可读/写的，将这个值设置为true 可以禁用样式表。
+	</li>
+	<li>
+		href：如果样式表是通过&lt;link&gt;包含的，则是样式表的URL；否则，是null。
+	</li>
+	<li>
+		media：当前样式表支持的所有媒体类型的集合。与所有DOM 集合一样，这个集合也有一个length 属性和一个item()方法。也可以使用方括号语法取得集合中特定的项。如果集合是空列表，表示样式表适用于所有媒体。在IE 中，media 是一个反映&lt;link&gt;和&lt;style&gt;元素media特性值的字符串。
+	</li>
+	<li>
+		ownerNode：指向拥有当前样式表的节点的指针，样式表可能是在HTML 中通过&lt;link&gt;或&lt;style/&gt;引入的（在XML 中可能是通过处理指令引入的）。如果当前样式表是其他样式表通过@import 导入的，则这个属性值为null。IE 不支持这个属性。
+	</li>
+	<li>
+		parentStyleSheet：在当前样式表是通过@import 导入的情况下，这个属性是一个指向导入它的样式表的指针。
+	</li>
+	<li>
+		title：ownerNode 中title 属性的值。
+	</li>
+	<li>
+		type：表示样式表类型的字符串。对CSS 样式表而言，这个字符串是"type/css"。
+	</li>
+</ul>
+除了disabled 属性之外，其他属性都是只读的。在支持以上所有这些属性的基础上，CSSStyleSheet 类型还支持下列属性和方法：<br />
+<ul>
+	<li>
+		cssRules：样式表中包含的样式规则的集合。IE 不支持这个属性，但有一个类似的rules 属性。
+	</li>
+	<li>
+		ownerRule：如果样式表是通过@import 导入的，这个属性就是一个指针，指向表示导入的规则；否则，值为null。IE 不支持这个属性。
+	</li>
+	<li>
+		deleteRule(index)：删除cssRules 集合中指定位置的规则。IE 不支持这个方法，但支持一个类似的removeRule()方法。
+	</li>
+	<li>
+		insertRule(rule,index)：向cssRules 集合中指定的位置插入rule 字符串。IE 不支持这个方法，但支持一个类似的addRule()方法。
+	</li>
+</ul>
+应用于文档的所有样式表是通过document.styleSheets 集合来表示的。通过这个集合的length属性可以获知文档中样式表的数量，而通过方括号语法或item()方法可以访问每一个样式表。来看一个例子。<br />
+<pre>var sheet = null;
+for (var i = 0,
+len = document.styleSheets.length; i &lt; len; i++) {
+	sheet = document.styleSheets[i];
+	alert(sheet.href);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8634" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码可以输出文档中使用的每一个样式表的href 属性（&lt;style&gt;元素包含的样式表没有href 属性）。<br />
+不同浏览器的document.styleSheets 返回的样式表也不同。所有浏览器都会包含&lt;style&gt;元素和rel 特性被设置为"stylesheet"的&lt;link&gt;元素引入的样式表。IE 和Opera 也包含rel 特性被设置为"alternate stylesheet"的&lt;link&gt;元素引入的样式表。<br />
+也可以直接通过&lt;link&gt;或&lt;style&gt;元素取得CSSStyleSheet 对象。DOM 规定了一个包含CSSStyleSheet 对象的属性，名叫sheet；除了IE，其他浏览器都支持这个属性。IE 支持的是styleSheet 属性。要想在不同浏览器中都能取得样式表对象，可以使用下列代码。<br />
+<pre>function getStyleSheet(element) {
+	return element.sheet || element.styleSheet;
+}
+//取得第一个&lt;link/&gt;元素引入的样式表
+var link = document.getElementsByTagName("link")[0];
+var sheet = getStylesheet(link);</pre>
+<a href="http://www.z-ai.net/study/api/s/8635" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里的getStyleSheet()返回的样式表对象与document.styleSheets 集合中的样式表对象相同。<br />
+<h2>
+	1. CSS 规则
+</h2>
+CSSRule 对象表示样式表中的每一条规则。实际上，CSSRule 是一个供其他多种类型继承的基类型，其中最常见的就是CSSStyleRule 类型，表示样式信息（其他规则还有@import、@font-face、@page 和@charset，但这些规则很少有必要通过脚本来访问）。CSSStyleRule 对象包含下列属性。<br />
+<ul>
+	<li>
+		cssText：返回整条规则对应的文本。由于浏览器对样式表的内部处理方式不同，返回的文本可能会与样式表中实际的文本不一样；Safari 始终都会将文本转换成全部小写。IE 不支持这个属性。
+	</li>
+	<li>
+		parentRule：如果当前规则是导入的规则，这个属性引用的就是导入规则；否则，这个值为null。IE 不支持这个属性。
+	</li>
+	<li>
+		parentStyleSheet：当前规则所属的样式表。IE 不支持这个属性。
+	</li>
+	<li>
+		selectorText：返回当前规则的选择符文本。由于浏览器对样式表的内部处理方式不同，返回的文本可能会与样式表中实际的文本不一样（例如，Safari 3 之前的版本始终会将文本转换成全部小写）。在Firefox、Safari、Chrome 和IE 中这个属性是只读的。Opera 允许修改selectorText。
+	</li>
+	<li>
+		style：一个CSSStyleDeclaration 对象，可以通过它设置和取得规则中特定的样式值。
+	</li>
+	<li>
+		type：表示规则类型的常量值。对于样式规则，这个值是1。IE 不支持这个属性。
+	</li>
+</ul>
+其中三个最常用的属性是cssText、selectorText 和style。cssText 属性与style.cssText属性类似，但并不相同。前者包含选择符文本和围绕样式信息的花括号，后者只包含样式信息（类似于元素的style.cssText）。此外，cssText 是只读的，而style.cssText 也可以被重写。<br />
+大多数情况下，仅使用style 属性就可以满足所有操作样式规则的需求了。这个对象就像每个元素上的style 属性一样，可以通过它读取和修改规则中的样式信息。以下面的CSS 规则为例。<br />
+<pre>div.box { background-color: blue; width: 100px; height: 200px; }</pre>
+<a href="http://www.z-ai.net/study/api/s/8636" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+假设这条规则位于页面中的第一个样式表中，而且这个样式表中只有这一条样式规则，那么通过下列代码可以取得这条规则的各种信息。<br />
+<pre>var sheet = document.styleSheets[0];
+var rules = sheet.cssRules || sheet.rules; //取得规则列表
+var rule = rules[0]; //取得第一条规则
+alert(rule.selectorText); //"div.box"
+alert(rule.style.cssText); //完整的CSS 代码
+alert(rule.style.backgroundColor); //"blue"
+alert(rule.style.width); //"100px"
+alert(rule.style.height); //"200px"</pre>
+<a href="http://www.z-ai.net/study/api/s/8636" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+使用这种方式，可以像确定元素的行内样式信息一样，确定与规则相关的样式信息。与使用元素的方式一样，在这种方式下也可以修改样式信息，如下面的例子所示。<br />
+<pre>var sheet = document.styleSheets[0];
+var rules = sheet.cssRules || sheet.rules; //取得规则列表
+var rule = rules[0]; //取得第一条规则
+rule.style.backgroundColor = "red"</pre>
+<a href="http://www.z-ai.net/study/api/s/8636" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+必须要注意的是，以这种方式修改规则会影响页面中适用于该规则的所有元素。换句话说，如果有两个带有box 类的&lt;div&gt;元素，那么这两个元素都会应用修改后的样式。<br />
+<h2>
+	2. 创建规则
+</h2>
+DOM 规定，要向现有样式表中添加新规则，需要使用insertRule()方法。这个方法接受两个参数：规则文本和表示在哪里插入规则的索引。下面是一个例子。<br />
+<pre>sheet.insertRule("body { background-color: silver }", 0); //DOM 方法</pre>
+这个例子插入的规则会改变元素的背景颜色。插入的规则将成为样式表中的第一条规则（插入到了位置0）——规则的次序在确定层叠之后应用到文档的规则时至关重要。Firefox、Safari、Opera 和Chrome都支持insertRule()方法。<br />
+IE8 及更早版本支持一个类似的方法，名叫addRule()，也接收两必选参数：选择符文本和CSS样式信息；一个可选参数：插入规则的位置。在IE 中插入与前面例子相同的规则，可使用如下代码。<br />
+<pre>sheet.addRule("body", "background-color: silver", 0); //仅对IE 有效</pre>
+有关这个方法的规定中说，最多可以使用addRule()添加4 095 条样式规则。超出这个上限的调用将会导致错误。<br />
+要以跨浏览器的方式向样式表中插入规则，可以使用下面的函数。这个函数接受4 个参数：要向其中添加规则的样式表以及与addRule()相同的3 个参数，如下所示。<br />
+<pre>function insertRule(sheet, selectorText, cssText, position) {
+	if (sheet.insertRule) {
+		sheet.insertRule(selectorText + "{" + cssText + "}", position);
+	} else if (sheet.addRule) {
+		sheet.addRule(selectorText, cssText, position);
+	}
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8637" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+下面是调用这个函数的示例代码。<br />
+<pre>insertRule(document.styleSheets[0], "body", "background-color: silver", 0);</pre>
+虽然可以像这样来添加规则，但随着要添加规则的增多，这种方法就会变得非常繁琐。因此，如果要添加的规则非常多，我们建议还是采用第10 章介绍过的动态加载样式表的技术。<br />
+<h2>
+	3. 删除规则
+</h2>
+从样式表中删除规则的方法是deleteRule()，这个方法接受一个参数：要删除的规则的位置。例如，要删除样式表中的第一条规则，可以使用以下代码。<br />
+<pre>sheet.deleteRule(0); //DOM 方法</pre>
+IE 支持的类似方法叫removeRule()，使用方法相同，如下所示：<br />
+<pre>sheet.removeRule(0); //仅对IE 有效</pre>
+下面是一个能够跨浏览器删除规则的函数。第一个参数是要操作的样式表，第二个参数是要删除的规则的索引。<br />
+<pre>function deleteRule(sheet, index) {
+	if (sheet.deleteRule) {
+		sheet.deleteRule(index);
+	} else if (sheet.removeRule) {
+		sheet.removeRule(index);
+	}
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8637" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+调用这个函数的方式如下。<br />
+<pre>deleteRule(document.styleSheets[0], 0);</pre>
+与添加规则相似，删除规则也不是实际Web 开发中常见的做法。考虑到删除规则可能会影响CSS层叠的效果，因此请大家慎重使用。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15313">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

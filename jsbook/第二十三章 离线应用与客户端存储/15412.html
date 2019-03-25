@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>23.1 离线检测</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">23.1 离线检测</h1>
+	<hr>
+		开发离线应用的第一步是要知道设备是在线还是离线，HTML5为此定义了一个navigator.onLine属性，这个属性值为true 表示设备能上网，值为false 表示设备离线。这个属性的关键是浏览器必须知道设备能否访问网络，从而返回正确的值。实际应用中，navigator.onLine 在不同浏览器间还有些小的差异。<br />
+<ul>
+	<li>
+		IE6+和Safari 5+能够正确检测到网络已断开，并将navigator.onLine 的值转换为false。
+	</li>
+	<li>
+		Firefox 3+和Opera 10.6+支持navigator.onLine 属性，但你必须手工选中菜单项“文件 → Web开发人员（设置）→ 脱机工作”才能让浏览器正常工作。
+	</li>
+	<li>
+		Chrome 11 及之前版本始终将navigator.onLine 属性设置为true。这是一个有待修复的bug①。
+	</li>
+</ul>
+<p>
+	<blockquote>
+		① 这个bug 在2011 年10 月已被修复（http://code.google.com/p/chromium/issues/detail?id=7469）
+	</blockquote>
+</p>
+由于存在上述兼容性问题，单独使用navigator.onLine 属性不能确定网络是否连通。即便如此，在请求发生错误的情况下，检测这个属性仍然是管用的。以下是检测该属性状态的示例。<br />
+<pre>if (navigator.onLine) {
+	//正常工作
+} else {
+	//执行离线状态时的任务
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8877" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+除navigator.onLine 属性之外，为了更好地确定网络是否可用，HTML5 还定义了两个事件：online 和offline。当网络从离线变为在线或者从在线变为离线时，分别触发这两个事件。这两个事件在window 对象上触发。<br />
+<pre>EventUtil.addHandler(window, "online",
+function() {
+	alert("Online");
+});
+EventUtil.addHandler(window, "offline",
+function() {
+	alert("Offline");
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8878" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+为了检测应用是否离线，在页面加载后，最好先通过navigator.onLine 取得初始的状态。然后，就是通过上述两个事件来确定网络连接状态是否变化。当上述事件触发时，navigator.onLine 属性的值也会改变，不过必须要手工轮询这个属性才能检测到网络状态的变化。<br />
+支持离线检测的浏览器有IE 6+（只支持navigator.onLine 属性）、Firefox 3、Safari 4、Opera 10.6、Chrome、iOS 3.2 版Safari 和Android 版WebKit。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15412">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

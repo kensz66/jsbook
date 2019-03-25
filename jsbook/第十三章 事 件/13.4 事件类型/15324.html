@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>13.4 事件类型</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">13.4 事件类型</h1>
+	<hr>
+		Web 浏览器中可能发生的事件有很多类型。如前所述，不同的事件类型具有不同的信息，而“DOM3级事件”规定了以下几类事件。<br />
+<ul>
+	<li>
+		UI（User Interface，用户界面）事件，当用户与页面上的元素交互时触发；
+	</li>
+	<li>
+		焦点事件，当元素获得或失去焦点时触发；
+	</li>
+	<li>
+		鼠标事件，当用户通过鼠标在页面上执行操作时触发；
+	</li>
+	<li>
+		滚轮事件，当使用鼠标滚轮（或类似设备）时触发；
+	</li>
+	<li>
+		文本事件，当在文档中输入文本时触发；
+	</li>
+	<li>
+		键盘事件，当用户通过键盘在页面上执行操作时触发；
+	</li>
+	<li>
+		合成事件，当为IME（Input Method Editor，输入法编辑器）输入字符时触发；
+	</li>
+	<li>
+		变动（mutation）事件，当底层DOM 结构发生变化时触发。
+	</li>
+	<li>
+		变动名称事件，当元素或属性名变动时触发。此类事件已经被废弃，没有任何浏览器实现它们，因此本章不做介绍。
+	</li>
+</ul>
+除了这几类事件之外，HTML5 也定义了一组事件，而有些浏览器还会在DOM 和BOM中实现其他专有事件。这些专有的事件一般都是根据开发人员需求定制的，没有什么规范，因此不同浏览器的实现有可能不一致。<br />
+DOM3 级事件模块在DOM2 级事件模块基础上重新定义了这些事件，也添加了一些新事件。包括IE9 在内的所有主流浏览器都支持DOM2 级事件。IE9 也支持DOM3 级事件。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15324">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

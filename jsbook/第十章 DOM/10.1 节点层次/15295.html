@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>10.1 节点层次</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">10.1 节点层次</h1>
+	<hr>
+		<p>
+	DOM 可以将任何HTML 或XML 文档描绘成一个由多层节点构成的结构。节点分为几种不同的类型，每种类型分别表示文档中不同的信息及（或）标记。每个节点都拥有各自的特点、数据和方法，另外也与其他节点存在某种关系。节点之间的关系构成了层次，而所有页面标记则表现为一个以特定节点为根节点的树形结构。以下面的HTML 为例：
+</p>
+<pre>&lt;html&gt;
+	&lt;head&gt;
+		&lt;title&gt;
+			Sample Page
+		&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;p&gt;
+			Hello World!
+		&lt;/p&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+	可以将这个简单的HTML 文档表示为一个层次结构，如图10-1 所示。
+</p>
+<p>
+	文档节点是每个文档的根节点。在这个例子中，文档节点只有一个子节点，即&lt;html&gt;元素，我们称之为文档元素。文档元素是文档的最外层元素，文档中的其他所有元素都包含在文档元素中。每个文档只能有一个文档元素。在HTML 页面中，文档元素始终都是&lt;html&gt;元素。在XML 中，没有预定义的元素，因此任何元素都可能成为文档元素。
+</p>
+<p>
+	每一段标记都可以通过树中的一个节点来表示：HTML 元素通过元素节点表示，特性（attribute）通过特性节点表示，文档类型通过文档类型节点表示，而注释则通过注释节点表示。总共有12 种节点类型，这些类型都继承自一个基类型。
+</p>
+<p>
+</p>
+<p>
+	<img src="../../image/2ebb45b06cc.gif" alt="" />
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15295">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

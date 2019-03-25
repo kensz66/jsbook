@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>8.6 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">8.6 小结</h1>
+	<hr>
+		浏览器对象模型（BOM）以window 对象为依托，表示浏览器窗口以及页面可见区域。同时，window对象还是ECMAScript 中的Global 对象，因而所有全局变量和函数都是它的属性，且所有原生的构造函数及其他函数也都存在于它的命名空间下。本章讨论了下列BOM的组成部分。<br />
+<ul>
+	<li>
+		在使用框架时，每个框架都有自己的window 对象以及所有原生构造函数及其他函数的副本。每个框架都保存在frames 集合中，可以通过位置或通过名称来访问。
+	</li>
+	<li>
+		有一些窗口指针，可以用来引用其他框架，包括父框架。
+	</li>
+	<li>
+		top 对象始终指向最外围的框架，也就是整个浏览器窗口。
+	</li>
+	<li>
+		parent 对象表示包含当前框架的框架，而self 对象则回指window。
+	</li>
+	<li>
+		使用location 对象可以通过编程方式来访问浏览器的导航系统。设置相应的属性，可以逐段或整体性地修改浏览器的URL。
+	</li>
+	<li>
+		调用replace()方法可以导航到一个新URL，同时该URL 会替换浏览器历史记录中当前显示的页面。
+	</li>
+	<li>
+		navigator 对象提供了与浏览器有关的信息。到底提供哪些信息，很大程度上取决于用户的浏览器；不过，也有一些公共的属性（如userAgent）存在于所有浏览器中。
+	</li>
+</ul>
+BOM 中还有两个对象：screen 和history，但它们的功能有限。screen 对象中保存着与客户端显示器有关的信息，这些信息一般只用于站点分析。history 对象为访问浏览器的历史记录开了一个小缝隙，开发人员可以据此判断历史记录的数量，也可以在历史记录中向后或向前导航到任意页面。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15285">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

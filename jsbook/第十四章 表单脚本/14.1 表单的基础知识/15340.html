@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>14.1.2 重置表单</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">14.1.2 重置表单</h1>
+	<hr>
+		在用户单击重置按钮时，表单会被重置。使用type 特性值为"reset"的&lt;input&gt;或&lt;button&gt;都可以创建重置按钮，如下面的例子所示。<br />
+<pre>&lt;!-- 通用重置按钮 --&gt;
+&lt;input type="reset" value="Reset Form"&gt;
+&lt;!-- 自定义重置按钮 --&gt;
+&lt;button type="reset"&gt;Reset Form&lt;/button&gt;</pre>
+这两个按钮都可以用来重置表单。在重置表单时，所有表单字段都会恢复到页面刚加载完毕时的初始值。如果某个字段的初始值为空，就会恢复为空；而带有默认值的字段，也会恢复为默认值。<br />
+用户单击重置按钮重置表单时，会触发reset 事件。利用这个机会，我们可以在必要时取消重置操作。例如，下面展示了阻止重置表单的代码。<br />
+<pre>var form = document.getElementById("myForm");
+EventUtil.addHandler(form, "reset",
+function(event) {
+	//取得事件对象
+	event = EventUtil.getEvent(event);
+	//阻止表单重置
+	EventUtil.preventDefault(event);
+});</pre>
+与提交表单一样，也可以通过JavaScript 来重置表单，如下面的例子所示。<br />
+<pre>var form = document.getElementById("myForm");
+//重置表单
+form.reset();</pre>
+与调用submit()方法不同，调用reset()方法会像单击重置按钮一样触发reset 事件。<br />
+在Web 表单设计中，重置表单通常意味着对已经填写的数据不满意。重置表单经常会导致用户摸不着头脑，如果意外地触发了表单重置事件，那么用户甚至会很恼火。事实上，重置表单的需求是很少见的。更常见的做法是提供一个取消按钮，让用户能够回到前一个页面，而不是不分青红皂白地重置表单中的所有值。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15340">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

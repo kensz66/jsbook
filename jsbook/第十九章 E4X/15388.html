@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>19.1 E4X 的类型</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">19.1 E4X 的类型</h1>
+	<hr>
+		作为对ECMAScript 的扩展，E4X 定义了如下几个新的全局类型。<br />
+<ul>
+	<li>
+		XML：XML 结构中的任何一个独立的部分。
+	</li>
+	<li>
+		XMLList：XML 对象的集合。
+	</li>
+	<li>
+		Namespace：命名空间前缀与命名空间URI 之间的映射。
+	</li>
+	<li>
+		QName：由内部名称和命名空间URI 组成的一个限定名。
+	</li>
+</ul>
+E4X 定义的这个4 个类型可以表现XML 文档中的所有部分，其内部机制是将每一种类型（特别是XML 和XMLList）都映射为多个DOM 类型。<br />
+<h2>
+	19.1.1 XML类型
+</h2>
+XML 类型是E4X 中定义的一个重要的新类型，可以用它来表现XML 结构中任何独立的部分。XML的实例可以表现元素、特性、注释、处理指令或文本节点。XML 类型继承自Object 类型，因此它也继承了所有对象默认的所有属性和方法。创建XML 对象的方式不止一种，第一种方式是像下面这样调用其构造函数：<br />
+<pre>var x = new XML();</pre>
+这行代码会创建一个空的XML 对象，我们能够向其中添加数据。另外，也可以向构造函数中传入一个XML 字符串，如下面的例子所示：<br />
+<pre>var x = new XML("&lt;employee position=\"Software Engineer\"&gt;&lt;name&gt;Nicholas " +"Zakas&lt;/name&gt;&lt;/employee&gt;");</pre>
+传入到构造函数中的XML 字符串会被解析为分层的XML 对象。除此之外，还可以向构造函数中传入DOM 文档或节点，以便它们的数据可以通过E4X 来表现，语法如下：<br />
+<pre>var x = new XML(xmldom);</pre>
+虽然这些创建XML 对象的方式都还不错，但最强大也最吸引人的方法，则是使用XML 字面量将XML数据直接指定给一个变量。XML 字面量就是嵌入到JavaScript 代码中的XML 代码。下面来看一个例子。<br />
+<pre>var employee = &lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;;</pre>
+<a href="http://www.z-ai.net/study/api/s/8819" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，我们将一个XML 数据结构直接指定给了一个变量。这种简洁的语法同样可以创建一个XML 对象，并将它赋值给employee 变量。<br />
+<blockquote>
+	Firefox 对E4X 的实现不支持解析XML 的开头代码（prolog）。无论&lt;?xmlversion="1.0" ?&gt;出现在传递给XML 构造函数的文本中，还是出现在XML 字面量中，都会导致语法错误。
+</blockquote>
+XML 类型的toXMLString()方法会返回XML 对象及其子节点的XML 字符串表示。另一方面，该类型的toString()方法则会基于不同XML 对象的内容返回不同的字符串。如果内容简单（纯文本），则返回文本；否则，toString()方法与toXMLString()方法返回的字符串一样。来看下面的例子。<br />
+<pre>var data = &lt;name&gt;Nicholas C. Zakas&lt;/name&gt;;
+alert(data.toString()); //"Nicholas C. Zakas"
+alert(data.toXMLString()); //"&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;"</pre>
+使用这两个方法，几乎可以满足所有序列化XML 的需求。<br />
+<h2>
+	19.1.2 XMLList类型
+</h2>
+XMLList 类型表现XML 对象的有序集合。XMLList 的DOM 对等类型是NodeList，但与Node 和NodeList 之间的区别相比，XML 和XMLList 之间的区别是有意设计得比较小的。要显式地创建一个XMLList 对象，可以像下面这样使用XMLList 构造函数：<br />
+<pre>var list = new XMLList();</pre>
+与XML 构造函数一样，也可以向其中传入一个待解析的XML 字符串。这个字符串可以不止包含一个文档元素，如下面的例子所示：<br />
+<pre>var list = new XMLList("&lt;item/&gt;&lt;item/&gt;");</pre>
+<a href="http://www.z-ai.net/study/api/s/8820" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+结果，保存在这个list 变量中的XMLList 就包含了两个XML 对象，分别是两个&lt;item/&gt;元素。<br />
+还可以使用加号（+）操作符来组合两个或多个XML 对象，从而创建XMLList 对象。加号操作符在E4X 中已经被重载，可以用于创建XMLList，如下所示：<br />
+<pre>var list = &lt;item/&gt; + &lt;item/&gt; ;</pre>
+这个例子使用加号操作符组合了两个XML 字面量，结果得到一个XMLList。同样的组合操作也可以使用特殊的&lt;&gt;和&lt;/&gt;语法来完成，此时不使用加号操作符，例如：<br />
+<pre>var list = &lt;&gt;&lt;item/&gt;&lt;item/&gt;&lt;/&gt;;</pre>
+尽管可以创建独立的XMLList 对象，但是这类对象通常是在解析较大的XML 结构的过程中捎带着被创建出来的。来看下面的例子：<br />
+<pre>var employees = &lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;;</pre>
+<a href="http://www.z-ai.net/study/api/s/8821" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码定义的employees 变量中包含着一个XML 对象，表示&lt;employees/&gt;元素。由于这个元素又包含两个&lt;employee/&gt;元素，因而就会创建相应的XMLList 对象，并将其保存在employees.employee 中。然后，可以使用方括号语法及位置来访问每个元素：<br />
+<pre>var firstEmployee = employees.employee[0];
+var secondEmployee = employees.employee[1];</pre>
+每个XMLList 对象都有length()方法，用于返回对象中包含的元素数量。例如：<br />
+<pre>alert(employees.employee.length()); //2</pre>
+注意，length()是方法，不是属性。这一点是故意与数组和NodeList 相区别的。<br />
+E4X 有意模糊XML 和XMLList 类型之间的区别，这一点很值得关注。实际上，一个XML 对象与一个只包含一个XML 对象的XMLList 之间，并没有显而易见的区别。为了减少两者之间的区别，每个XML对象也同样有一个length()方法和一个由[0]引用的属性（返回XML 对象自身）。<br />
+XML 与XMLList 之间的这种兼容性可以简化E4X 的使用，因为有些方法可以返回任意一个类型。<br />
+XMLList 对象的toString()和toXMLString()方法返回相同的字符串值，也就是将其包含的XML 对象序列化之后再拼接起来的结果。<br />
+<h2>
+	19.1.3 Namespace类型
+</h2>
+E4X 中使用Namespace 对象来表现命名空间。通常，Namespace 对象是用来映射命名空间前缀和命名空间URI 的，不过有时候并不需要前缀。要创建Namespace 对象，可以像下面这样使用Namespace构造函数：<br />
+<pre>var ns = new Namespace();</pre>
+而传入URI 或前缀加URI，就可以初始化Namespace 对象，如下所示：<br />
+<pre>var ns = new Namespace("http://www.wrox.com/"); //没有前缀的命名空间
+var wrox = new Namespace("wrox", "http://www.wrox.com/"); //wrox 命名空间</pre>
+可以使用prefix 和uri 属性来取得Namespace 对象中的信息：<br />
+<pre>alert(ns.uri); //"http://www.wrox.com/"
+alert(ns.prefix); //undefined
+alert(wrox.uri); //"http://www.wrox.com/"
+alert(wrox.prefix); //"wrox"</pre>
+<a href="http://www.z-ai.net/study/api/s/8822" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在没有给Namespace 对象指定前缀的情况下，prefix 属性会返回undefined。要想创建默认的命名空间，应该将前缀设置为空字符串。<br />
+如果XML 字面量中包含命名空间，或者通过XML 构造函数解析的XML 字符串中包含命名空间信息，那么就会自动创建Namespace 对象。然后，就可以通过前缀和namespace()方法来取得对Namespace对象的引用。来看下面的例子：<br />
+<pre>var xml = &lt;wrox:root xmlns:wrox="http://www.wrox.com/"&gt;
+&lt;wrox:message&gt;Hello World!&lt;/wrox:message&gt;
+&lt;/wrox:root&gt;;
+var wrox = xml.namespace("wrox");
+alert(wrox.uri);
+alert(wrox.prefix);</pre>
+<a href="http://www.z-ai.net/study/api/s/8823" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，我们以XML 字面量的形式创建了一个包含命名空间的XML 片段。而表现wrox 命名空间的Namespace 对象可以通过namespace("wrox") 取得，然后就可以访问这个对象的uri 和prefix 属性了。如果XML 片段中有默认的命名空间，那么向namespace()中传入空字符串，即可取得相应的Namespace 对象。<br />
+Namespace 对象的toString()方法始终会返回命名空间URI。<br />
+<h2>
+	19.1.4 QName类型
+</h2>
+QName 类型表现的是XML 对象的限定名，即命名空间与内部名称的组合。向QName 构造函数中传入名称或Namespace 对象和名称，可以手工创建新的QName 对象，如下所示：<br />
+<pre>var wrox = new Namespace("wrox", "http://www.wrox.com/");
+var wroxMessage = new QName(wrox, "message"); //表示"wrox:message"</pre>
+创建了QName 对象之后，可以访问它的两个属性：uri 和localName。其中，uri 属性返回在创建对象时指定的命名空间的URI（如果未指定命名空间，则返回空字符串），而localName 属性返回限定名中的内部名称，如下面的例子所示：<br />
+<pre>alert(wroxMessage.uri); //"http://www.wrox.com/"
+alert(wroxMessage.localName); //"message"</pre>
+<a href="http://www.z-ai.net/study/api/s/8824" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这两个属性是只读的，如果你想修改它们的值，会导致错误发生。QName 对象重写了toString()方法，会以uri::localName 形式返回一个字符串，对于前面的例子来说，就是"http://www.wrox.com/::message"。<br />
+在解析XML 结构时，会为表示相应元素或特性的XML 对象自动创建QName 对象。可以使用这个XML对象的name()方法取得与该XML 对象关联的QName 对象，如下面的例子所示：<br />
+<pre>var xml = &lt; wrox:root xmlns:wrox="http://www.wrox.com/"&gt;
+&lt;wrox:message&gt;Hello World!&lt;/wrox:message&gt;
+&lt;/wrox:root&gt; ;
+var wroxRoot = xml.name();
+alert(wroxRoot.uri); //"http://www.wrox.com/"
+alert(wroxRoot.localName); //"root"</pre>
+<a href="http://www.z-ai.net/study/api/s/8825" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这样，即便没有指定命名空间信息，也会根据XML 结构中的元素和特性创建一个QName 对象。<br />
+使用setName()方法并传入一个新QName 对象，可以修改XML 对象的限定名，如下所示：<br />
+<pre>xml.setName(new QName("newroot"));</pre>
+通常，这个方法会在修改相应命名空间下的元素标签名或特性名时用到。如果该名称不属于任何命名空间，则可以像下面这样使用setLocalName()方法来修改内部名称：<br />
+<pre>xml.setLocalName("newtagname");</pre></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15388">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

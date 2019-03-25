@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>JavaScript库</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">JavaScript库</h1>
+	<hr>
+		<h3>
+	JavaScript 库可以帮助我们跨越浏览器差异的鸿沟，并对复杂的浏览器功能提供更为简便的访问
+</h3>
+方式。程序库有两种形式：通用库和专用库。通用JavaScript 库提供了对常见浏览器功能的访问，可以作为网站或者Web 应用的基础。专用库则只做特定的事，仅用于网站或者Web 应用的某些部分。本附录给出了这些库与其功能的概况，并提供了相关网站作为你的参考资源。<br />
+<h2>
+	C.1 通用库
+</h2>
+通用JavaScript 库提供横跨几个主题的功能。所有的通用库都尝试通过使用新API 包装常见功能来统一浏览器的接口、减小实现差异。某些API 看上去与原生功能很相似，而另一些则完全不同。通用库一般提供与DOM交互的功能、支持Ajax、同时还有一些协助常见任务的工具方法。<br />
+<h3>
+	C.1.1 YUI
+</h3>
+它是一个开源JavaScript 与CSS 库，以一种组件方式设计的。这个库不只有一个文件；它包含了很多文件，提供各种不同的配置，让你可以按需载入。YUI（Yahoo!User Interface Library，雅虎用户界面库）涵盖了JavaScript 的所有方面，从基本的工具及帮助函数到完善的浏览器部件。在雅虎有一支专门的软件工程师团队负责YUI，他们提供了优秀的文档和支持。<br />
+<ul>
+	<li>
+		协议：BSD 许可证
+	</li>
+	<li>
+		网站：http://yuilibrary.com
+	</li>
+</ul>
+<h3>
+	C.1.2 Prototype
+</h3>
+它是一个提供了常见任务API 的开源库。最初是针对Ruby on Rails 框架中的使用而开发的，Prototype是类驱动的，旨在为JavaScript 提供类定义和继承。因此，Prototype 提供了很多类，用于将常见或复杂功能封装为简单的API 调用。Prototype 只有一个单独的文件，可以很容易地放入任意页面。它是由SamStephenson 撰写并维护的。<br />
+<ul>
+	<li>
+		协议：MIT 许可证或者是Creative Commons Attribution-Share Alike 3.0 Unported
+	</li>
+	<li>
+		网站：http://www.prototypejs.org/
+	</li>
+</ul>
+<h3>
+	C.1.3 Dojo Toolkit
+</h3>
+<p>
+	Dojo Toolkit 开源库基于一种包系统建模，一组功能组成一个包，可以按需载入。Dojo 提供了范围广泛的选项和配置，几乎涵盖了你要用JavaScript 做的任何事情。Dojo Toolkit 由Alex Russell 创建，并由Dojo 基金会的雇员和志愿者维护。
+</p>
+<ul>
+	<li>
+		协议：新BSD 许可证或学术自由协议2.1 版
+	</li>
+	<li>
+		网站：http://www.dojotoolkit.org/
+	</li>
+</ul>
+<h3>
+	C.1.4 MooTools
+</h3>
+MooTools 是一个为了精简和优化而设计的开源库，它为内置JavaScript 对象添加了各种方法，以通过接近的接口提供新功能，或者直接提供新的对象。MooTools 的短小精悍受到一些Web 开发者的青睐。<br />
+<ul>
+	<li>
+		协议：MIT 许可证
+	</li>
+	<li>
+		网站：http://www.mootools.net/
+	</li>
+</ul>
+<h3>
+	C.1.5 jQuery
+</h3>
+jQuery 是一个给JavaScript 提供了函数式编程接口的开源库。它是一个完整的库，其核心是构建于CSS 选择器上的，用来操作DOM 元素。通过链式调用，jQuery 代码看上去更像是对于应该发生什么的描述而不是JavaScript 代码。这种代码风格在设计师和原型制作人中非常流行。jQuery 是由John Resig撰写并维护的。<br />
+<ul>
+	<li>
+		协议：MIT 许可证或通用公共许可证（GPL）
+	</li>
+	<li>
+		网站：http://jquery.com/
+	</li>
+</ul>
+<h3>
+	C.1.6 MochiKit
+</h3>
+MochKit 是一个由一些小工具组成的开源库，它以完善的文档和完整的测试见长，拥有大量API 及相关范例文档以及数百个测试来确保质量。MochiKit 是由Bob Ippolito 撰写并维护的。<br />
+<ul>
+	<li>
+		协议：MIT 许可者或学术自由许可证2.1 版
+	</li>
+	<li>
+		网站：http://www.mochikit.com/
+	</li>
+</ul>
+<h3>
+	C.1.7 Underscore.js
+</h3>
+虽然严格来讲Underscore.js 并不是一个通用的库，但它的确为JavaScript 中的功能性编程提供了很多额外的功能。其文档称Underscore.js 是对jQuery 的补充，提供了操作对象、数组、函数和其他JavaScript数据类型的更多的低级功能。Underscore.js 由DcoumentCloud 的Jeremy Ashkenas 维护。<br />
+<ul>
+	<li>
+		协议：MIT 许可证
+	</li>
+	<li>
+		网站：http://documentcloud.github.com/underscore/
+	</li>
+</ul>
+<h2>
+	C.2 互联网应用
+</h2>
+互联网应用库是针对于简化完整的Web 应用开发而设计的。它们并不提供应用问题的小块组件，而是提供了快速应用开发的整个概念框架。虽然这些库也可能提供一些底层功能，但他们的目标是帮助用户快速开发Web 应用。<br />
+<h3>
+	C.2.1 Backbone.js
+</h3>
+Backbone.js 是构建于Underscore.js 基础之上的一个迷你MVC 开源库，它针对单页应用进行优化，让你能够随着应用状态变化方便地更新页面的任意部分。Backbone.js 由DcoumentCloud 的JeremyAshkenas 维护。<br />
+<ul>
+	<li>
+		协议：MIT 许可证
+	</li>
+	<li>
+		网站：http://documentcloud.github.com/backbone/
+	</li>
+</ul>
+<h3>
+	C.2.2 Rico
+</h3>
+Rico 是一个开源库，旨在让行为丰富的互联网应用的开发更加简单。它提供了Ajax、动画、样式以及部件的工具。这个库由一些志愿者组成的小团队维护，但是2008 年起开发速度大大减慢了。<br />
+<ul>
+	<li>
+		协议：Apache 许可证2.0
+	</li>
+	<li>
+		网站：http://openrico.org/
+	</li>
+</ul>
+<h3>
+	C.2.3 qooxdoo
+</h3>
+它是一个旨在为整个互联网应用开发周期提供帮助的开源库。qooxdoo 实现了它自己的类和接口，用于创建类似于传统面向对象语言的编程模型。这个库包含了一个完整的GUI 工具包以及用于简化前端构建过程的编译器。qooxdoo 起初是1&amp;1webhosting 公司（www.1and1.com）的内部使用库，后来基于开源协议发布了。1&amp;1 骋用了一些全职开发者来维护和开发这个库。<br />
+<ul>
+	<li>
+		协议：GNU 较宽松公共许可证（LGPL）或者Eclipse 公共许可证（EPL）
+	</li>
+	<li>
+		网站：http://www.qooxdoo.org/
+	</li>
+</ul>
+<h2>
+	C.3 动画和特效
+</h2>
+动画和其他视觉特效也成为了Web 开发的重要部分。在网页上做出流畅的动画是一个很重要的任务，一些开发者已经做出了易用的库，提供流畅的动画和特效。前面提到的很多通用JavaScript 库也有动画功能。<br />
+<h3>
+	C.3.1 script.aculo.us
+</h3>
+script.aculo.us 是Prototype 的“同伴”，它提供了出色特效的简单使用方式，使用的东西不超过是CSS和DOM。Prototype 必须在使用script.aculo.us 之前载入。script.aculo.us 是最流行的特效库之一，世界上很多网站和Web 应用都在使用它。它的作者Thomas Fuchs 积极地维护着script.aculo.us。<br />
+<ul>
+	<li>
+		协议：MIT 许可证
+	</li>
+	<li>
+		网站：http://script.aculo.us/
+	</li>
+</ul>
+<h3>
+	C.3.2 moo.fx
+</h3>
+moo.fx 开源动画库是设计在Prototype 或者MooTools 之上运行的。它的目标是尽可能小（最新的版本是3KB)，并支持开发人员用尽可能少的代码创建动画。MooTools 是默认包含moo.fx 的，但也可以单独下载用于Prototype 中。<br />
+<ul>
+	<li>
+		协议：MIT 许可证
+	</li>
+	<li>
+		网站：http://moofx.mad4milk.net/
+	</li>
+</ul>
+<h3>
+	C.3.3 Lightbox
+</h3>
+Lightbox 是一个用于在任意页面上创建图像浮动层的JavaScript 库，依赖于Prototype 和script.aculo.us 来实现它的视觉特效。基本的理念是让用户在一个浮动层中浏览一个或者一系列图像，而不必离开当前页面。Lightbox 浮动层无论是外观还是过渡效果都可以自定义。Lightbox 由LokeshDhakar 开发并维护。<br />
+<ul>
+	<li>
+		协议：创作共用协议2.5
+	</li>
+	<li>
+		网站：http://www.huddletotegher.com/projects/lightbox2/
+	</li>
+</ul>
+<h2>
+	C.4 加密
+</h2>
+随着Ajax 应用的流行，对于浏览器端加密以确保通讯安全的需求也越来越多。幸好，一些人已经在JavaScript 中实现了常用的安全算法。这些库大部分并没有其作者的正式支持，但还是被广泛应用着。<br />
+<h3>
+	C.4.1 JavaScript MD5
+</h3>
+该开源库实现了MD4、MD5 以及SHA-1 安全散列函数。作者Paul Johnston 和其他一些贡献者将每个算法作为一个文件，创建了这个用于Web 应用的丰富的库。主页上提供了散列算法的概述、对于其弱点的讨论以及适当的使用方法。<br />
+<ul>
+	<li>
+		协议：BSD 许可证
+	</li>
+	<li>
+		网站：http://pajhome.org.uk/crypt/md5
+	</li>
+</ul>
+<h3>
+	C.4.2 JavaScrypt
+</h3>
+该JavaScript 库实现了MD5 和AES（256 位）加密算法。JavaScrypt 的网站提供了很多关于密码学历史及其在计算机中应用的信息。但是缺乏关于如何将该库集成到Web 应用中的基本文档，JavaScrypt的代码里面全都是深奥的数学处理和计算。<br />
+<ul>
+	<li>
+		协议：公共域
+	</li>
+	<li>
+		网站：http://www.fourmilab.ch/javascrypt/
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15436">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

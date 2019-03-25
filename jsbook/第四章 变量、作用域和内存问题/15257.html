@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>4.4 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">4.4 小结</h1>
+	<hr>
+		JavaScript 变量可以用来保存两种类型的值：基本类型值和引用类型值。基本类型的值源自以下5种基本数据类型：Undefined、Null、Boolean、Number 和String。基本类型值和引用类型值具有以下特点：<br />
+<ul>
+	<li>
+		基本类型值在内存中占据固定大小的空间，因此被保存在栈内存中；
+	</li>
+	<li>
+		从一个变量向另一个变量复制基本类型的值，会创建这个值的一个副本；
+	</li>
+	<li>
+		引用类型的值是对象，保存在堆内存中；
+	</li>
+	<li>
+		包含引用类型值的变量实际上包含的并不是对象本身，而是一个指向该对象的指针；
+	</li>
+	<li>
+		从一个变量向另一个变量复制引用类型的值，复制的其实是指针，因此两个变量最终都指向同一个对象；
+	</li>
+	<li>
+		确定一个值是哪种基本类型可以使用typeof 操作符，而确定一个值是哪种引用类型可以使用instanceof 操作符。
+	</li>
+</ul>
+所有变量（包括基本类型和引用类型）都存在于一个执行环境（也称为作用域）当中，这个执行环境决定了变量的生命周期，以及哪一部分代码可以访问其中的变量。以下是关于执行环境的几点总结：<br />
+<ul>
+	<li>
+		执行环境有全局执行环境（也称为全局环境）和函数执行环境之分；
+	</li>
+	<li>
+		每次进入一个新执行环境，都会创建一个用于搜索变量和函数的作用域链；
+	</li>
+	<li>
+		函数的局部环境不仅有权访问函数作用域中的变量，而且有权访问其包含（父）环境，乃至全局环境；
+	</li>
+	<li>
+		全局环境只能访问在全局环境中定义的变量和函数，而不能直接访问局部环境中的任何数据；
+	</li>
+	<li>
+		变量的执行环境有助于确定应该何时释放内存。
+	</li>
+</ul>
+JavaScript 是一门具有自动垃圾收集机制的编程语言，开发人员不必关心内存分配和回收问题。可以对JavaScript 的垃圾收集例程作如下总结。<br />
+<ul>
+	<li>
+		离开作用域的值将被自动标记为可以回收，因此将在垃圾收集期间被删除。
+	</li>
+	<li>
+		“标记清除”是目前主流的垃圾收集算法，这种算法的思想是给当前不使用的值加上标记，然后再回收其内存。
+	</li>
+	<li>
+		另一种垃圾收集算法是“引用计数”，这种算法的思想是跟踪记录所有值被引用的次数。JavaScript引擎目前都不再使用这种算法；但在IE 中访问非原生JavaScript 对象（如DOM 元素）时，这种算法仍然可能会导致问题。
+	</li>
+	<li>
+		当代码中存在循环引用现象时，“引用计数”算法就会导致问题。
+	</li>
+	<li>
+		解除变量的引用不仅有助于消除循环引用现象，而且对垃圾收集也有好处。为了确保有效地回收内存，应该及时解除不再使用的全局对象、全局对象属性以及循环引用变量的引用。
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15257">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

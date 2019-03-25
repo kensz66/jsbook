@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>12.1 DOM 变化</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">12.1 DOM 变化</h1>
+	<hr>
+		DOM2 级和3 级的目的在于扩展DOM API，以满足操作XML 的所有需求，同时提供更好的错误处理及特性检测能力。从某种意义上讲，实现这一目的很大程度意味着对命名空间的支持。“DOM2 级核心”没有引入新类型，它只是在DOM1 级的基础上通过增加新方法和新属性来增强了既有类型。“DOM3级核心”同样增强了既有类型，但也引入了一些新类型。<br />
+类似地，“DOM2 级视图”和“DOM2 级HTML”模块也增强了DOM 接口，提供了新的属性和方法。由于这两个模块很小，因此我们将把它们与“DOM2 级核心”放在一起，讨论基本JavaScript 对象的变化。可以通过下列代码来确定浏览器是否支持这些DOM 模块。<br />
+<pre>var supportsDOM2Core = document.implementation.hasFeature("Core", "2.0");
+var supportsDOM3Core = document.implementation.hasFeature("Core", "3.0");
+var supportsDOM2HTML = document.implementation.hasFeature("HTML", "2.0");
+var supportsDOM2Views = document.implementation.hasFeature("Views", "2.0");
+var supportsDOM2XML = document.implementation.hasFeature("XML", "2.0");</pre>
+本章只讨论那些已经有浏览器实现的部分，任何浏览器都没有实现的部分将不作讨论。 <br />
+<h2>
+	12.1.1 针对XML命名空间的变化
+</h2>
+有了XML 命名空间，不同XML 文档的元素就可以混合在一起，共同构成格式良好的文档，而不必担心发生命名冲突。从技术上说，HTML 不支持XML 命名空间，但XHTML 支持XML 命名空间。<br />
+因此，本节给出的都是XHTML 的示例。<br />
+命名空间要使用xmlns 特性来指定。XHTML 的命名空间是<code>http://www.w3.org/1999/xhtml</code>，在任何格式良好XHTML 页面中，都应该将其包含在&lt;html&gt;元素中，如下面的例子所示。<br />
+<pre>&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+	&lt;head&gt;
+		&lt;title&gt; Example XHTML page
+		&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		Hello world!
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+对这个例子而言，其中的所有元素默认都被视为XHTML 命名空间中的元素。要想明确地为XML命名空间创建前缀，可以使用xmlns 后跟冒号，再后跟前缀，如下所示。<br />
+<pre>&lt;xhtml:html xmlns:xhtml="http://www.w3.org/1999/xhtml"&gt;
+	&lt;xhtml:head&gt;
+		&lt;xhtml:title&gt;
+			Example XHTML page
+		&lt;/xhtml:title&gt;
+	&lt;/xhtml:head&gt;
+	&lt;xhtml:body&gt;
+		Hello world!
+	&lt;/xhtml:body&gt;
+&lt;/xhtml:html&gt;</pre>
+这里为XHTML 的命名空间定义了一个名为xhtml 的前缀，并要求所有XHTML 元素都以该前缀开头。有时候为了避免不同语言间的冲突，也需要使用命名空间来限定特性，如下面的例子所示。<br />
+<pre>&lt;xhtml:html xmlns:xhtml="http://www.w3.org/1999/xhtml"&gt;
+	&lt;xhtml:head&gt;
+		&lt;xhtml:title&gt;
+			Example XHTML page
+		&lt;/xhtml:title&gt;
+	&lt;/xhtml:head&gt;
+	&lt;xhtml:body xhtml:class="home"&gt;
+		Hello world!
+	&lt;/xhtml:body&gt;
+&lt;/xhtml:html&gt;</pre>
+这个例子中的特性class 带有一个xhtml 前缀。在只基于一种语言编写XML 文档的情况下，命名空间实际上也没有什么用。不过，在混合使用两种语言的情况下，命名空间的用处就非常大了。来看一看下面这个混合了XHTML 和SVG 语言的文档：<br />
+<pre>&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+	&lt;head&gt;
+		&lt;title&gt;
+			Example XHTML page
+		&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 100"
+		style="width:100%; height:100%"&gt;
+			&lt;rect x="0" y="0" width="100" height="100" style="fill:red" /&gt;
+		&lt;/svg&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+在这个例子中，通过设置命名空间，将&lt;svg&gt;标识为了与包含文档无关的元素。此时，&lt;svg&gt;元素的所有子元素，以及这些元素的所有特性，都被认为属于http://www.w3.org/2000/svg 命名空间。即使这个文档从技术上说是一个XHTML文档，但因为有了命名空间，其中的SVG代码也仍然是有效的。<br />
+对于类似这样的文档来说，最有意思的事发生在调用方法操作文档节点的情况下。例如，在创建一个元素时，这个元素属于哪个命名空间呢？在查询一个特殊标签名时，应该将结果包含在哪个命名空间中呢？“DOM2 级核心”通过为大多数DOM1 级方法提供特定于命名空间的版本解决了这个问题。<br />
+<h3>
+	1. Node 类型的变化
+</h3>
+在DOM2 级中，Node 类型包含下列特定于命名空间的属性。<br />
+<ul>
+	<li>
+		localName：不带命名空间前缀的节点名称。
+	</li>
+	<li>
+		namespaceURI：命名空间URI 或者（在未指定的情况下是）null。
+	</li>
+	<li>
+		prefix：命名空间前缀或者（在未指定的情况下是）null。
+	</li>
+</ul>
+当节点使用了命名空间前缀时，其nodeName 等于prefix+":"+ localName。以下面的文档为例：<br />
+<pre>&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;
+	&lt;head&gt;
+		&lt;title&gt;
+			Example XHTML page
+		&lt;/title&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;s:svg xmlns:s="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 100"
+		style="width:100%; height:100%"&gt;
+			&lt;s:rect x="0" y="0" width="100" height="100" style="fill:red" /&gt;
+		&lt;/s:svg&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+对于&lt;html&gt;元素来说，它的localName 和tagName 是"html"，namespaceURI 是"http://www.w3.org/1999/xhtml"，而prefix 是null。对于&lt;s:svg&gt;元素而言，它的localName 是"svg"，tagName 是"s:svg"，namespaceURI 是"http://www.w3.org/2000/svg"，而prefix 是"s"。<br />
+DOM3 级在此基础上更进一步，又引入了下列与命名空间有关的方法。<br />
+<ul>
+	<li>
+		isDefaultNamespace(namespaceURI)：在指定的namespaceURI 是当前节点的默认命名空间的情况下返回true。
+	</li>
+	<li>
+		lookupNamespaceURI(prefix)：返回给定prefix 的命名空间。
+	</li>
+	<li>
+		lookupPrefix(namespaceURI)：返回给定namespaceURI 的前缀。
+	</li>
+</ul>
+针对前面的例子，可以执行下列代码：<br />
+<pre>alert(document.body.isDefaultNamespace("http://www.w3.org/1999/xhtml"); //true
+//假设svg 中包含着对&lt;s:svg&gt;的引用
+alert(svg.lookupPrefix("http://www.w3.org/2000/svg")); //"s"
+alert(svg.lookupNamespaceURI("s")); //"http://www.w3.org/2000/svg"</pre>
+在取得了一个节点，但不知道该节点与文档其他元素之间关系的情况下，这些方法是很有用的。<br />
+<h3>
+	2. Document 类型的变化
+</h3>
+DOM2 级中的Document 类型也发生了变化，包含了下列与命名空间有关的方法。<br />
+<ul>
+	<li>
+		createElementNS(namespaceURI, tagName)：使用给定的tagName 创建一个属于命名空间namespaceURI 的新元素。
+	</li>
+	<li>
+		createAttributeNS(namespaceURI, attributeName)：使用给定的attributeName 创建一个属于命名空间namespaceURI 的新特性。
+	</li>
+	<li>
+		getElementsByTagNameNS(namespaceURI, tagName)：返回属于命名空间namespaceURI的tagName 元素的NodeList。
+	</li>
+</ul>
+使用这些方法时需要传入表示命名空间的URI（而不是命名空间前缀），如下面的例子所示。<br />
+<pre>//创建一个新的SVG 元素
+var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+//创建一个属于某个命名空间的新特性
+var att = document.createAttributeNS("http://www.somewhere.com", "random");
+//取得所有XHTML 元素
+var elems = document.getElementsByTagNameNS("http://www.w3.org/1999/xhtml", "*");</pre>
+只有在文档中存在两个或多个命名空间时，这些与命名空间有关的方法才是必需的。<br />
+<h3>
+	3. Element 类型的变化
+</h3>
+“DOM2 级核心”中有关Element 的变化，主要涉及操作特性。新增的方法如下。<br />
+<ul>
+	<li>
+		getAttributeNS(namespaceURI,localName)：取得属于命名空间namespaceURI 且名为localName 的特性。
+	</li>
+	<li>
+		getAttributeNodeNS(namespaceURI,localName)：取得属于命名空间namespaceURI 且名为localName 的特性节点。
+	</li>
+	<li>
+		getElementsByTagNameNS(namespaceURI, tagName)：返回属于命名空间namespaceURI的tagName 元素的NodeList。
+	</li>
+	<li>
+		hasAttributeNS(namespaceURI,localName)：确定当前元素是否有一个名为localName的特性，而且该特性的命名空间是namespaceURI。注意，“DOM2 级核心”也增加了一个hasAttribute()方法，用于不考虑命名空间的情况。
+	</li>
+	<li>
+		removeAttriubteNS(namespaceURI,localName)：删除属于命名空间namespaceURI 且名为localName 的特性。
+	</li>
+	<li>
+		setAttributeNS(namespaceURI,qualifiedName,value)：设置属于命名空间namespace-URI 且名为qualifiedName 的特性的值为value。
+	</li>
+	<li>
+		setAttributeNodeNS(attNode)：设置属于命名空间namespaceURI 的特性节点。
+	</li>
+</ul>
+除了第一个参数之外，这些方法与DOM1 级中相关方法的作用相同；第一个参数始终都是一个命名空间URI。<br />
+<h3>
+	4. NamedNodeMap 类型的变化
+</h3>
+NamedNodeMap 类型也新增了下列与命名空间有关的方法。由于特性是通过NamedNodeMap 表示的，因此这些方法多数情况下只针对特性使用。<br />
+<ul>
+	<li>
+		getNamedItemNS(namespaceURI,localName)：取得属于命名空间namespaceURI 且名为localName 的项。
+	</li>
+	<li>
+		removeNamedItemNS(namespaceURI,localName)：移除属于命名空间namespaceURI 且名为localName 的项。
+	</li>
+	<li>
+		setNamedItemNS(node)：添加node，这个节点已经事先指定了命名空间信息。
+	</li>
+</ul>
+由于一般都是通过元素访问特性，所以这些方法很少使用。<br />
+<h2>
+	12.1.2 其他方面的变化
+</h2>
+DOM 的其他部分在“DOM2 级核心”中也发生了一些变化。这些变化与XML 命名空间无关，而是更倾向于确保API 的可靠性及完整性。<br />
+<h3>
+	1. DocumentType 类型的变化
+</h3>
+DocumentType 类型新增了3 个属性：publicId、systemId 和internalSubset。其中，前两个属性表示的是文档类型声明中的两个信息段，这两个信息段在DOM1 级中是没有办法访问到的。以下面的HTML 文档类型声明为例。<br />
+<pre>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"&gt;</pre>
+对这个文档类型声明而言，publicId 是"<code>-//W3C//DTD HTML 4.01//EN</code>"，而systemId 是"<code>http://www.w3.org/TR/html4/strict.dtd</code>"。在支持DOM2 级的浏览器中，应该可以运行下列代码。<br />
+<pre>alert(document.doctype.publicId);
+alert(document.doctype.systemId);</pre>
+实际上，很少需要在网页中访问此类信息。<br />
+最后一个属性internalSubset，用于访问包含在文档类型声明中的额外定义，以下面的代码为例。<br />
+<pre>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" [&lt;!ELEMENT name (#PCDATA)&gt;] &gt;</pre>
+访问document.doctype.internalSubset 将得到"<code>&lt;!ELEMENT name (#PCDATA)&gt;</code>"。这种内部子集（internal subset）在HTML 中极少用到，在XML 中可能会更常见一些。<br />
+<h3>
+	2. Document 类型的变化
+</h3>
+Document 类型的变化中唯一与命名空间无关的方法是importNode()。这个方法的用途是从一个文档中取得一个节点，然后将其导入到另一个文档，使其成为这个文档结构的一部分。需要注意的是，每个节点都有一个ownerDocument 属性，表示所属的文档。如果调用appendChild()时传入的节点属于不同的文档（ownerDocument 属性的值不一样），则会导致错误。但在调用importNode()时传入不同文档的节点则会返回一个新节点，这个新节点的所有权归当前文档所有。<br />
+说起来，importNode()方法与Element 的cloneNode()方法非常相似，它接受两个参数：要复制的节点和一个表示是否复制子节点的布尔值。返回的结果是原来节点的副本，但能够在当前文档中使用。来看下面的例子：<br />
+<pre>var newNode = document.importNode(oldNode, true); //导入节点及其所有子节点
+document.body.appendChild(newNode);</pre>
+这个方法在HTML 文档中并不常用，在XML 文档中用得比较多（更多讨论请参见第18 章）。<br />
+“DOM2 级视图”模块添加了一个名为defaultView 的属性，其中保存着一个指针，指向拥有给定文档的窗口（或框架）。除此之外，“视图”规范没有提供什么时候其他视图可用的信息，因而这是唯一一个新增的属性。除IE 之外的所有浏览器都支持defaultView 属性。在IE 中有一个等价的属性名叫parentWindow（Opera 也支持这个属性）。因此，要确定文档的归属窗口，可以使用以下代码。<br />
+<pre>var parentWindow = document.defaultView || document.parentWindow;</pre>
+除了上述一个方法和一个属性之外，“DOM2 级核心”还为document.implementation 对象规定了两个新方法：createDocumentType()和createDocument()。前者用于创建一个新的DocumentType节点，接受3 个参数：文档类型名称、publicId、systemId。例如，下列代码会创建一个新的HTML4.01 Strict 文档类型。<br />
+<pre>var doctype = document.implementation.createDocumentType("html","-//W3C//DTD HTML 4.01//EN","http://www.w3.org/TR/html4/strict.dtd");</pre>
+由于既有文档的文档类型不能改变，因此createDocumentType()只在创建新文档时有用；创建新文档时需要用到createDocument()方法。这个方法接受3 个参数：针对文档中元素的namespaceURI、文档元素的标签名、新文档的文档类型。下面这行代码将会创建一个空的新XML 文档。<br />
+<pre>var doc = document.implementation.createDocument("", "root", null);</pre>
+这行代码会创建一个没有命名空间的新文档，文档元素为&lt;root&gt;，而且没有指定文档类型。要想创建一个XHTML 文档，可以使用以下代码。<br />
+<pre>var doctype = document.implementation.createDocumentType("html"," -//W3C//DTD XHTML 1.0 Strict//EN","http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+var doc = document.implementation.createDocument("http://www.w3.org/1999/xhtml","html", doctype);</pre>
+<p>
+	这样，就创建了一个带有适当命名空间和文档类型的新XHTML 文档。不过，新文档当前只有文档元素&lt;html&gt;，剩下的所有元素都需要继续添加。
+</p>
+<p>
+	“DOM2 级HTML”模块也为document.implementation 新增了一个方法，名叫createHTMLDocument()。这个方法的用途是创建一个完整的HTML 文档，包括&lt;html&gt;、&lt;head&gt;、&lt;title&gt;和&lt;body&gt;元素。这个方法只接受一个参数，即新创建文档的标题（放在&lt;title&gt;元素中的字符串），返回新的HTML 文档，如下所示：
+</p>
+<pre>var htmldoc = document.implementation.createHTMLDocument("New Doc");
+alert(htmldoc.title); //"New Doc"
+alert(typeof htmldoc.body); //"object"</pre>
+<a href="http://www.z-ai.net/study/api/s/8627" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+通过调用createHTMLDocument()创建的这个文档，是HTMLDocument 类型的实例，因而具有该类型的所有属性和方法，包括title 和body 属性。只有Opera 和Safari 支持这个方法。<br />
+<h3>
+	3. Node 类型的变化
+</h3>
+Node 类型中唯一与命名空间无关的变化，就是添加了isSupported()方法。与DOM1级为document.implementation 引入的hasFeature()方法类似，isSupported()方法用于确定当前节点具有什么能力。这个方法也接受相同的两个参数：特性名和特性版本号。如果浏览器实现了相应特性，而且能够基于给定节点执行该特性，isSupported()就返回true。来看一个例子：<br />
+<pre>if (document.body.isSupported("HTML", "2.0")){
+    //执行只有"DOM2 级HTML"才支持的操作
+}</pre>
+由于不同实现在决定对什么特性返回true 或false 时并不一致，这个方法同样也存在与hasFeature()方法相同的问题。为此，我们建议在确定某个特性是否可用时，最好还是使用能力检测。<br />
+DOM3 级引入了两个辅助比较节点的方法：isSameNode()和isEqualNode()。这两个方法都接受一个节点参数，并在传入节点与引用的节点相同或相等时返回true。所谓相同，指的是两个节点引用的是同一个对象。所谓相等，指的是两个节点是相同的类型，具有相等的属性（nodeName、nodeValue，等等），而且它们的attributes 和childNodes 属性也相等（相同位置包含相同的值）。来看一个例子。<br />
+<pre>var div1 = document.createElement("div");
+div1.setAttribute("class", "box");
+var div2 = document.createElement("div");
+div2.setAttribute("class", "box");
+alert(div1.isSameNode(div1)); //true
+alert(div1.isEqualNode(div2)); //true
+alert(div1.isSameNode(div2)); //false</pre>
+这里创建了两个具有相同特性的&lt;div&gt;元素。这两个元素相等，但不相同。<br />
+DOM3 级还针对为DOM 节点添加额外数据引入了新方法。其中，setUserData()方法会将数据指定给节点，它接受3 个参数：要设置的键、实际的数据（可以是任何数据类型）和处理函数。以下代码可以将数据指定给一个节点。<br />
+<pre>document.body.setUserData("name", "Nicholas", function(){});</pre>
+然后，使用getUserData()并传入相同的键，就可以取得该数据，如下所示：<br />
+<pre>var value = document.body.getUserData("name");</pre>
+传入setUserData()中的处理函数会在带有数据的节点被复制、删除、重命名或引入一个文档时调用，因而你可以事先决定在上述操作发生时如何处理用户数据。处理函数接受5 个参数：表示操作类型的数值（1 表示复制，2 表示导入，3 表示删除，4 表示重命名）、数据键、数据值、源节点和目标节点。在删除节点时，源节点是null；除在复制节点时，目标节点均为null。在函数内部，你可以决定如何存储数据。来看下面的例子。<br />
+<pre>var div = document.createElement("div");
+div.setUserData("name", "Nicholas",
+function(operation, key, value, src, dest) {
+	if (operation == 1) {
+		dest.setUserData(key, value,
+		function() {});
+	}
+});
+var newDiv = div.cloneNode(true);
+alert(newDiv.getUserData("name")); //"Nicholas"</pre>
+<a href="http://www.z-ai.net/study/api/s/8628" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里，先创建了一个&lt;div&gt;元素，然后又为它添加了一些数据（用户数据）。在使用cloneNode()复制这个元素时，就会调用处理函数，从而将数据自动复制到了副本节点。结果在通过副本节点调用getUserData()时，就会返回与原始节点中包含的相同的值。<br />
+<h3>
+	4. 框架的变化
+</h3>
+框架和内嵌框架分别用HTMLFrameElement 和HTMLIFrameElement 表示，它们在DOM2级中都有了一个新属性，名叫contentDocument。这个属性包含一个指针，指向表示框架内容的文档对象。在此之前，无法直接通过元素取得这个文档对象（只能使用frames 集合）。可以像下面这样使用这个属性。<br />
+<pre>var iframe = document.getElementById("myIframe");
+var iframeDoc = iframe.contentDocument; //在IE8 以前的版本中无效</pre>
+<a href="http://www.z-ai.net/study/api/s/8629" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+由于contentDocument 属性是Document 类型的实例，因此可以像使用其他HTML 文档一样使用它，包括所有属性和方法。Opera、Firefox、Safari 和Chrome 支持这个属性。IE8 之前不支持框架中的contentDocument 属性，但支持一个名叫contentWindow 的属性，该属性返回框架的window 对象，而这个window 对象又有一个document 属性。因此，要想在上述所有浏览器中访问内嵌框架的文档对象，可以使用下列代码。<br />
+<pre>var iframe = document.getElementById("myIframe");
+var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;</pre>
+<a href="http://www.z-ai.net/study/api/s/8630" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+所有浏览器都支持contentWindow 属性。<br />
+<blockquote>
+	访问框架或内嵌框架的文档对象要受到跨域安全策略的限制。如果某个框架中的页面来自其他域或不同子域，或者使用了不同的协议，那么要访问这个框架的文档对象就会导致错误。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15310">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>22.2 防篡改对象</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">22.2 防篡改对象</h1>
+	<hr>
+		JavaScript 共享的本质一直是开发人员心头的痛。因为任何对象都可以被在同一环境中运行的代码修改。开发人员很可能会意外地修改别人的代码，甚至更糟糕地，用不兼容的功能重写原生对象。ECMAScript 5 致力于解决这个问题，可以让开发人员定义防篡改对象（tamper-proof object）。第6章讨论了对象属性的问题，也讨论了如何手工设置每个属性的[[Configurable]]、[[Writable]]、 [[Enumerable]]、[[Value]]、[[Get]]以及[[Set]]特性，以改变属性的行为。类似地，ECMAScript 5也增加了几个方法，通过它们可以指定对象的行为。不过请注意：一旦把对象定义为防篡改，就无法撤销了。<br />
+<h2>
+	22.2.1 不可扩展对象
+</h2>
+默认情况下，所有对象都是可以扩展的。也就是说，任何时候都可以向对象中添加属性和方法。例如，可以像下面这样先定义一个对象，后来再给它添加一个属性。<br />
+<pre>var person = { name: "Nicholas" };
+person.age = 29;</pre>
+即使第一行代码已经完整定义person 对象，但第二行代码仍然能给它添加属性。现在，使用Object.preventExtensions()方法可以改变这个行为，让你不能再给对象添加属性和方法。例如：<br />
+<pre>var person = { name: "Nicholas" };
+Object.preventExtensions(person);
+person.age = 29;
+alert(person.age); //undefined</pre>
+<a href="http://www.z-ai.net/study/api/s/8862" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在调用了Object.preventExtensions()方法后，就不能给person 对象添加新属性和方法了。在非严格模式下，给对象添加新成员会导致静默失败，因此person.age 将是undefined。而在严格模式下，尝试给不可扩展的对象添加新成员会导致抛出错误。虽然不能给对象添加新成员，但已有的成员则丝毫不受影响。你仍然还可以修改和删除已有的成员。另外，使用Object.istExtensible()方法还可以确定对象是否可以扩展。<br />
+<pre>var person = { name: "Nicholas" };
+alert(Object.isExtensible(person)); //true
+Object.preventExtensions(person);
+alert(Object.isExtensible(person)); //false</pre>
+<a href="http://www.z-ai.net/study/api/s/8863" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<h2>
+	22.2.2 密封的对象
+</h2>
+ECMAScript 5 为对象定义的第二个保护级别是密封对象（sealed object）。密封对象不可扩展，而且已有成员的[[Configurable]]特性将被设置为false。这就意味着不能删除属性和方法，因为不能使用Object.defineProperty()把数据属性修改为访问器属性，或者相反。属性值是可以修改的。要密封对象，可以使用Object.seal()方法。<br />
+<pre>var person = { name: "Nicholas" };
+Object.seal(person);
+person.age = 29;
+alert(person.age); //undefined
+delete person.name;
+alert(person.name); //"Nicholas"</pre>
+<a href="http://www.z-ai.net/study/api/s/8864" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，添加age 属性的行为被忽略了。而尝试删除name 属性的操作也被忽略了，因此这个属性没有受任何影响。这是在非严格模式下的行为。在严格模式下，尝试添加或删除对象成员都会导致抛出错误。<br />
+使用Object.isSealed()方法可以确定对象是否被密封了。因为被密封的对象不可扩展，所以用Object.isExtensible()检测密封的对象也会返回false。<br />
+<pre>var person = { name: "Nicholas" };
+alert(Object.isExtensible(person)); //true
+alert(Object.isSealed(person)); //false
+Object.seal(person);
+alert(Object.isExtensible(person)); //false
+alert(Object.isSealed(person)); //true</pre>
+<a href="http://www.z-ai.net/study/api/s/8865" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<h2>
+	22.2.3 冻结的对象
+</h2>
+最严格的防篡改级别是冻结对象（frozen object）。冻结的对象既不可扩展，又是密封的，而且对象数据属性的[[Writable]]特性会被设置为false。如果定义[[Set]]函数，访问器属性仍然是可写的。ECMAScript 5 定义的Object.freeze()方法可以用来冻结对象。<br />
+<pre>var person = { name: "Nicholas" };
+Object.freeze(person);
+person.age = 29;
+alert(person.age); //undefined
+delete person.name;
+alert(person.name); //"Nicholas"
+person.name = "Greg";
+alert(person.name); //"Nicholas"</pre>
+<a href="http://www.z-ai.net/study/api/s/8866" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+与密封和不允许扩展一样，对冻结的对象执行非法操作在非严格模式下会被忽略，而在严格模式下会抛出错误。<br />
+当然，也有一个Object.isFrozen()方法用于检测冻结对象。因为冻结对象既是密封的又是不可扩展的，所以用Object.isExtensible()和Object.isSealed()检测冻结对象将分别返回false和true。<br />
+<pre>var person = { name: "Nicholas" };
+alert(Object.isExtensible(person)); //true
+alert(Object.isSealed(person)); //false
+alert(Object.isFrozen(person)); //false
+Object.freeze(person);
+alert(Object.isExtensible(person)); //false
+alert(Object.isSealed(person)); //true
+alert(Object.isFrozen(person)); //true</pre>
+<a href="http://www.z-ai.net/study/api/s/8867" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+对JavaScript 库的作者而言，冻结对象是很有用的。因为JavaScript 库最怕有人意外（或有意）地修改了库中的核心对象。冻结（或密封）主要的库对象能够防止这些问题的发生。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15406">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

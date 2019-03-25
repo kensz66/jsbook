@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>25.1 requestAnimationFrame()</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">25.1 requestAnimationFrame()</h1>
+	<hr>
+		<p>
+	很长时间以来，计时器和循环间隔一直都是JavaScript 动画的最核心技术。虽然CSS 变换及动画为Web 开发人员提供了实现动画的简单手段，但JavaScript 动画开发领域的状况这些年来并没有大的变化。
+</p>
+<p>
+	Firefox 4 最早为JavaScript 动画添加了一个新API，即mozRequestAnimationFrame()。这个方法会告诉浏览器：有一个动画开始了。进而浏览器就可以确定重绘的最佳方式。
+</p>
+<h2>
+	25.1.1 早期动画循环
+</h2>
+在JavaScript 中创建动画的典型方式，就是使用setInterval()方法来控制所有动画。以下是一个使用setInterval()的基本动画循环：<br />
+<pre>(function() {
+	function updateAnimations() {
+		doAnimation1();
+		doAnimation2();
+		//其他动画
+	}
+	setInterval(updateAnimations, 100);
+})();</pre>
+<p>
+	为了创建一个小型动画库，updateAnimations()方法就得不断循环地运行每个动画，并相应地改变不同元素的状态（例如，同时显示一个新闻跑马灯和一个进度条）。如果没有动画需要更新，这个方法可以退出，什么也不用做，甚至可以把动画循环停下来，等待下一次需要更新的动画。
+</p>
+<p>
+	编写这种动画循环的关键是要知道延迟时间多长合适。一方面，循环间隔必须足够短，这样才能让不同的动画效果显得更平滑流畅；另一方面，循环间隔还要足够长，这样才能确保浏览器有能力渲染产生的变化。大多数电脑显示器的刷新频率是60Hz，大概相当于每秒钟重绘60 次。大多数浏览器都会对重绘操作加以限制，不超过显示器的重绘频率，因为即使超过那个频率用户体验也不会有提升。
+</p>
+<p>
+	因此，最平滑动画的最佳循环间隔是1000ms/60，约等于17ms。以这个循环间隔重绘的动画是最平滑的，因为这个速度最接近浏览器的最高限速。为了适应17ms 的循环间隔，多重动画可能需要加以节制，以便不会完成得太快。
+</p>
+<p>
+	虽然与使用多组setTimeout()的循环方式相比，使用setInterval()的动画循环效率更高，但后者也不是没有问题。无论是setInterval()还是setTimeout()都不十分精确。为它们传入的第二个参数，实际上只是指定了把动画代码添加到浏览器UI 线程队列中以等待执行的时间。如果队列前面已经加入了其他任务，那动画代码就要等前面的任务完成后再执行。简言之，以毫秒表示的延迟时间并不代表到时候一定会执行动画代码，而仅代表到时候会把代码添加到任务队列中。如果UI 线程繁忙，比如忙于处理用户操作，那么即使把代码加入队列也不会立即执行。
+</p>
+<h2>
+	25.1.2 循环间隔的问题
+</h2>
+<p>
+	知道什么时候绘制下一帧是保证动画平滑的关键。然而，直至最近，开发人员都没有办法确保浏览器按时绘制下一帧。随着&lt;canvas&gt;元素越来越流行，新的基于浏览器的游戏也开始崭露头脚，面对不十分精确的setInterval()和setTimeout()，开发人员一筹莫展。
+</p>
+<p>
+	浏览器使用的计时器的精度进一步恶化了问题。具体地说，浏览器使用的计时器并非精确到毫秒级别。以下是几个浏览器的计时器精度。
+</p>
+<ul>
+	<li>
+		IE8 及更早版本的计时器精度为15.625ms。
+	</li>
+	<li>
+		IE9 及更晚版本的计时器精度为4ms。
+	</li>
+	<li>
+		Firefox 和Safari 的计时器精度大约为10ms。
+	</li>
+	<li>
+		Chrome 的计时器精度为4ms。
+	</li>
+</ul>
+<p>
+	IE9 之前版本的计时器精度为15.625ms，因此介于0 和15 之间的任何值只能是0 和15。IE9 把计时器精度提高到了4ms，但这个精度对于动画来说仍然不够明确。Chrome 的计时器精度为4ms，而Firefox和Safari 的精度是10ms。更为复杂的是，浏览器都开始限制后台标签页或不活动标签页的计时器。因此，即使你优化了循环间隔，结果仍然只能接近你想要的效果。
+</p>
+<h2>
+	25.1.3 mozRequestAnimationFrame
+</h2>
+<p>
+	Mozilla 的Robert O’Callahan 认识到了这个问题，提出了一个非常独特的方案。他指出，CSS 变换和动画的优势在于浏览器知道动画什么时候开始，因此会计算出正确的循环间隔，在恰当的时候刷新UI。而对于JavaScript 动画，浏览器无从知晓什么时候开始。因此他的方案就是创造一个新方法mozRequestAnimationFrame()，通过它告诉浏览器某些JavaScript 代码将要执行动画。这样浏览器可以在运行某些代码后进行适当的优化。
+</p>
+<p>
+	mozRequestAnimationFrame()方法接收一个参数，即在重绘屏幕前调用的一个函数。这个函数负责改变下一次重绘时的DOM样式。为了创建动画循环，可以像以前使用setTimeout()一样，把多个对mozRequestAnimationFrame()的调用连缀起来。比如：
+</p>
+<pre>function updateProgress() {
+	var div = document.getElementById("status");
+	div.style.width = (parseInt(div.style.width, 10) + 5) + "%";
+	if (div.style.left != "100%") {
+		mozRequestAnimationFrame(updateProgress);
+	}
+}
+mozRequestAnimationFrame(updateProgress);</pre>
+<p>
+	因为mozRequestAnimationFrame()只运行一次传入的函数，因此在需要再次修改UI 从而生成动画时，需要再次手工调用它。同样，也需要同时考虑什么时候停止动画。这样就能得到非常平滑流畅的动画。
+</p>
+<p>
+	目前来看，mozRequestAnimationFrame()解决了浏览器不知道JavaScript 动画什么时候开始、不知道最佳循环间隔时间的问题，但不知道代码到底什么时候执行的问题呢？同样的方案也可以解决这个问题。
+</p>
+<p>
+	我们传递的mozRequestAnimationFrame()函数也会接收一个参数，它是一个时间码（从1970年1 月1 日起至今的毫秒数）， 表示下一次重绘的实际发生时间。注意， 这一点很重要：mozRequestAnimationFrame()会根据这个时间码设定将来的某个时刻进行重绘，而根据这个时间码，你也能知道那个时刻是什么时间。然后，再优化动画效果就有了依据。要知道距离上一次重绘已经过去了多长时间，可以查询mozAnimationStartTime，其中包含上一次重绘的时间码。用传入回调函数的时间码减去这个时间码，就能计算出在屏幕上重绘下一组变化之前要经过多长时间。使用这个值的典型方式如下：
+</p>
+<pre>function draw(timestamp) {
+	//计算两次重绘的时间间隔
+	var diff = timestamp - startTime;
+	//使用diff 确定下一步的绘制时间
+	//把startTime 重写为这一次的绘制时间
+	startTime = timestamp;
+	//重绘UI
+	mozRequestAnimationFrame(draw);
+}
+var startTime = mozAnimationStartTime;
+mozRequestAnimationFrame(draw);</pre>
+这里的关键是第一次读取mozAnimationStartTime 的值，必须在传递给mozRequestAnimationFrame()的回调函数外面进行。如果是在回调函数内部读取mozAnimationStartTime，得到的值与传入的时间码是相等的。<br />
+<h2>
+	25.1.4 webkitRequestAnimationFrame与msRequestAnimationFrame
+</h2>
+基于mozRequestAnimationFrame()，Chrome 和IE10+也都给出了自己的实现，分别叫webkit-RequestAnimationFrame()和msRequestAnimationFrame()。这两个版本与Mozilla 的版本有两个方面的微小差异。首先，不会给回调函数传递时间码，因此你无法知道下一次重绘将发生在什么时间。<br />
+<p>
+	其次，Chrome 又增加了第二个可选的参数，即将要发生变化的DOM元素。知道了重绘将发生在页面中哪个特定元素的区域内，就可以将重绘限定在该区域中。
+</p>
+<p>
+	既然没有下一次重绘的时间码，那Chrome 和IE 没有提供mozAnimationStartTime 的实现也就很容易理解了——没有那个时间码，实现这个属性也没有什么用。不过，Chrome 倒是又提供了另一个方法webkitCancelAnimationFrame()，用于取消之前计划执行的重绘操作。
+</p>
+<p>
+	假如你不需要知道精确的时间差，那么可以在Firefox 4+、IE10+和Chrome 中可以参考以下模式创建动画循环。
+</p>
+<pre>(function() {
+	function draw(timestamp) {
+		//计算两次重绘的时间间隔
+		var drawStart = (timestamp || Date.now()),
+		diff = drawStart - startTime;
+		//使用diff 确定下一步的绘制时间
+		//把startTime 重写为这一次的绘制时间
+		startTime = drawStart;
+		//重绘UI
+		requestAnimationFrame(draw);
+	}
+	var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame,
+	startTime = window.mozAnimationStartTime || Date.now();
+	requestAnimationFrame(draw);
+})();</pre>
+<p>
+	以上模式利用已有的功能创建了一个动画循环，大致计算出了两次重绘的时间间隔。在Firefox 中，计算时间间隔使用的是既有的时间码，而在Chrome 和IE 中，则使用不十分精确的Date 对象。这个模式可以大致体现出两次重绘的时间间隔，但不会告诉你在Chrome 和IE 中的时间间隔到底是多少。不过，大致知道时间间隔总比一点儿概念也没有好些。
+</p>
+因为首先检测的是标准函数名，其次才是特定于浏览器的版本，所以这个动画循环在将来也能够使用。<br />
+<blockquote>
+	目前，W3C 已经着手起草requestAnimationFrame() API，而且作为Web Performance Group 的一部分，Mozilla 和Google 正共同参与该标准草案的制定工作。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15426">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

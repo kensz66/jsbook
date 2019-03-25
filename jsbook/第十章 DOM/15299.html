@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>10.3 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">10.3 小结</h1>
+	<hr>
+		DOM是语言中立的API，用于访问和操作HTML 和XML 文档。DOM1 级将HTML 和XML 文档形象地看作一个层次化的节点树，可以使用JavaScript 来操作这个节点树，进而改变底层文档的外观和结构。<br />
+DOM 由各种节点构成，简要总结如下。<br />
+<ul>
+	<li>
+		最基本的节点类型是Node，用于抽象地表示文档中一个独立的部分；所有其他类型都继承自Node。
+	</li>
+	<li>
+		Document 类型表示整个文档，是一组分层节点的根节点。在JavaScript 中，document 对象是Document 的一个实例。使用document 对象，有很多种方式可以查询和取得节点。
+	</li>
+	<li>
+		Element 节点表示文档中的所有HTML 或XML 元素，可以用来操作这些元素的内容和特性。
+	</li>
+	<li>
+		另外还有一些节点类型，分别表示文本内容、注释、文档类型、CDATA 区域和文档片段。
+	</li>
+</ul>
+<p>
+	访问DOM 的操作在多数情况下都很直观，不过在处理&lt;script&gt;和&lt;style&gt;元素时还是存在一些复杂性。由于这两个元素分别包含脚本和样式信息，因此浏览器通常会将它们与其他元素区别对待。这些区别导致了在针对这些元素使用innerHTML 时，以及在创建新元素时的一些问题。
+</p>
+理解DOM的关键，就是理解DOM 对性能的影响。DOM操作往往是JavaScript 程序中开销最大的部分，而因访问NodeList 导致的问题为最多。NodeList 对象都是“动态的”，这就意味着每次访问NodeList 对象，都会运行一次查询。有鉴于此，最好的办法就是尽量减少DOM操作。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15299">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

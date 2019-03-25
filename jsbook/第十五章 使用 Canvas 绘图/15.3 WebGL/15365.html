@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.3 WebGL</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.3 WebGL</h1>
+	<hr>
+		WebGL 是针对Canvas 的3D 上下文。与其他Web 技术不同，WebGL 并不是W3C 制定的标准，而是由Khronos Group 制定的。其官方网站是这样介绍的：“Khronos Group 是一个非盈利的由会员资助的协会，专注于为并行计算以及各种平台和设备上的图形及动态媒体制定无版税的开放标准。” KhronosGroup 也设计了其他图形处理API，比如OpenGL ES 2.0。浏览器中使用的WebGL 就是基于OpenGL ES2.0 制定的。<br />
+OpenGL 等3D 图形语言是非常复杂的，本书不可能介绍其中每一个概念。熟悉OpenGL ES 2.0 的读者可能会觉得WebGL 更好理解一些，因为好多概念是相通的。<br />
+本节将适当地介绍OpenGL ES 2.0 的一些概念，尽力解释其中的某些部分在WebGL 中的实现。要全面了解OpenGL，请访问www.opengl.org。要全面学习WebGL，请参考www.learningwebgl.com，其中包含非常棒的系列教程①。<br /></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15365">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

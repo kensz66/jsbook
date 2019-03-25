@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.5.6 关系操作符</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.5.6 关系操作符</h1>
+	<hr>
+		小于（&lt;） 、大于（&gt;） 、小于等于（&lt;=）和大于等于（&gt;=）这几个关系操作符用于对两个值进行比较，比较的规则与我们在数学课上所学的一样。这几个操作符都返回一个布尔值，如下面的例子所示：<br />
+<pre>var result1 = 5 &gt; 3; //true
+var result2 = 5 &lt; 3; //false</pre>
+<a href="http://www.z-ai.net/study/api/s/8392" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+与 ECMAScript 中的其他操作符一样，当关系操作符的操作数使用了非数值时，也要进行数据转换或完成某些奇怪的操作。以下就是相应的规则。<br />
+<ul>
+	<li>
+		如果两个操作数都是数值，则执行数值比较。
+	</li>
+	<li>
+		如果两个操作数都是字符串，则比较两个字符串对应的字符编码值。
+	</li>
+	<li>
+		如果一个操作数是数值，则将另一个操作数转换为一个数值，然后执行数值比较。
+	</li>
+	<li>
+		如果一个操作数是对象，则调用这个对象的 valueOf()方法，用得到的结果按照前面的规则执行比较。如果对象没有 valueOf()方法，则调用 toString()方法，并用得到的结果根据前面的规则执行比较。
+	</li>
+	<li>
+		如果一个操作数是布尔值，则先将其转换为数值，然后再执行比较。
+	</li>
+</ul>
+在使用关系操作符比较两个字符串时，会执行一种奇怪的操作。很多人都会认为，在比较字符串值时，小于的意思是“在字母表中的位置靠前”，而大于则意味着“在字母表中的位置靠后”，但实际上完全不是那么回事。在比较字符串时，实际比较的是两个字符串中对应位置的每个字符的字符编码值。经过这么一番比较之后，再返回一个布尔值。由于大写字母的字符编码全部小于小写字母的字符编码，因此我们就会看到如下所示的奇怪现象：<br />
+<pre>var result = "Brick" &lt; "alphabet"; //true</pre>
+在这个例子中，字符串"Brick"被认为小于字符串"alphabet"。原因是字母 B 的字符编码为 66，而字母 a 的字符编码是 97。如果要真正按字母表顺序比较字符串，就必须把两个操作数转换为相同的大小写形式（全部大写或全部小写），然后再执行比较，如下所示：<br />
+<pre>var result = "Brick".toLowerCase() &lt; "alphabet".toLowerCase(); //false</pre>
+通过将两个操作数都转换为小写形式，就可以得出"alphabet"按字母表顺序排在"Brick"之前的正确判断了。<br />
+另一种奇怪的现象发生在比较两个数字字符串的情况下，比如下面这个例子：<br />
+<pre>var result = "23" &lt; "3"; //true</pre>
+确实，当比较字符串"23"是否小于"3"时，结果居然是 true。这是因为两个操作数都是字符串，而字符串比较的是字符编码（"2"的字符编码是 50，而"3"的字符编码是 51）。不过，如果像下面例子中一样，将一个操作数改为数值，比较的结果就正常了：<br />
+<pre>var result = "23" &lt; 3; //false</pre>
+此时，字符串"23"会被转换成数值 23，然后再与 3 进行比较，因此就会得到合理的结果。在比较数值和字符串时，字符串都会被转换成数值，然后再以数值方式与另一个数值比较。当然，这个规则对前面的例子是适用的。可是，如果那个字符串不能被转换成一个合理的数值呢？比如：<br />
+<pre>var result = "a" &lt; 3; // false，因为"a"被转换成了 NaN</pre>
+由于字母"a"不能转换成合理的数值，因此就被转换成了 NaN。根据规则，任何操作数与 NaN 进行关系比较，结果都是 false。于是，就出现了下面这个有意思的现象：<br />
+<pre>var result1 = NaN &lt; 3; //false
+var result2 = NaN &gt;= 3; //false</pre>
+按照常理，如果一个值不小于另一个值，则一定是大于或等于那个值。然而，在与 NaN 进行比较时，这两个比较操作的结果都返回了 false。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15245">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

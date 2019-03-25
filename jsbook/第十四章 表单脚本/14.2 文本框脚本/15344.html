@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>14.2.2 过滤输入</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">14.2.2 过滤输入</h1>
+	<hr>
+		我们经常会要求用户在文本框中输入特定的数据，或者输入特定格式的数据。例如，必须包含某些字符，或者必须匹配某种模式。由于文本框在默认情况下没有提供多少验证数据的手段，因此必须使用JavaScript 来完成此类过滤输入的操作。而综合运用事件和DOM 手段，就可以将普通的文本框转换成能够理解用户输入数据的功能型控件。<br />
+<h2>
+	1. 屏蔽字符
+</h2>
+有时候，我们需要用户输入的文本中包含或不包含某些字符。例如，电话号码中不能包含非数值字符。如前所述，响应向文本框中插入字符操作的是keypress 事件。因此，可以通过阻止这个事件的默认行为来屏蔽此类字符。在极端的情况下，可以通过下列代码屏蔽所有按键操作。<br />
+<pre>EventUtil.addHandler(textbox, "keypress",
+function(event) {
+	event = EventUtil.getEvent(event);
+	EventUtil.preventDefault(event);
+});</pre>
+运行以上代码后，由于所有按键操作都将被屏蔽，结果会导致文本框变成只读的。如果只想屏蔽特定的字符，则需要检测keypress 事件对应的字符编码，然后再决定如何响应。例如，下列代码只允许用户输入数值。<br />
+<pre>EventUtil.addHandler(textbox, "keypress",
+function(event) {
+	event = EventUtil.getEvent(event);
+	var target = EventUtil.getTarget(event);
+	var charCode = EventUtil.getCharCode(event);
+	if (!/\d/.test(String.fromCharCode(charCode))) {
+		EventUtil.preventDefault(event);
+	}
+});</pre>
+在这个例子中，我们使用EventUtil.getCharCode()实现了跨浏览器取得字符编码。然后，使用String.fromCharCode()将字符编码转换成字符串，再使用正则表达式 /\d/ 来测试该字符串，从而确定用户输入的是不是数值。如果测试失败，那么就使用EventUtil.preventDefault()屏蔽按键事件。结果，文本框就会忽略所有输入的非数值。<br />
+虽然理论上只应该在用户按下字符键时才触发keypress 事件，但有些浏览器也会对其他键触发此事件。Firefox 和Safari（3.1 版本以前）会对向上键、向下键、退格键和删除键触发keypress 事件；<br />
+Safari 3.1 及更新版本则不会对这些键触发keypress 事件。这意味着，仅考虑到屏蔽不是数值的字符还不够，还要避免屏蔽这些极为常用和必要的键。所幸的是，要检测这些键并不困难。在Firefox 中，所有由非字符键触发的keypress 事件对应的字符编码为0，而在Safari 3 以前的版本中，对应的字符编码全部为8。为了让代码更通用，只要不屏蔽那些字符编码小于10 的键即可。故而，可以将上面的函数重写成如下所示。<br />
+<pre>EventUtil.addHandler(textbox, "keypress",
+function(event) {
+	event = EventUtil.getEvent(event);
+	var target = EventUtil.getTarget(event);
+	var charCode = EventUtil.getCharCode(event);
+	if (!/\d/.test(String.fromCharCode(charCode)) &amp;&amp; charCode &gt; 9) {
+		EventUtil.preventDefault(event);
+	}
+});</pre>
+这样，我们的事件处理程序就可以适用所有浏览器了，即可以屏蔽非数值字符，但不屏蔽那些也会触发keypress 事件的基本按键。<br />
+除此之外，还有一个问题需要处理：复制、粘贴及其他操作还要用到Ctrl 键。在除IE 之外的所有浏览器中，前面的代码也会屏蔽Ctrl+C、Ctrl+V，以及其他使用Ctrl 的组合键。因此，最后还要添加一个检测条件，以确保用户没有按下Ctrl 键，如下面的例子所示。<br />
+<pre>EventUtil.addHandler(textbox, "keypress",
+function(event) {
+	event = EventUtil.getEvent(event);
+	var target = EventUtil.getTarget(event);
+	var charCode = EventUtil.getCharCode(event);
+	if (!/\d/.test(String.fromCharCode(charCode)) &amp;&amp; charCode &gt; 9 &amp;&amp; !event.ctrlKey) {
+		EventUtil.preventDefault(event);
+	}
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8731" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+经过最后一点修改，就可以确保文本框的行为完全正常了。在这个例子的基础上加以修改和调整，就可以将同样的技术运用于放过和屏蔽任何输入文本框的字符。<br />
+<h2>
+	2. 操作剪贴板
+</h2>
+IE 是第一个支持与剪贴板相关事件，以及通过JavaScript 访问剪贴板数据的浏览器。IE 的实现成为了事实上的标准，不仅Safari 2、Chrome 和Firefox 3 也都支持类似的事件和剪贴板访问（Opera 不支持<br />
+通过JavaScript 访问剪贴板），HTML 5 后来也把剪贴板事件纳入了规范。下列就是6 个剪贴板事件。<br />
+<ul>
+	<li>
+		beforecopy：在发生复制操作前触发。
+	</li>
+	<li>
+		copy：在发生复制操作时触发。
+	</li>
+	<li>
+		beforecut：在发生剪切操作前触发。
+	</li>
+	<li>
+		cut：在发生剪切操作时触发。
+	</li>
+	<li>
+		beforepaste：在发生粘贴操作前触发。
+	</li>
+	<li>
+		paste：在发生粘贴操作时触发。
+	</li>
+</ul>
+由于没有针对剪贴板操作的标准，这些事件及相关对象会因浏览器而异。在Safari、Chrome 和Firefox中，beforecopy、beforecut 和beforepaste 事件只会在显示针对文本框的上下文菜单（预期将发生剪贴板事件）的情况下触发。但是，IE 则会在触发copy、cut 和paste 事件之前先行触发这些事件。<br />
+至于copy、cut 和paste 事件，只要是在上下文菜单中选择了相应选项，或者使用了相应的键盘组合键，所有浏览器都会触发它们。<br />
+在实际的事件发生之前，通过beforecopy、beforecut 和beforepaste 事件可以在向剪贴板发送数据，或者从剪贴板取得数据之前修改数据。不过，取消这些事件并不会取消对剪贴板的操作——只有取消copy、cut 和paste 事件，才能阻止相应操作发生。<br />
+要访问剪贴板中的数据，可以使用clipboardData 对象：在IE 中，这个对象是window 对象的属性；而在Firefox 4+、Safari 和Chrome 中，这个对象是相应event 对象的属性。但是，在Firefox、Safari 和Chorme 中，只有在处理剪贴板事件期间clipboardData 对象才有效，这是为了防止对剪贴板的未授权访问；在IE 中，则可以随时访问clipboardData 对象。为了确保跨浏览器兼容性，最好只在发生剪贴板事件期间使用这个对象。<br />
+这个clipboardData 对象有三个方法：getData()、setData()和clearData()。其中，getData()用于从剪贴板中取得数据，它接受一个参数，即要取得的数据的格式。在IE 中，有两种数据格式："text"和"URL"。在Firefox、Safari 和Chrome 中，这个参数是一种MIME 类型；不过，可以用"text"代表"text/plain"。<br />
+类似地，setData()方法的第一个参数也是数据类型，第二个参数是要放在剪贴板中的文本。对于第一个参数，IE 照样支持"text"和"URL"，而Safari 和Chrome 仍然只支持MIME 类型。但是，与getData()方法不同的是，Safari 和Chrome 的setData()方法不能识别"text"类型。这两个浏览器在成功将文本放到剪贴板中后，都会返回true；否则，返回false。为了弥合这些差异，我们可以向EventUtil 中再添加下列方法。<br />
+<pre>var EventUtil = {
+	//省略的代码
+	getClipboardText: function(event) {
+		var clipboardData = (event.clipboardData || window.clipboardData);
+		return clipboardData.getData("text");
+	},
+	//省略的代码
+	setClipboardText: function(event, value) {
+		if (event.clipboardData) {
+			return event.clipboardData.setData("text/plain", value);
+		} else if (window.clipboardData) {
+			return window.clipboardData.setData("text", value);
+		}
+	},
+	//省略的代码
+};</pre>
+这里的getClipboardText()方法相对简单；它只要确定clipboardData 对象的位置，然后再以"text"类型调用getData()方法即可。相应地，setClipboardText()方法则要稍微复杂一些。在取得clipboardData 对象之后，需要根据不同的浏览器实现为setData()传入不同的类型（对于Safari和Chrome，是"text/plain"；对于IE，是"text"）。<br />
+在需要确保粘贴到文本框中的文本中包含某些字符，或者符合某种格式要求时，能够访问剪贴板是非常有用的。例如，如果一个文本框只接受数值，那么就必须检测粘贴过来的值，以确保有效。在paste事件中，可以确定剪贴板中的值是否有效，如果无效，就可以像下面示例中那样，取消默认的行为。<br />
+<pre>EventUtil.addHandler(textbox, "paste",
+function(event) {
+	event = EventUtil.getEvent(event);
+	var text = EventUtil.getClipboardText(event);
+	if (!/^\d*$/.test(text)) {
+		EventUtil.preventDefault(event);
+	}
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8732" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这里，onpaste 事件处理程序可以确保只有数值才会被粘贴到文本框中。如果剪贴板的值与正则表达式不匹配，则会取消粘贴操作。Firefox、Safari 和Chrome 只允许在onpaste 事件处理程序中访问getData()方法。<br />
+由于并非所有浏览器都支持访问剪贴板，所以更简单的做法是屏蔽一或多个剪贴板操作。在支持copy、cut 和paste 事件的浏览器中（IE、Safari、Chrome 和Firefox 3 及更高版本），很容易阻止这些事件的默认行为。在Opera 中，则需要阻止那些会触发这些事件的按键操作，同时还要阻止在文本框中显示上下文菜单。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15344">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

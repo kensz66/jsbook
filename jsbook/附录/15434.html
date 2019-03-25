@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>ECMAScript Harmony</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">ECMAScript Harmony</h1>
+	<hr>
+		<p>
+	2004 年Web 开发重新焕发生机的大背景下，浏览器开发商和其他相关组织之间进行了一系列会谈，讨论应该如何改进JavaScript。ECMA-262 第四版的制定工作就建立在两大相互竞争的提案基础上：一个是Netscape 的JavaScript 2.0，另一个是Microsoft 的JScript.NET。各方抛开在浏览器领域的竞争，聚集在ECMA 麾下，提出了希望能以JavaScript 为蓝本设计出一门新语言的建议方案。最初的工作草案叫做ECMAScript 4，而且很长时间以来，它好像就是JavaScript 的下一个版本。后来，一个叫ECMAScript 3.1 反提案的加入，令JavaScript 的未来再次充满了疑问。在反复争论之后，ECMAScript3.1 成为了JavaScript 的下一个版本，而且未来的工作成果——代号Harmony（和谐），将力争让ECMAScript 4 向ECMAScript 3.1 靠拢。
+</p>
+ECMAScript 3.1 最终改名为ECMAScript 5，很快就完成了标准化。ECMAScript 5 的详细内容本书已经介绍过了。ECMAScript 5 的标准化工作一完成，Harmony 立即被提上日程。Harmony 与ECMAScript5 的指导思想比较一致，就是只进行增量调整，不彻底改造语言。虽然到2011 年的时候，Harmony，也就是未来的ECMAScript 6，还没有全部制定完成，但其中的几个部分已经尘埃落定。本附录所要介绍的就是那些将来肯定能进入最终规范的部分。不过也提醒一下大家，在将来的实现中，这些内容的细节有可能与你在这里看到的不一样。<br />
+<h2>
+	A.1 一般性变化
+</h2>
+Harmony 为ECMAScript 引入了一些基本的变化。对这门语言来说，这些虽然不算是大的变化，但的确也弥补了它功能上的一些缺憾。<br />
+<h3>
+	A.1.1 常量
+</h3>
+没有正式的常量是JavaScript 的一个明显缺陷。为了弥补这个缺陷，标准制定者为Harmony 增加了用const 关键字声明常量的语法。使用方式与var 类似，但const 声明的变量在初始赋值后，就不能再重新赋值了。来看一个例子。<br />
+<pre>const MAX_SIZE = 25;</pre>
+可以像声明变量一样在任何地方声明常量。但在同一作用域中，常量名不能与其他变量或函数名重名，因此下列声明会导致错误：<br />
+<pre>const FLAG = true;
+var FLAG = false; //错误！</pre>
+除了值不能修改之外，可以像使用任何变量一样使用常量。修改常量的值，不会有任何效果，如下所示：<br />
+<pre>const FLAG = true;
+FLAG = false;
+alert(FLAG); //true</pre>
+支持常量的浏览器有Firefox、Safari 3+、Opera 9+和Chrome。在Safari 和Opera 中，const 与var的作用一样，因为前者定义的常量的值是可以修改的。<br />
+<h3>
+	A.1.2 块级作用域及其他作用域
+</h3>
+本书时不时就会提醒读者一句：JavaScript 没有块级作用域。换句话说，在语句块中定义的变量与在包含函数中定义的变量共享相同的作用域。Harmony 新增了定义块级作用域的语法：使用let 关键字。<br />
+与const 和var 类似，可以使用let 在任何地方定义变量并为变量赋值。区别在于，使用let 定义的变量在定义它的代码块之外没有定义。比如说吧，下面是一个非常常见的代码块：<br />
+<pre>for (var i=0; i &lt; 10; i++) {
+    //执行某些操作
+}
+alert(i); //10</pre>
+在上面的代码块中，变量i 是作为代码块所在函数的局部变量来声明的。也就是说，在for 循环执行完毕后，仍然能够读取i 的值。如果在这里使用let 代替var，则循环之后，变量i 将不复存在。<br />
+看下面的例子。<br />
+<pre>for (let i=0; i &lt; 10; i++) {
+    //执行某些操作
+}
+alert(i); //错误！变量i 没有定义</pre>
+以上代码执行到最后一行的时候，就会出现错误，因为for 循环一结束，变量i 就已经没有定义了。因为不能对没有定义的变量执行操作，所以发生错误是自然的。<br />
+还有另外一种使用let 的方式，即创建let 语句，在其中定义只能在后续代码块中使用的变量，像下面的例子这样：<br />
+<pre>var num = 5;
+let (num=10, multiplier=2){
+   alert(num * multiplier); //20
+}
+alert(num); //5</pre>
+<p>
+	以上代码通过let 语句定义了一个区域，这个区域中的变量num 等于10，multiplier 等于2。
+</p>
+<p>
+	此时的num 覆盖了前面用var 声明的同名变量，因此在let 语句块中，num 乘以multiplier 等于20。而出了let 语句块之后，num 变量的值仍然是5。这是因为let 语句创建了自己的作用域，这个作用域里的变量与外面的变量无关。
+</p>
+使用同样的语法还可以创建let 表达式，其中的变量只在表达式中有定义。再看一个例子。<br />
+<pre>var result = let(num=10, multiplier=2) num * multiplier;
+alert(result); //20</pre>
+这里的let 表达式使用两个变量计算后得到一个值，保存在变量result 中。执行表达式之后，num和multiplier 变量就不存在了。<br />
+在JavaScript 中使用块级作用域，可以更精细地控制代码执行过程中变量的存废。<br />
+<h2>
+	A.2 函数
+</h2>
+大多数代码都是以函数方式编写的，因此Harmony 从几个方面改进了函数，使其更便于使用。与Harmony 中其他部分类似，对函数的改进也集中在开发人员和实现人员共同面临的难题上。<br />
+<h3>
+	A.2.1 剩余参数与分布参数
+</h3>
+Harmony 中不再有arguments 对象，因此也就无法通过它来读取到未声明的参数。不过，使用剩余参数（rest arguments）语法，也能表示你期待给函数传入可变数量的参数。剩余参数的语法形式是三个点后跟一个标识符。使用这种语法可以定义可能会传进来的更多参数，然后把它们收集到一个数组中。来看一个例子。<br />
+<pre>function sum(num1, num2, ...nums) {
+	var result = num1 + num2;
+	for (let i = 0, len = nums.length; i &lt; len; i++) {
+		result += nums[i];
+	}
+	return result;
+}
+var result = sum(1, 2, 3, 4, 5, 6);</pre>
+<p>
+	以上代码定义了一个sum()函数，接收至少两个参数。这个函数还能接收更多参数，而其余参数都将保存在nums 数组中。与原来的arguments 对象不同，剩余参数都保存在Array 的一个实例中，因此可以使用任何数组方法来操作它们。另外，即使并没有多余的参数传入函数，剩余参数对象也是Array的实例。
+</p>
+<p>
+	与剩余参数紧密相关的另一种参数语法是分布参数（spread arguments）。通过分布参数，可以向函数中传入一个数组，然后数组中的元素会映射到函数的每个参数上。分布参数的语法形式与剩余参数的语法相同，就是在值的前面加三个点。唯一的区别是分布参数在调用函数的时候使用，而剩余参数在定义函数的时候使用。比如，我们可以不给sum()函数一个一个地传入参数，而是传入分布参数：
+</p>
+<pre>var result = sum(...[1, 2, 3, 4, 5, 6]);</pre>
+在这里，我们将一个数组作为分布参数传给了sum()函数。以上代码在功能上与下面这行代码等价：<br />
+<pre>var result = sum.apply(this, [1, 2, 3, 4, 5, 6]);</pre>
+<h3>
+	A.2.2 默认参数值
+</h3>
+ECMAScript 函数中的所有参数都是可选的，因为实现不会检查传入的参数数量。不过，除了手工检查传入了哪个参数之外，你还可以为参数指定默认值。如果调用函数时没有传入该参数，那么该参数就会使用默认值。<br />
+要为参数指定默认值，可以在参数名后面直接加上等于号和默认值，就像下面这样：<br />
+<pre>function sum(num1, num2=0){
+return num1 + num2;
+}
+var result1 = sum(5);
+var result2 = sum(5, 5);</pre>
+这个sum()函数接收两个参数，但第二个参数是可选的，因为它的默认值为0。使用可选参数的好处是开发人员不用再去检查是否给某个参数传入了值，如果没有的话就使用某个特定的值。默认参数值帮你解除了这个困扰。<br />
+<h3>
+	A.2.3 生成器
+</h3>
+所谓生成器，其实就是一个对象，它每次能生成一系列值中的一个。对Harmony 而言，要创建生成器，可以让函数通过yield 操作符返回某个特殊的值。对于使用yield 操作符返回值的函数，调用它时就会创建并返回一个新的Generator 实例。然后，在这个实例上调用next()方法就能取得生成器的第一个值。此时，执行的是原来的函数，但执行流到yield 语句就会停止，只返回特定的值。从这个角度看，yield 与return 很相似。如果再次调用next()方法，原来函数中位于yield 语句后的代码会继续执行，直到再次遇见yield 语句时停止执行，此时再返回一个新值。来看下面的例子。<br />
+<pre>function myNumbers() {
+	for (var i = 0; i &lt; 10; i++) {
+		yield i * 2;
+	}
+}
+var generator = myNumbers();
+try {
+	while (true) {
+		document.write(generator.next() + "&lt;br /&gt;");
+	}
+} catch(ex) {
+	//有意没有写代码
+} finally {
+	generator.close();
+}</pre>
+<p>
+	调用myNumbers()函数后，会得到一个生成器。myNumbers()函数本身非常简单，包含一个每次循环都产生一个值的for 循环。每次调用next()方法都会执行一次for 循环，然后返回下一个值。第一个值是0，第二个值是2，第三个值是4，依此类推。在myNumbers()函数完成退出而没有执行yield语句时（最后一次循环判断i 不小于10 的时候），生成器会抛出StopIteration 错误。因此，为了输出生成器能产生的所有数值，这里用一个try-catch 结构包装了一个while 循环，以避免出错时中断代码执行。
+</p>
+<p>
+	如果不再需要某个生成器，最好是调用它的close()方法。这样会执行原始函数的其他部分，包括try-catch 相关的finally 语句块。在需要一系列值，而每一个值又与前一个值存在某种关系的情况下，可以使用生成器。
+</p>
+<h2>
+	A.3 数组及其他结构
+</h2>
+Harmony 的另一个重点是数组。数组是JavaScript 使用最频繁的一种数据结构，因此定义一些更直观更方便地使用数组的方式，绝对是改进这门语言时最优先考虑的事。<br />
+<h3>
+	A.3.1 迭代器
+</h3>
+<p>
+	迭代器也是一个对象，它能迭代一系列值并每次返回其中一个值。想象一下使用for 或for-in 循环，这时候就是在迭代一批值，而且每次操作其中的一个值。迭代器的作用相同，只不过用不着使用循环了。Harmony 为各种类型的对象都定义了迭代器。
+</p>
+要为对象创建迭代器，可以调用Iterator 构造函数，传入想要迭代其值的对象。要取得对象中的下一个值，可以调用迭代器的next()方法。默认情况下，这个方法会返回一个数组。如果迭代的是数组，那么返回数组的第一个元素是值的索引，如果迭代的是对象，那么返回数组的第一个元素是值的属性名；返回数组的第二个元素是值本身。如果所有值都已经迭代了一遍，则再调用next()会抛出StopIteration 错误。看下面这个例子。<br />
+<pre class="runsl">&lt;script type="text/javascript"&gt;
+	var person = {
+		name: "Nicholas",
+		age: 29
+	};
+	var iterator = new Iterator(person);
+	try {
+		while (true) {
+			let value = iterator.next();
+			document.write(value.join(":") + "&lt;br&gt;");
+		}
+	} catch(ex) {
+		//有意没有写代码
+	}
+&lt;/script&gt;</pre>
+以上代码为person 对象创建了一个迭代器。第一次调用next()方法，返回数组["name","Nicholas"]，第二次调用返回数组["age", 29]。以上代码的输入结果为：<br />
+<pre>name:Nicholas
+age:29</pre>
+如果为非数组对象创建迭代器，则迭代器会按照与使用for-in 循环一样的顺序，返回对象的每个属性。这就意味着迭代器也只能返回对象的实例属性，而且返回属性的顺序也会因实现而异。为数组创建的迭代器也类似，即按数组元素顺序依次返回值，下面是一个例子。<br />
+<pre class="runsl">&lt;script type="text/javascript"&gt;
+	var colors = ["red", "green", "blue"];
+	var iterator = new Iterator(colors);
+	try {
+		while (true) {
+			let value = iterator.next();
+			document.write(value.join(":") + "&lt;br&gt;");
+		}
+	} catch(ex) {}
+&lt;/script&gt;</pre>
+以上代码的输出结果如下：<br />
+0:red<br />
+1:green<br />
+2:blue<br />
+如果你只想让next()方法返回对象的属性名或者数组的索引值，可以在创建迭代器时为Iterator构造函数传入第二个参数true，如下所示：<br />
+<pre>var iterator = new Iterator(colors, true);</pre>
+在这样创建的迭代器上每次调用next()方法，只会返回数组中每个值的索引，而不会返回包含索引和值数组。<br />
+如果想为自定义类型创建迭代器，需要定义一个特殊的方法__iterator__()，这个方法应该返回一个包含next()方法的对象。当把自定义类型传给Iterator 构造函数时，就会调用那个特殊的方法。<br />
+<h3>
+	A.3.2 数组领悟
+</h3>
+所谓数组领悟（array comprehensions），指的是用一组符合某个条件的值来初始化数组。Harmony定义的这项功能借鉴了Python 中流行的一个语言结构。JavaScript 中数组领悟的基本形式如下：<br />
+<pre>array = [ value for each (variable in values) condition ];</pre>
+其中，value 是实际会包含在数组中的值，它源自values 数组。for each 结构会循环values中的每一个值，并将每个值保存在变量variable 中。如果保存在variable 中的值符合condition条件，就会将这个值添加到结果数组中。下面是一个例子。<br />
+<pre>//原始数组
+var numbers = [0,1,2,3,4,5,6,7,8,9,10];
+//把所有元素复制到新数组
+var duplicate = [i for each (i in numbers)];
+//只把偶数复制到新数组
+var evens = [i for each (i in numbers) if (i % 2 == 0)];
+//把每个数乘以2 后的结果放到新数组中
+var doubled = [i*2 for each (i in numbers)];
+//把每个奇数乘以3 后的结果放到新数组中
+var tripledOdds = [i*3 for each (i in numbers) if (i % 2 &gt; 0)];</pre>
+<p>
+	在以上代码的数组领悟部分，我们使用变量i 迭代了numbers 中的所有值，而其中一些语句给出了条件，以筛选最终包含在数组中的结果。本质上讲，只要条件求值为true，该值就会添加到数组中。与自己编写同样功能的for 循环相比，数组领悟的语法稍有不同，但却更加简洁。Firefox 2+是唯一支持数组领悟的浏览器，而且要使用这个功能，必须将&lt;script&gt;的type 属性值指定为"<code>application/javascript;version=1.7</code>"。
+</p>
+数组领悟语法的values 也可以是一个生成器或者一个迭代器。<br />
+<h3>
+	A.3.3 解构赋值
+</h3>
+从一组值中挑出一或多个值，然后把它们分别赋给独立的变量，这也是一个很常见的需求。就拿迭代器的next()方法返回的数组来说，假设这个数组包含着对象中一个属性的名称和值。为了把这个属性和值分别保存在各自的变量中，需要写两个语句，如下所示。<br />
+<pre>var nextValue = ["color", "red"];
+var name = nextValue[0];
+var value = nextValue[1];</pre>
+而使用解构赋值（destructuring assignments）语法，用一条语句即可解决问题：<br />
+<pre>var [name, value] = ["color", "red"];
+alert(name); //"color"
+alert(value); //"red"</pre>
+在传统的JavaScript 中，数组字面量是不能出现在等于号（赋值操作符）左边的。解构赋值的这种语法表示的是把等于号右边数组中包含的值，分别赋给等于号左边数组中的变量。结果就是变量name的值为"color"，变量value 的值为"red"。<br />
+如果你不想取得数组中所有的值，可以只在数组字面量中给出对应的变量，比如：<br />
+<pre>var [, value] = ["color", "red"];
+alert(value); //"red"</pre>
+这样就只会给变量value 赋值，值为"red"。<br />
+有了解构赋值，还可做点有创意的事儿，比如交换变量的值。在ECMAScript 3 中，要交换两个变量的值，一般是要这样写代码的：<br />
+<pre>var value1 = 5;
+var value2 = 10;
+var temp = value1;
+value1 = value2;
+value2 = temp;</pre>
+利用解构后的数组赋值，可以省掉那个临时变量temp，比如：<br />
+<pre>var value1 = 5;
+var value2 = 10;
+[value2, value1] = [value1, value2];</pre>
+解构赋值同样适用于对象，看下面这个例子：<br />
+<pre>var person = {
+    name: "Nicholas",
+    age: 29
+};
+var { name: personName, age: personAge } = person;
+alert(personName); //"Nicholas"
+alert(personAge); //29</pre>
+与使用数组字面量一样，看到等于号左边出现了对象字面量，那就是解构赋值表达式。这条语句实际上定义了两个变量，personName 和personAge，它们分别得到了person 对象中对应的值。与数组解构赋值一样，在对象解构赋值中也可以选择要取得的值，比如：<br />
+<pre>var { age: personAge } = person;
+alert(personAge); //29</pre>
+以上代码只取得了person 对象中age 属性的值，将它赋给了变量personAge。<br />
+<h2>
+	A.4 新对象类型
+</h2>
+Harmony 为JavaScript 定义了几个新的对象类型。这几个新类型提供了以前只有JavaScript 引擎才能使用的功能。<br />
+<h3>
+	A.4.1 代理对象
+</h3>
+Harmony 为JavaScript 引入了代理的概念。所谓代理（proxy），就是一个表示接口的对象，对它的操作不一定作用在代理对象本身。举个例子，设置代理对象的一个属性，实际上可能会在另一个对象上调用一个函数。代理是一种非常有用的抽象机制，能够通过API 只公开部分信息，同时还能对数据源进行全面控制。<br />
+要创建代理对象，可以使用Proxy.create()方法，传入一个handler（处理程序）对象和一个可选的prototype（原型）对象：<br />
+<pre>var proxy = Proxy.create(handler);
+//创建一个以myObject 为原型的代理对象
+var proxy = Proxy.create(handler, myObject);</pre>
+其中，handler 对象包含用于定义捕捉器（trap）的属性。捕捉器本身是函数，用于处理（捕捉）原生功能，以便该功能能够以另一种方式来处理。要确保代理对象能够按照预期工作，至少要实现以下7 种基本的捕捉器。<br />
+<ul>
+	<li>
+		getOwnPropertyDescriptor：当在代理对象上调用Object.getOwnPropertyDescriptor()时调用的函数。这个函数以接收到的属性名作为参数，返回属性描述符，或者在属性不存在时返回null。
+	</li>
+	<li>
+		getPropertyDescriptor：当在代理对象上调用Object.getPropertyDescriptor()时调用的函数。（这是Harmony 中的新方法。）这个函数以接收到的属性名作为参数，返回属性描述符，或者在属性不存在时返回null。
+	</li>
+	<li>
+		getOwnPropertyNames：当在代理对象上调用Object.getOwnPropertyNames ()时调用的函数。这个函数以接收到的属性名作为参数，应该返回一个字符串数组。
+	</li>
+	<li>
+		getPropertyNames：当在代理对象上调用Object.getPropertyNames ()时调用的函数。（这是Harmony 中的新方法。）这个函数以接收到的属性名作为参数，应该返回一个字符串数组。
+	</li>
+	<li>
+		defineProperty：当在代理对象上调用Object.defineProperty()时调用的函数。这个函数以接收到的属性名和属性描述符作为参数。
+	</li>
+	<li>
+		delete：定义在对象属性上使用delete 操作符时调用的函数。属性名以参数形式传进来，如果删除成功则返回true，删除失败返回false。
+	</li>
+	<li>
+		fix：当调用Object.freeze()、Object.seal()或Object.preventExtensions()时调用的函数。当在代理对象上调用这几个方法时，返回undefined 以抛出错误。
+	</li>
+</ul>
+除了这7 个基本的捕捉器，还有6 个派生的捕捉器（derived trap）。与基本捕捉器不同，少定义一个或几个派生捕捉器不会导致错误。每个派生的捕捉器都会覆盖一种默认的JavaScript 行为。<br />
+<ul>
+	<li>
+		has 在对象上使用in 操作符（例如"name" in object）时调用的函数。以接收到的属性名作为参数，返回true 表示对象包含该属性，否则返回false。
+	</li>
+	<li>
+		hasOwn：在代理对象上调用hasOwnProperty()方法时调用的函数。以接收到的属性名作为参数，返回true 表示对象包含该属性，否则返回false。
+	</li>
+	<li>
+		get：在读取属性时调用的函数。这个函数接收两个参数，即包含被读属性的对象的引用及属性名。这个对象引用可能是代理对象本身，也可能是继承了代理对象的对象。
+	</li>
+	<li>
+		set：在写入属性时调用的函数。这个函数接收三个参数，即包含被写属性的对象的引用、属性名和属性值。与get 类似，这个对象引用可能是代理对象本身，也可能是继承了代理对象的对象。
+	</li>
+	<li>
+		enumerate：当代理对象被放在for-in 循环中时调用的函数。这个函数必须返回一个字符串数组，其中包含在for-in 循环中使用的相应属性名。
+	</li>
+	<li>
+		keys：当在代理对象上调用Object.keys()时调用的函数。与enumerate 类似，这个函数也必须返回一个字符串数组。
+	</li>
+</ul>
+在需要公开API，而同时又要避免使用者直接操作底层数据的时候，可以使用代理。例如，假设你想实现一个传统的栈数据类型。虽然数组可以作为栈来使用，但你想保证人们只使用push()、pop()和length。在这种情况下，就可以基于数组创建一个代理对象，只对外公开这三个对象成员。<br />
+<pre>/*
+*实验ES 6 代理对象。这个实验在数组的基础上创建一个栈数据结构。
+*代理在此用于从接口过滤"push"、"pop"和"length"之外的成员，让数组成为一个纯粹的栈，
+*任何人不能直接操作其内容。
+*/
+var Stack = (function() {
+	var stack = [],
+	allowed = ["push", "pop", "length"];
+	return Proxy.create({
+		get: function(receiver, name) {;
+			if (allowed.indexOf(name) &gt; -1) {
+				if (typeof stack[name] == "function") {
+					return stack[name].bind(stack);
+				} else {
+					return stack[name];
+				}
+			} else {
+				return undefined;
+			}
+		}
+	});
+});
+var mystack = new Stack();
+mystack.push("hi");
+mystack.push("goodbye");
+console.log(mystack.length); //1
+console.log(mystack[0]); //未定义
+console.log(mystack.pop()); //"goodbye"</pre>
+以上代码创建了一个构造函数Stack。但它没有使用this，而是返回了一个对数组操作进行包装的代理对象。这个代理对象只定义了一个get 捕捉器，该函数检测了一组允许的属性，然后才返回相应的值。如果引用的是不被允许的属性，那么捕捉器就返回undefined；如果引用的是push()、pop()和length，则一切正常。这里的关键是get 捕捉器，它根据允许的成员过滤了对象的成员。如果该成员是函数，就返回一个与底层数组对象绑定的函数，这样操作针对的就是数组而非代理对象。<br />
+<h3>
+	A.4.2 代理函数
+</h3>
+除了创建代理对象之外，Harmony 还支持创建代理函数（proxy function）。代理函数与代理对象的区别是它可以执行。要创建代理函数，可以调用Proxy.createFunction()方法，传入一个handler（处理程序）对象、一个调用捕捉器函数和一个可选的构造函数捕捉器函数。例如：<br />
+<pre>var proxy = Proxy.createFunction(handler, function(){}, function(){});</pre>
+<p>
+	与代理对象一样，handler 对象也有同样多的捕捉器。调用捕捉器函数是在代理函数执行（如proxy()）时运行的代码。构造函数捕捉器是在用new 操作符调用代理函数（如new proxy()）时运行的代码。如果没有指定构造函数捕捉器，则使用调用捕捉器作为构造函数。
+</p>
+<h2>
+	A.4.3 映射与集合
+</h2>
+<p>
+	Map 类型，也称为简单映射，只有一个目的：保存一组键值对儿。开发人员通常都使用普通对象来保存键值对儿，但问题是那样做会导致键容易与原生属性混淆。简单映射能做到键和值与对象属性分离，从而保证对象属性的安全存储。以下是使用简单映射的几个例子。
+</p>
+<pre>var map = new Map();
+map.set("name", "Nicholas");
+map.set("book", "Professional JavaScript");
+console.log(map.has("name")); //true
+console.log(map.get("name")); //"Nicholas"
+map.delete("name");</pre>
+简单映射的基本API 包括get()、set()和delete()，每个方法的作用看名字就知道了。键可以是原始值，也可是引用值。<br />
+与简单映射相关的是Set 类型。集合就是一组不重复的元素。与简单映射不同的是，集合中只有键，没有与键关联的值。在集合中，添加元素要使用add()方法，检查元素是否存在要使用has()方法，而删除元素要使用delete()方法。以下是基本的使用示例。<br />
+<pre>var set = new Set();
+set.add("name");
+console.log(set.has("name")); //true
+set.delete("name");
+console.log(set.has("name")); //false</pre>
+截止到2011 年10 月，规范中关于Map 和Set 的内容还没有最后定稿。因此，在JavaScript 引擎实现该规范时，有些细节可能会发生变化。<br />
+<h3>
+	A.4.4 WeakMap
+</h3>
+WeakMap 是ECMAScript 中唯一一个能让你知道什么时候对象已经完全解除引用的类型。WeakMap与简单映射很相似，也是用来保存键值对儿的。它们的主要区别在于，WeakMap 的键必须是对象，而在对象已经不存在时，相关的键值对儿就会从WeakMap 中被删除。例如：<br />
+<pre>var key = {},
+map = new WeakMap();
+map.set(key, "Hello!");
+//解除对键的引用，从而删除该值
+key = null;</pre>
+至于什么情况下适合使用WeakMap，目前还不清楚。不过，Java 中倒是有一个相同的数据结构叫WeakHashMap；于是，JavaScript 又多了一种数据类型。<br />
+<h3>
+	A.4.5 StructType
+</h3>
+JavaScript 一个最大的不足是使用一种数据类型表示所有数值。WebGL 为解决这个问题引入了类型化数组，而ECMAScript 6 则引入了类型化结构，为这门语言带来了更多的数值数据类型。结构类型（StructType）与C 语言中的结构类似；在C 语言中，可以把多个属性组合成一条记录。对于JavaScript的结构类型，通过指定属性及其保存的数据类型，也可以创建类似的数据结构。早期的实现定义了以下几种块类型。<br />
+<ul>
+	<li>
+		uint8：无符号8 位整数。
+	</li>
+	<li>
+		int8：有符号8 位整数。
+	</li>
+	<li>
+		uint16：无符号16 位整数。
+	</li>
+	<li>
+		int16：有符号16 位整数。
+	</li>
+	<li>
+		uint32：无符号32 位整数。
+	</li>
+	<li>
+		int32：有符号32 位整数。
+	</li>
+	<li>
+		float32：32 位浮点数。
+	</li>
+	<li>
+		float64：64 位浮点数。
+	</li>
+</ul>
+这些块类型都只能包含一个值。将来还有望在这8 种类型基础上进一步扩展。要创建结构类型的对象，可以使用new 操作符调用StructType，传入对象字面量形式的属性定义。<br />
+<pre>var Size = new StructType({ width: uint32, height: uint32 });</pre>
+以上代码创建了一个名为Size 的新结构类型，该类型带有两个属性：width 和height。这两个属性都应该保存无符号32 位整数。而变量Size 实际上是一个构造函数，可以像使用对象的构造函数一样使用它。要实例化这个结构类型，需要向构造函数中传入一个带属性值的对象字面量。<br />
+<pre>var boxSize = new Size({ width: 80, height: 60 });
+console.log(boxSize.width); //80
+console.log(boxSize.height); //60</pre>
+这样，就创建了Size 的一个宽为80、高为60 的实例。实例的属性可以被读写，但始终都必须包含32 位无符号整数。<br />
+将属性定义为另一个结构类型，可以得到更复杂的结构类型。例如：<br />
+<pre>var Location = new StructType({ x: int32, y: int32 });
+var Box = new StructType({ size: Size, location: Location });
+var boxInfo = new Box({ size: { width:80, height:60 }, location: { x: 0, y: 0 }});
+console.log(boxInfo.size.width); //80</pre>
+这个例子创建了一个简单的结构类型Location，又创建了一个复杂的结构类型Box。Box 的属性本身也是结构类型。Box 构造函数仍然接收对象字面量参数，以便为每个属性定义值，但它会检查传入值的数据类型，以确保作为属性值的数据类型正确。<br />
+<h3>
+	A.4.6 ArrayType
+</h3>
+与结构类型密切相关的是数组类型。通过数组类型（ArrayType）可以创建一个数组，并限制数组的值必须是某种特定的类型（与WebGL 中的类型化数组很相似）。要创建新的数组类型，可以调用ArrayType 构造函数，并传入它应该保存的数据类型以及应该保存的元素数目。例如：<br />
+<pre>var SizeArray = new ArrayType(Size, 2);
+var boxes = new BoxArray([ { width: 80, height: 60 }, { width: 50, height: 50 } ]);</pre>
+以上代码创建了一个名为SizeArray 的数组类型，这个数组类型只能保存Size 的实例，同时也给数组分配了两个该实例的位置。要实例化数组类型，可以传入一个数组，其中包含应该转换的数据。数据可以是字面量，只要该字面量能提升为正确的数据类型即可（比如在这个例子中，传入的字面量可以提升为结构类型）。<br />
+<h2>
+	A.5 类
+</h2>
+开发人员一直吵着要在JavaScript 中增加一种语法，用于定义类似于Java 的类。ECMAScript 6 最终确实定义了这种语法。但JavaScript 中的类只是一种语法糖，覆盖在目前基于构造函数和基于原型的方式和类型之上。先看看下面的类型定义。<br />
+<pre>function Person(name, age) {
+	this.name = name;
+	this.age = age;
+}
+Person.prototype.sayName = function() {
+	alert(this.name);
+};
+Person.prototype.getOlder = function(years) {
+	this.age += years;
+};</pre>
+再看看使用新语法定义的类：<br />
+<pre>class Person {
+	constructor(name, age) {
+		public name = name;
+		public age = age;
+	}
+	sayName() {
+		alert(this.name);
+	}
+	getOlder(years) {
+		this.age += years;
+	}
+}</pre>
+新语法以关键字class 开头，然后就是类型名，而花括号中定义的是属性和方法。定义方法不必再使用function 关键字，有方法名和圆括号就可以。如果把方法命名为constructor，那它就是这个类的构造函数（与前一个例子中的Person 函数一样）。在这个类中定义的方法和属性都会添加到原型上，具体来说，sayName()和getOlder()都是在Person.prototype 上定义的。<br />
+在构造函数中，public 和private 关键字用于创建对象的实例属性。这个例子中的name 和age都是公有属性。<br />
+<h3>
+	A.5.1 私有成员
+</h3>
+关于类语法的建议是默认支持私有成员的，包括实例中的私有成员和原型中的私有成员。private关键字表示成员是私有的，不能在类方法之外访问。要访问私有成员，可以使用一种特殊的语法，即调用private()函数并传入this 对象，然后再访问私有成员。例如，下面这个例子把Person 类的age改成为私有属性：<br />
+<pre>class Person {
+	constructor(name, age) {
+		public name = name;
+		private age = age;
+	}
+	sayName() {
+		alert(this.name);
+	}
+	getOlder(years) {
+		private(this).age += years;
+	}
+}</pre>
+这种用于访问私有成员的语法还没有定论，将来很可能会改变。<br />
+<h3>
+	A.5.2 getter和setter
+</h3>
+新的类语法支持直接为属性定义getter 和setter，从而避免了调用Object.defineProperty()的麻烦。为属性定义getter 和setter 与定义方法类似，只不过要在方法名前加上get 和set 关键字。例如：<br />
+<pre>class Person {
+	constructor(name, age) {
+		public name = name;
+		public age = age;
+		private innerTitle = "";
+		get title() {
+			return innerTitle;
+		}
+		set title(value) {
+			innerTitle = value;
+		}
+	}
+	sayName() {
+		alert(this.name);
+	}
+	getOlder(years) {
+		this.age += years;
+	}
+}</pre>
+这个Person 类为title 属性定义了一个getter 和一个setter。这两个操作innerTitle 变量的函数都定义在了构造函数中。要为原型属性定义getter 和setter，语法相同，但要在构造函数外部定义。<br />
+<h3>
+	A.5.3 继承
+</h3>
+使用类语法而不是过去那种JavaScript 语法，最大的好处是容易实现继承。有了类语法，只要使用与其他语言相同的extends 关键字就能实现继承，而不必去考虑借用构造函数或者原型连缀。例如：<br />
+<pre>class Employee extends Person {
+	constructor(name, age) {
+		super(name, age);
+	}
+}</pre>
+以上代码创建了一个新类Employee，它继承了Person 类。在简单的语法背后，已经自动实现了原型连缀，而且通过使用super()函数，也正式支持了借用构造函数。从逻辑上看，上面的代码与下面的代码是等价的：<br />
+<pre>function Employee(name, age){
+    Person.call(this, name, age);
+}
+Employee.prototype = new Person();</pre>
+除了这种风格的继承，类语法还允许直接将对象指定为其原型，方法就是用prototype 关键字代替extends：<br />
+<pre>var basePerson = {
+	sayName: function() {
+		alert(this.name);
+	},
+	getOlder: function(years) {
+		this.age += years;
+	}
+};
+class Employee prototype basePerson {
+	constructor(name, age) {
+		public name = name;
+		public age = age;
+	}
+}</pre>
+这个例子将basePerson 对象直接指定为Employee.prototype，从而实现了与目前使用Object.create()实现的一样的继承。<br />
+<h2>
+	A.6 模块
+</h2>
+模块（或者“命名空间”、“包”）是组织JavaScript 应用代码的重要方法。每个模块都包含着独立于其他模式的特定、独一无二的功能。JavaScript 开发中曾出现过一些临时性的模块格式，而ECMAScript 6则对如何创建和管理模块给出了标准的定义。<br />
+模块在其自己的顶级执行环境中运行，因而不会污染导入它的全局执行环境。默认情况下，模块中声明的所有变量、函数、类等都是该模块私有的。对于应该向外部公开的成员，可以在前面加上export关键字。例如：<br />
+<pre>module MyModule {
+	//公开这些成员
+	export let myobject = {};
+	export
+	function hello() {
+		alert("hello");
+	};
+	//隐藏这些成员
+	function goodbye() {
+		//...
+	}
+}</pre>
+这个模块公开了一个名为myobject 的对象和一个名为hello()的函数。可以在页面或其他模块中使用这个模块，也可以只导入模块中的一个成员或者两个成员。导入模块要使用import 命令：<br />
+<pre>//只导入myobject
+import myobject from MyModule;
+console.log(myobject);
+//导入所有公开的成员
+import * from MyModule;
+console.log(myobject);
+console.log(hello);
+//列出要导入的成员名
+import {
+	myobject,
+	hello
+}
+from MyModule;
+console.log(myobject);
+console.log(hello);
+//不导入，直接使用模块
+console.log(MyModule.myobject);
+console.log(MyModule.hello);</pre>
+在执行环境能够访问到模块的情况下，可以直接调用模块中对外公开的成员。导入操作只不过是把模块中的个别成员拿到当前执行环境中，以便直接操作而不必引用模块。<br />
+<h3>
+	外部模块
+</h3>
+通过提供模块所在外部文件的URL，也可以动态加载和导入模块。为此，首先要在模块声明后面加上外部文件的URL，然后再导入模块成员：<br />
+<pre>module MyModule from "mymodule.js";
+import myobject from MyModule;</pre>
+以上声明会通知JavaScript 引擎下载mymodule.js 文件，然后从中加载名为MyModule 的模块。请读者注意，这个调用会阻塞进程。换句话说，JavaScript 引擎在下载完外部文件并对其求值之前，不会处理后面的代码。<br />
+如果你只想包含模块中对外公开的某些成员，不想把整个模块都加载进来，可以像下面这样使用import 指令：<br />
+<pre>import myobject from "mymodule.js";</pre>
+总之，模块就是一种组织相关功能的手段，而且能够保护全局作用域不受污染。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15434">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

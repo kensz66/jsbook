@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>JavaScript工具</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">JavaScript工具</h1>
+	<hr>
+		JavaScript 代码和用其他语言编写代码很像，使用工具能够提高工作效率。JavaScript 开发人员可用的工具数量一度爆发性增长，使得查找问题、优化和部署基于JavaScript 的解决方案更为简单。其中一些工具是专为JavaScript 设计使用的，而其他一些可以在浏览器之外运行。本附录对其中一些工具给出了概述，并额外提供了信息资源。<br />
+<h2>
+	D.1 校验器
+</h2>
+JavaScript 调试有一个问题，很多IDE 并不能在输入的时候自动指出语法错误。大多数开发者写了一部分代码之后要将其载入到浏览器中查找错误。你可以通过在部署之前校验JavaScript 代码，以便显著地减少此类错误。校验器提供了基本的语法检查，并给出某些风格的警告。<br />
+<h3>
+	D.1.1 JSLint
+</h3>
+JSLint 是一个由Douglas Crockford 撰写的JavaScript 校验器。它通过跨浏览器问题的最小共同点检查，能够从核心层次上检查语法错误。（它遵循最严格的规则来确保代码到处都能运行。）你可以启用Crockford 对于代码风格的警告，包括代码格式、未声明的全局变量的使用以及其他更多警告。尽管JSLint是用JavaScript 写的，但是通过基于Java 的Rhino 解释器，它可以在命令行中运行，或者通过WScript或者其他JavaScript 解释器。网站上提供了针对各种命令行解释器的自定义版本。<br />
+<ul>
+	<li>
+		&nbsp;价格：免费
+	</li>
+	<li>
+		&nbsp;网站：http://www.jslint.com/
+	</li>
+</ul>
+<h3>
+	D.1.2 JSHint
+</h3>
+JSHint 是JSLint 的一个分支，为应用规则提供了更多的自定义功能。与JSLint 类似，它首先检查语法错误，然后检查有问题的编码模式。JSLint 的每一项检查JSHint 都有，但开发人员可以更好地控制应用什么规则。与JSLint 一样，JSHint 也能使用Rhino 在命令行中运行。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.jshint.com/
+	</li>
+</ul>
+<h3>
+	D.1.3 JavaScript Lint
+</h3>
+它和JSLint 完全不相干，JavaScript Lint 是Matthias Miller 写的一个基于C 的JavaScript 校验器。它使用了SpiderMonkey（即Firefox 所用的JavaScript 解释器）来分析代码并查找语法错误。这个工具包含写大量选项，可以启用额外关于编码风格的警告，以及未声明的变量和不可到达的代码警告。Windows 和Macintosh 上都有可用的JavaScript Lint，源代码也可以自由取得。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.javascriptlint.com/
+	</li>
+</ul>
+<h2>
+	D.2 压缩器
+</h2>
+JavaScript 构建过程中很重要的一部分，是压缩输出并移除多余的字符。这样做可以确保传送到浏览器的字节数最少，最终加速了用户体验。有几种压缩比率不同的工具可以选择。<br />
+<h3>
+	D.2.1 JSMin
+</h3>
+JSMin 是由Douglas Crockford 写的一个基于C 的压缩器，进行最基本的JavaScript 压缩。它主要是移除空白和注释，确保最终的代码依然可以被顺利执行。JSMin 有Windows 执行程序，包括C 版本代码，还有其他语言的代码：<br />
+<ul>
+	<li>
+		&nbsp;价格：免费
+	</li>
+	<li>
+		&nbsp;网站：http://www.crockford.com/javascript/jsmin.html
+	</li>
+</ul>
+<h3>
+	D.2.2 Dojo ShrinkSafe
+</h3>
+负责Dojo Toolkit 的同一批人开发了一个叫做ShrinkSafe 的工具，它使用了Rhino JavaScript 解释器首先将JavaScript 代码解析为记号流，然后用它们来安全压缩代码。和JSMin 一样，ShrinkSafe 移除多余的空白符（不包括换行）和注释，但是还更进一步将局部变量替换为两个字符长的变量名。最后可以<br />
+比JSMin 产生更小输出，而没有引入语法错误的风险。<br />
+<ul>
+	<li>
+		&nbsp;价格：免费
+	</li>
+	<li>
+		&nbsp;网站：http://shrinksafe.dojotoolkit.org/
+	</li>
+</ul>
+<h3>
+	D.2.3 YUI Compressor
+</h3>
+YUI 小组有一个叫做YUI Compressor 的压缩器。和ShrinkSafe 类似，YUI Compressor 利用了Rhino解释器将JavaScript 代码解析为记号流，并移除注释和空白字符并替换变量名。与ShrinkSafe 不同，YUICompressor 还移除换行并进行一些细微的优化进一步节省字节数。一般来说，YUI Compressor 处理过的文件要小于JSMin 或者ShrinkSafe 处理过的文件。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://yuilibrary.com /projects/yuicompressor
+	</li>
+</ul>
+<h2>
+	D.3 单元测试
+</h2>
+TDD（Test-driven development，测试驱动开发）是一种以单元测试为核心的软件开发过程。直到最近，才出现了一些对JavaScript 进行单元测试的工具。现在多数JavaScript 库都在它们自己的代码中使用了某种形式的单元测试，其中一些发布了单元测试框架让他人使用。<br />
+<h3>
+	D.3.1 JsUnit
+</h3>
+最早的JavaScript 单元测试框架，不绑定于任何特定的JavaScript 库。JsUnit 是Java 知名的JUnit 测试框架的移植。测试在页面中运行，并可以设置为自动测试并将结果提交到服务器。它的网站上包含了例子和基本的文档：<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.jsunit.net/
+	</li>
+</ul>
+<h3>
+	D.3.2 YUI Test
+</h3>
+作为YUI 的一部分，YUI Test 不仅可以用于测试使用YUI 的代码，也可以测试网站或者应用中的任何代码。YUI Test 包含了简单和复杂的断言，以及一种模拟简单的鼠标和键盘事件的方法。该框架在Yahoo! Developer Network 上有完整的文档描述，包含了例子、API 文档和更多内容。测试时在浏览器中运行，结果输出在页面上。YUI 便使用YUI Test 来测试整个库。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://yuilibrary.com/projects/yuitest/
+	</li>
+</ul>
+<h3>
+	D.3.3 DOH
+</h3>
+DOH（ Dojo Object Harness）在发布给大家使用之前，最初是作为Dojo 内部的单元测试工具出现的。和其他框架一样，单元测试是在浏览器中运行的。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.dojotoolkit.org/
+	</li>
+</ul>
+<h3>
+	D.3.4 qUnit
+</h3>
+qUnit 是为测试jQuery 而开发的一个单元测试框架。jQuery 本身的确使用qUnit 进行各项测试。除此之外，qUnit 与jQuery 并没有绑定关系，也可以用它来测试所有JavaScript 代码。qUnit 的特点是简单易用，一般开发人员很容易上手。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：https://github.com/jquery/qunit
+	</li>
+</ul>
+<h2>
+	D.4 文档生成器
+</h2>
+大多数IDE 对于主流语言都包含了文档生成器。由于JavaScript 并没有官方的IDE，过去文档一般都是手工完成，或者是利用针对其他语言的文档生成器。然而，现在终于有一些专门针对JavaScript 的文档生成器了。<br />
+<h3>
+	D.4.1 JsDoc Toolkit
+</h3>
+JsDoc Toolkit 是最早出现的JavaScript 文档生成器之一。它要求你在代码中输入类似Javadoc 的注释，然后处理这些注释并输出为HTML 文件。你可以自定义HTML 的格式，这需使用预定义的JsDoc 模板或者创建自己的模版。JsDoc Toolkit 可以以Java 包的形式获得。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://code.google.com/p/jsdoc-toolkit/
+	</li>
+</ul>
+<h3>
+	D.4.2 YUI Doc
+</h3>
+YUI Doc 是YUI 的文档生成器。该生成器以Python 书写，所以它要求安装有Python 运行时环境。YUI Doc 可以输出集成了属性和方法搜索（用YUI 的自动完成挂件实现的）的HTML 文件。和JsDoc一样，YUI Doc 要求源代码中使用类似Javadoc 的注释。默认的HTML 可以通过修改默认的HTML 模板文件和相关的样式表来更改。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.yuilibrary.com/projects/yuidoc/
+	</li>
+</ul>
+<h3>
+	D.4.3 AjaxDoc
+</h3>
+AjaxDoc 的目标和前面提到的生成器有些差异。它不为JavaScript 文档生成HTML 文件，而是创建与针对.NET 语言（如C#和Visual Basic. NET）所创建文件相同格式的XML 文件。这样做就可以由标准的.NET 文档生成器创建HTML 文件形式的文档。AjaxDoc 使用类似于所有.NET 语言用到的文档注释格式。创建AjaxDoc 是针对ASP.NET 的Ajax 解决方案，但是它也可以用于单独的项目。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.codeplex.com/ajaxdoc
+	</li>
+</ul>
+<h2>
+	D.5 安全执行环境
+</h2>
+随着mashup 应用越来越流行，对于允许来自外界的JavaScript 存在于同一个页面上并执行有着越来越多的需求。这导致了一些访问受限功能的安全问题。以下工具旨在创建安全的执行环境，其中不同来源的JavaScript 可以共存，而不会互相影响。<br />
+<h3>
+	D.5.1 ADsafe
+</h3>
+由Douglas Crockford 创建，ADsafe 是JavaScript 的子集，这个子集被认为可以被第三方脚本安全访问。对于用ADsafe 运行的代码，页面必须包含ADsafe JavaScript 库并标记为ADsafe 挂件格式。因此，代码可以在任何页面上安全执行。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://www.adsafe.org/
+	</li>
+</ul>
+<h3>
+	D.5.2 Caja
+</h3>
+Caja 用一种独特的方式来确保JavaScript 的安全执行。类似于ADsafe，Caja 定义了JavaScript 的一个可以用安全方式使用的子集。Caja 继而可以清理JavaScript 代码并验证它只按照预期的方式运行。作为该项目的一部分，有一种叫做Cajita 的语言，它是JavaScript 功能的一种更小的子集。Caja 还处于幼年期，但是已经展示了很多前景，允许多个脚本在同一个页面执行而没有恶意活动的可能。<br />
+<ul>
+	<li>
+		价格：免费
+	</li>
+	<li>
+		网站：http://code.google.com/p/google-caja/
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15437">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

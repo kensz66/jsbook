@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>19.3 其他变化</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">19.3 其他变化</h1>
+	<hr>
+		为了与ECMAScript 做到无缝集成，E4X 也对语言基础进行了一些修改。其中之一就是引入了for-each-in 循环，以便迭代遍历每一个属性并返回属性的值，如下面的例子所示。<br />
+<pre>var employees = &lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;;
+for each (var child in employees){
+    alert(child.toXMLString());
+}</pre>
+在这个例子的for-each-in 循环中，&lt;employees/&gt;的每个子节点会依次被赋值给child 变量，其中包括注释、处理指令和/或文本节点。要想返回特性节点，则需要对一个由特性节点组成的XMLList对象进行操作，如下所示。<br />
+<pre>for each (var attribute in employees.@*){ //遍历特性
+    alert(attribute);
+}</pre>
+虽然for-each-in 循环是在E4X 中定义的，但这个语句也可以用于常规的数组和对象，例如：<br />
+<pre>var colors = ["red","green","blue"];
+for each(var color in colors){
+    alert(color);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8833" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+对于数组，for-each-in 循环会返回数组中的每一项。对于非XML 对象，这个循环返回对象每个属性的值。<br />
+E4X 还添加了一个全局函数，名叫isXMLName()。这个函数接受一个字符串，并在这个字符串是元素或特性的有效内部名称的情况下返回true。在使用未知字符串构建XML 数据结构时，这个函数可以为开发人员提供方便。来看下面的例子。<br />
+<pre>alert(isXMLName("color")); //true
+alert(isXMLName("hello world")); //false</pre>
+如果你不确定某个字符串的来源，而又需要将该字符串用作一个内部名称，那么最好在使用它之前先通过isXMLName()检测一下是否有效，以防发生错误。<br />
+E4X 对标准ECMAScript 的最后一个修改是typeof 操作符。在对XML 对象或XMLList 对象使用这个操作符时，typeof 返回字符串"xml"。但在对其他对象使用这个操作符时，返回的都是"object"，例如：<br />
+<pre>var xml = new XML();
+var list = new XMLList();
+var object = {};
+alert(typeof xml); //"xml"
+alert(typeof list); //"xml"
+alert(typeof object); //"object"</pre>
+多数情况下，都没有必要区分XML 和XMLList 对象。在E4X 中，这两个对象都被看成是基本数据类型，因而也无法通过instanceof 操作符来将它们区分开来。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15390">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

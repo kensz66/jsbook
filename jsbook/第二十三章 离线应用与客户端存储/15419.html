@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>23.4 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">23.4 小结</h1>
+	<hr>
+		离线Web 应用和客户端存储数据的能力对未来的Web 应用越来越重要。浏览器已经能够检测到用户是否离线，并触发JavaScript 事件以便应用做出处理。可以指定在应用缓存中保存哪些文件以便离线时使用。对于应用缓存的状态及变化，也有相应的JavaScript API 可以调用检测。<br />
+本书还讨论了客户端存储的以下几方面内容。<br />
+<ul>
+	<li>
+		以前，这种存储只能使用cookie 完成，cookie 是一小块可以客户端设置也可以在服务器端设置的信息，每次发起请求时都会传送它。
+	</li>
+	<li>
+		在JavaScript 中通过document.cookie 可以访问cookie。
+	</li>
+	<li>
+		cookie 的限制使其可以存储少量数据，然而对于大量数据效率很低。
+	</li>
+</ul>
+IE 发明了一种叫做用户数据的行为，可以应用到页面的某个元素上，它有以下特点。<br />
+<ul>
+	<li>
+		一旦应用后，该元素便可以从一个命名数据空间中载入数据，然后可以通过getAttribute()、setAttribute()和removeAttribute()方法访问。
+	</li>
+	<li>
+		数据必须明确使用save()方法保存到命名数据空间中，以便能在会话之间持久化数据。
+	</li>
+</ul>
+Web Storage 定义了两种用于存储数据的对象：sessionStorage 和localStorage。前者严格用于在一个浏览器会话中存储数据，因为数据在浏览器关闭后会立即删除；后者用于跨会话持久化数据并遵循跨域安全策略。<br />
+IndexedDB 是一种类似SQL 数据库的结构化数据存储机制。但它的数据不是保存在表中，而是保存在对象存储空间中。创建对象存储空间时，需要定义一个键，然后就可以添加数据。可以使用游标在对象存储空间中查询特定的对象。而索引则是为了提高查询速度而基于特定的属性创建的。<br />
+有了以上这些选择，就可以在客户端机器上使用JavaScript 存储大量数据了。但你必须小心，不要在客户端存储敏感数据，因为数据缓存不会加密。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15419">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

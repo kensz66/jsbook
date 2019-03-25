@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.4 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.4 小结</h1>
+	<hr>
+		HTML5 的&lt;canvas&gt;元素提供了一组JavaScript API，让我们可以动态地创建图形和图像。图形是在一个特定的上下文中创建的，而上下文对象目前有两种。第一种是2D 上下文，可以执行原始的绘图操作，比如：<br />
+<ul>
+	<li>
+		设置填充、描边颜色和模式
+	</li>
+	<li>
+		绘制矩形
+	</li>
+	<li>
+		绘制路径
+	</li>
+	<li>
+		绘制文本
+	</li>
+	<li>
+		创建渐变和模式
+	</li>
+</ul>
+第二种是3D 上下文，即WebGL 上下文。WebGL 是从OpenGL ES 2.0 移植到浏览器中的，而OpenGLES 2.0 是游戏开发人员在创建计算机图形图像时经常使用的一种语言。WebGL 支持比2D 上下文更丰富和更强大的图形图像处理能力，比如：<br />
+<ul>
+	<li>
+		用GLSL（OpenGL Shading Language，OpenGL 着色语言）编写的顶点和片段着色器
+	</li>
+	<li>
+		支持类型化数组，即能够将数组中的数据限定为某种特定的数值类型
+	</li>
+	<li>
+		创建和操作纹理
+	</li>
+</ul>
+目前，主流浏览器的较新版本大都已经支持&lt;canvas&gt;标签。同样地，这些版本的浏览器基本上也都支持2D 上下文。但对于WebGL 而言，目前还只有Firefox 4+和Chrome 支持它。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15369">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

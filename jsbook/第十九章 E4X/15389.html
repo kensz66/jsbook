@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>19.2 一般用法</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">19.2 一般用法</h1>
+	<hr>
+		在将XML 对象、元素、特性和文本集合到一个层次化对象之后，就可以使用点号加特性或标签名的方式来访问其中不同的层次和结构。每个子元素都是父元素的一个属性，而属性名与元素的内部名称相同。如果子元素只包含文本，则相应的属性只返回文本，如下面的例子所示。<br />
+<pre>var employee = &lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;;
+alert(employee.name); //"Nicholas C. Zakas"</pre>
+以上代码中的&lt;name/&gt;元素只包含文本。访问employee.name 即可取得该文本，而在内部需要定位到&lt;name/&gt;元素，然后返回相应文本。由于传入到alert()时，会隐式调用toString()方法，因此显示的是&lt;name/&gt;中包含的文本。这就使得访问XML 文档中包含的文本数据非常方便。如果有多个元素具有相同的标签名，则会返回XMLList。下面再看一个例子。<br />
+<pre>var employees = &lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;;
+alert(employees.employee[0].name); //"Nicholas C. Zakas"
+alert(employees.employee[1].name); //"Jim Smith"</pre>
+这个例子访问了每个&lt;employee/&gt;元素并返回了它们&lt;name/&gt;元素的值。如果你不确定子元素的内部名称，或者你想访问所有子元素，不管其名称是什么，也可以像下面这样使用星号（*）。<br />
+<pre>var allChildren = employees.*; //返回所有子元素，不管其名称是什么
+alert(employees.*[0].name); //"Nicholas C. Zakas"</pre>
+<a href="http://www.z-ai.net/study/api/s/8832" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+与其他属性一样，星号也可能返回XML 对象，或返回XMLList 对象，这要取决于XML 结构。<br />
+要达到同样的目的，除了属性之外，还可以使用child()方法。将属性名或索引值传递给child()方法，也会得到相同的值。来看下面的例子。<br />
+<pre>var firstChild = employees.child(0); //与employees.*[0]相同
+var employeeList = employees.child("employee"); //与employees.employee 相同
+var allChildren = employees.child("*"); //与employees.*相同</pre>
+为了再方便一些，还有一个children()方法始终返回所有子元素。例如：<br />
+<pre>var allChildren = employees.children(); //与employees.*相同</pre>
+而另一个方法elements()的行为与child()类似，区别仅在于它只返回表示元素的XML 对象。例如：<br />
+<pre>var employeeList = employees.elements("employee"); //与employees.employee 相同
+var allChildren = employees.elements("*"); //与employees.*相同</pre>
+这些方法为JavaScript 开发人员提供了访问XML 数据的较为熟悉的语法。要删除子元素，可以使用delete 操作符，如下所示：<br />
+<pre>delete employees.employee[0];
+alert(employees.employee.length()); //1</pre>
+显然，这也正是将子节点看成属性的一个主要的优点。<br />
+<h2>
+	19.2.1 访问特性
+</h2>
+访问特性也可以使用点语法，不过其语法稍有扩充。为了区分特性名与子元素的标签名，必须在名称前面加上一个@字符。这是从XPath 中借鉴的语法；XPath 也是使用@来区分特性和标签的名称。不过，结果可能就是这种语法看起来比较奇怪，例如：<br />
+<pre>var employees = &lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;;
+alert(employees.employee[0].@position); //"Software Engineer"</pre>
+与元素一样，每个特性都由一个属性来表示，而且可以通过这种简写语法来访问。以这种语法访问特性会得到一个表示特性的XML 对象，对象的toString()方法始终会返回特性的值。要取得特性的名称，可以使用对象的name()方法。另外，也可以使用child()方法来访问特性，只要传入带有@前缀的特性的名称即可。<br />
+<p>
+</p>
+<pre>alert(employees.employee[0].child("@position")); //"Software Engineer"</pre>
+<p>
+</p>
+由于访问XML 对象的属性时也可以使用child()，因此必须使用@字符来区分标签名和特性名。<br />
+使用attribute()方法并传入特性名，可以只访问XML 对象的特性。与child()方法不同，使用attribute()方法时，不需要传入带@字符的特性名。下面是一个例子。<br />
+<pre>alert(employees.employee[0].attribute("position")); //"Software Engineer"</pre>
+<a href="http://www.z-ai.net/study/api/s/8826" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这三种访问特性的方式同时适用于XML 和XMLList 类型。对于XML 对象来说，会返回一个表示相应特性的XML 对象；对XMLList 对象来说，会返回一个XMLList 对象，其中包含列表中所有元素的特性XML 对象。对于前面的例子而言，employees.employee.@position 返回的XMLList 将包含两个对象：一个对象表示第一个&lt;employee/&gt;元素中的position 特性，另一个对象表示第二个元素中的同一特性。<br />
+要取得XML 或XMLList 对象中的所有特性，可以使用attributes()方法。这个方法会返回一个表示所有特性的XMLList 对象。使用这个方法与使用@*的结果相同，如下面的例子所示。<br />
+<pre>//下面两种方式都会取得所有特性
+var atts1 = employees.employee[0].@*;
+var atts2 = employees.employee[0].attributes();</pre>
+在E4X 中修改特性的值与修改属性的值一样非常简单，只要像下面这样为特性指定一个新值即可。<br />
+<pre>employees.employee[0].@position = "Author"; //修改position 特性</pre>
+修改的特性会在内部反映出来，换句话说，此后再序列化XML 对象，就会使用新的特性值。同样，为特性赋值的语法也可以用来添加新特性，如下面的例子所示。<br />
+<pre>employees.employee[0].@experience = "8 years"; //添加experience 特性
+employees.employee[0].@manager = "Jim Smith"; //添加manager 特性</pre>
+由于特性与其他ECMAScript 属性类似，因此也可以使用delete 操作符来删除特性，如下所示。<br />
+<pre>delete employees.employee[0].@position; //删除 position 特性</pre>
+通过属性来访问特性极大地简化了与底层XML 结构交互的操作。<br />
+<h2>
+	19.2.2 其他节点类型
+</h2>
+E4X 定义了表现XML 文档中所有部分的类型，包括注释和处理指令。在默认情况上，E4X 不会解析注释或处理指令，因此这些部分不会出现在最终的对象层次中。如果想让解析器解析这些部分，可以像下面这样设置XML 构造函数的下列两个属性。<br />
+<pre>XML.ignoreComments = false;
+XML.ignoreProcessingInstructions = false;</pre>
+在设置了这两个属性之后，E4X 就会将注释和处理指令解析到XML 结构中。<br />
+由于XML 类型可以表示所有节点，因此必须有一种方式来确定节点类型。使用nodeKind()方法可以得到XML 对象表示的类型，该访问可能会返回"text"、"element"、"comment"、"processinginstruction"或"attribute"。以下面的XML 对象为例。<br />
+<pre>var employees = &lt;employees&gt;
+&lt;?Dont forget the donuts?&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;!--just added--&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt; ;</pre>
+我们可以通过下面的表格来说明nodeKind()返回的节点类型。<br />
+<img src="../image/997e8faf3e3.gif" alt="" /><br />
+不能在包含多个XML 对象的XMLList 上调用nodeKind()方法；否则，会抛出一个错误。<br />
+可以只取得特定类型的节点，而这就要用到下列方法。<br />
+<ul>
+	<li>
+		attributes()：返回XML 对象的所有特性。
+	</li>
+	<li>
+		comments()：返回XML 对象的所有子注释节点。
+	</li>
+	<li>
+		elements(tagName)：返回XML 对象的所有子元素。可以通过提供元素的tagName（标签名）来过滤想要返回的结果。
+	</li>
+	<li>
+		processingInstructions(name)：返回XML 对象的所有处理指令。可以通过提供处理指令的name（名称）来过滤想要返回的结果。
+	</li>
+	<li>
+		text()：返回XML 对象的所有文本子节点。
+	</li>
+</ul>
+上述的每一个方法都返回一个包含适当XML 对象的XMLList。<br />
+使用hasSimpleContent()和hasComplexContent()方法，可以确定XML 对象中是只包含文本，还是包含更复杂的内容。如果XML 对象中只包含子文本节点，则前一个方法会返回true；如果XML 对象的子节点中有任何非文本节点，则后一个方法返回true。来看下面的例子。<br />
+<pre>alert(employees.employee[0].hasComplexContent()); //true
+alert(employees.employee[0].hasSimpleContent()); //false
+alert(employees.employee[0].name.hasComplexContent()); //false
+alert(employees.employee[0].name.hasSimpleContent()); //true</pre>
+利用这些方法，以及前面提到的其他方法，可以极大地方便查找XML 结构中的数据。<br />
+<h2>
+	19.2.3 查询
+</h2>
+实际上，E4X 提供的查询语法在很多方面都与XPath 类似。取得元素或特性值的简单操作是最基本的查询。在查询之前，不会创建表现XML文档结构中不同部分的XML 对象。从底层来看，XML 和XMLList的所有属性事实上都是查询的结果。也就是说，引用不表现XML 结构中某一部分的属性仍然会返回XMLList；只不过这个XMLList 中什么也不会包含。例如，如果基于前面的XML 示例执行下列代码，则返回的结果就是空的。<br />
+<pre>var cats = employees.cat;
+alert(cats.length()); //0</pre>
+<a href="http://www.z-ai.net/study/api/s/8827" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个查询想要查找&lt;employees/&gt;中的&lt;cat/&gt;元素，但这个元素并不存在。上面的第一行代码会返回一个空的XMLList 对象。虽然返回的是空对象，但查询可以照常进行，而不会发生异常。<br />
+前面我们看到的大多数例子都使用点语法来访问直接的子节点。而像下面这样使用两个点，则可以进一步扩展查询的深度，查询到所有后代节点。<br />
+<pre>var allDescendants = employees..*; //取得&lt;employees/&gt;的所有后代节点</pre>
+上面的代码会返回&lt;employees/&gt;元素的所有后代节点。结果中将会包含元素、文本、注释和处理指令，最后两种节点的有无取决于在XML 构造函数上的设置（前面曾经讨论过）；但结果中不会包含特性。要想取得特定标签的元素，需要将星号替换成实际的标签名。<br />
+<pre>var allNames = employees..name; //取得作为&lt;employees/&gt;后代的所有&lt;name/&gt;节点</pre>
+同样的查询可以使用descendants()方法来完成。在不给这个方法传递参数的情况下，它会返回所有后代节点（与使用..*相同），而传递一个名称作为参数则可以限制结果。下面就是这两种情况的例子。<br />
+<pre>var allDescendants = employees.descendants(); //所有后代节点
+var allNames = employees.descendants("name"); //后代中的所有&lt;name/&gt;元素</pre>
+还可以取得所有后代元素中的所有特性，方法是使用下列任何一行代码。<br />
+<pre>var allAttributes = employees..@*; //取得所有后代元素中的所有特性
+var allAttributes2 = employees.descendants("@*"); //同上</pre>
+与限制结果中的后代元素一样，也可以通过用完整的特性名来替换星号达到过滤特性的目的。例如：<br />
+<pre>var allAttributes = employees..@position; //取得所有position 特性
+var allAttributes2 = employees.descendants("@position"); //同上</pre>
+除了访问后代元素之外，还可以指定查询的条件。例如，要想返回position 特性值为"Salesperson"的所有&lt;employee/&gt;元素，可以使用下面的查询：<br />
+<pre>var salespeople = employees.employee.(@position == "Salesperson");</pre>
+同样的语法也可以用于修改XML 结构中的某一部分。例如，可以将第一位销售员（salesperson）的position 特性修改为"Senior Salesperson"，代码如下：<br />
+<pre>employees.employee.(@position == "Salesperson")[0].@position= "Senior Salesperson";</pre>
+注意，圆括号中的表达式会返回一个包含结果的XMLList，而方括号返回其中的第一项，然后我们重写了@position 属性的值。<br />
+使用parent()方法能够在XML 结构中上溯，这个方法会返回一个XML 对象，表示当前XML 对象的父元素。如果在XMLList 上调用parent()方法，则会返回列表中所有对象的公共父元素。下面是一个例子。<br />
+<pre>var employees2 = employees.employee.parent();</pre>
+这里，变量employees2 中包含着与变量employees 相同的值。在处理来源未知的XML 对象时，经常会用到parent()方法。<br />
+<h2>
+	19.2.4 构建和操作XML
+</h2>
+将XML 数据转换成XML 对象的方式有很多种。前面曾经讨论过，可以将XML 字符串传递到XML构造函数中，也可以使用XML 字面量。相对而言，XML 字面量方式更方便一些，因为可以在字面量中嵌入JavaScript 变量，语法是使用花括号（{}）。可以将JavaScript 变量嵌入到字面量中的任意位置上，如下面的例子所示。<br />
+<pre>var tagName = "color";
+var color = "red";
+var xml = &lt;{tagName}&gt;{color}&lt;/{tagName}&gt;;
+alert(xml.toXMLString()); //"&lt;color&gt;red&lt;/color&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8828" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，XML 字面量的标签名和文本值都是使用花括号语法插入的。有了这个语法，就可以省去在构建XML 结构时拼接字符串的麻烦。<br />
+E4X 也支持使用标准的JavaScript 语法来构建完整的XML 结构。如前所述，大多数必要的操作都是查询，而且即便元素或特性不存在也不会抛出错误。在此基础上更进一步，如果将一个值指定给一个不存在的元素或特性，E4X 就会首先在底层创建相应的结构，然后完成赋值。来看下面的例子。<br />
+<pre>var employees = &lt;employees/&gt;;
+employees.employee.name = "Nicholas C. Zakas";
+employees.employee.@position = "Software Engineer";</pre>
+这个例子一开始声明了&lt;employees/&gt;元素，然后在这个元素基础上开始构建XML 结构。第二行代码在&lt;employees/&gt;中创建了一个&lt;employee/&gt;元素和一个&lt;name/&gt;元素，并指定了文本值。第三行代码添加了一个position 特性并为该特性指定了值。此时构建的XML 结构如下所示。<br />
+<pre>&lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;</pre>
+当然，使用加号操作符也可以再添加一个&lt;employee/&gt;元素，如下所示。<br />
+<pre>employees.employee += &lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;;</pre>
+<a href="http://www.z-ai.net/study/api/s/8829" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+最终构建的XML 结构如下所示：<br />
+<pre>&lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;</pre>
+除了上面介绍的基本的XML 构建语法之外，还有一些类似DOM 的方法，简介如下。<br />
+<ul>
+	<li>
+		appendChild(child)：将给定的child 作为子节点添加到XMLList 的末尾。
+	</li>
+	<li>
+		copy()：返回XML 对象副本。
+	</li>
+	<li>
+		insertChildAfter(refNode, child)：将child 作为子节点插入到XMLList 中refNode 的后面。
+	</li>
+	<li>
+		insertChildBefore(refNode, child)：将child 作为子节点插入到XMLList 中refNode 的前面。
+	</li>
+	<li>
+		prependChild(child)：将给定的child 作为子节点添加到XMLList 的开始位置。
+	</li>
+	<li>
+		replace(propertyName, value)：用value 值替换名为propertyName 的属性，这个属性可能是一个元素，也可能是一个特性。
+	</li>
+	<li>
+		setChildren(children)：用children 替换当前所有的子元素，children 可以是XML 对象，也可是XMLList 对象。
+	</li>
+</ul>
+这些方法既非常有用，也非常容易使用。下列代码展示了这些方法的用途。<br />
+<pre>var employees = &lt;employees&gt;
+&lt;employee position="Software Engineer"&gt;
+&lt;name&gt;Nicholas C. Zakas&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Salesperson"&gt;
+&lt;name&gt;Jim Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;;
+employees.appendChild(&lt;employee position="Vice President"&gt;
+&lt;name&gt;Benjamin Anderson&lt;/name&gt;
+&lt;/employee&gt;);
+employees.prependChild(&lt;employee position="User Interface Designer"&gt;
+&lt;name&gt;Michael Johnson&lt;/name&gt;
+&lt;/employee&gt;);
+employees.insertChildBefore(employees.child(2),
+&lt;employee position="Human Resources Manager"&gt;
+&lt;name&gt;Margaret Jones&lt;/name&gt;
+&lt;/employee&gt;);
+employees.setChildren(&lt;employee position="President"&gt;
+&lt;name&gt;Richard McMichael&lt;/name&gt;
+&lt;/employee&gt; +
+&lt;employee position="Vice President"&gt;
+&lt;name&gt;Rebecca Smith&lt;/name&gt;
+&lt;/employee&gt;);</pre>
+<a href="http://www.z-ai.net/study/api/s/8830" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码首先在员工列表的底部添加了一个名为Benjamin Anderson 的副总统（vice president）。然后，在员工列表顶部又添加了一个名为Michael Johnson 的界面设计师。接着，在列表中位置为2 的员工——此时这个员工是Jim Smith，因为他前面还有Michael Johnson 和Nicholas C. Zakas——之前又添加了一个名为Margaret Jones 的人力资源部经理。最后，所有这些子元素都被总统Richard McMichael 和副总统Rebecca Smith 替代。结果XML 如下所示。<br />
+<pre>&lt;employees&gt;
+&lt;employee position="President"&gt;
+&lt;name&gt;Richard McMichael&lt;/name&gt;
+&lt;/employee&gt;
+&lt;employee position="Vice President"&gt;
+&lt;name&gt;Rebecca Smith&lt;/name&gt;
+&lt;/employee&gt;
+&lt;/employees&gt;</pre>
+熟练运用这些技术和方法，就能够使用E4X 执行任何DOM风格的操作。<br />
+<h2>
+	19.2.5 解析和序列化
+</h2>
+E4X 将解析和序列化数据的控制放在了XML 构造函数的一些设置当中。与XML 解析相关的设置有如下三个。<br />
+<ul>
+	<li>
+		ignoreComments：表示解析器应该忽略标记中的注释。默认设置为true。
+	</li>
+	<li>
+		ignoreProcessingInstructions：表示解析器应该忽略标记中的处理指令。默认设置为true。
+	</li>
+	<li>
+		ignoreWhitespace：表示解析器应该忽略元素间的空格，而不是创建表现这些空格的文本节点。默认设置为true。
+	</li>
+</ul>
+这三个设置会影响对传入到XML 构造函数中的字符串以及XML 字面量的解析。另外，与XML 数据序列化相关的设置有如下两个。<br />
+<ul>
+	<li>
+		prettyIndent：表示在序列化XML 时，每次缩进的空格数量。默认值为2。
+	</li>
+	<li>
+		prettyPrinting：表示应该以方便人类认读的方式输出XML，即每个元素重起一行，而且子元素都要缩进。默认设置为true。
+	</li>
+</ul>
+这两个设置将影响到toString()和toXMLString()的输出。<br />
+以上五个设置都保存在settings 对象中，通过XML 构造函数的settings()方法可以取得这个对象，如下所示。<br />
+<pre>var settings = XML.settings();
+alert(settings.ignoreWhitespace); //true
+alert(settings.ignoreComments); //true</pre>
+<a href="http://www.z-ai.net/study/api/s/8831" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+通过向setSettings()方法中传入包含全部5 项设置的对象，可以一次性指定所有设置。在需要临时改变设置的情况下，这种设置方式非常有用，如下所示。<br />
+<pre>var settings = XML.settings();
+XML.prettyIndent = 8;
+XML.ignoreComments = false;
+//执行某些处理
+XML.setSettings(settings); //重置前面的设置</pre>
+而使用defaultSettings()方法则可以取得一个包含默认设置的对象，因此任何时候都可以使用下面的代码重置设置。<br />
+<pre>XML.setSettings(XML.defaultSettings())</pre>
+<h2>
+	19.2.6 命名空间
+</h2>
+E4X 提供了方便使用命名空间的特性。前面曾经讨论过，使用namspace()方法可以取得与特定前缀对应的Namespace 对象。而通过使用setNamespace()并传入Namespace 对象，也可以为给定元素设置命名空间。来看下面的例子。<br />
+<pre>var messages = &lt;messages&gt;
+&lt;message&gt;Hello world!&lt;/message&gt;
+&lt;/messages&gt;;
+messages.setNamespace(new Namespace("wrox", "http://www.wrox.com/"));</pre>
+调用setNamespace()方法后，相应的命名空间只会应用到调用这个方法的元素。此时，序列化messages 变量会得到如下结果。<br />
+<pre>&lt;wrox:messages xmlns:wrox="http://www.wrox.com/"&gt;
+&lt;message&gt;Hello world!&lt;/message&gt;
+&lt;/wrox:messages&gt;</pre>
+可见，由于调用了setNamespace()方法，&lt;messages/&gt;元素有了wrox 命名空间前缀，而&lt;message/&gt;元素则没有变化。<br />
+如果只想添加一个命名空间声明，而不想改变元素，可以使用addNamespace()方法并传入Namespace 对象，如下面的例子所示。<br />
+<pre>messages.addNamespace(new Namespace("wrox", "http://www.wrox.com/"));</pre>
+在将这行代码应用于原先的&lt;messages/&gt;元素时，就会创建如下所示的XML 结构。<br />
+<pre>&lt;messages xmlns:wrox="http://www.wrox.com/"&gt;
+&lt;message&gt;Hello world!&lt;/message&gt;
+&lt;/messages&gt;</pre>
+调用removeNamespace()方法并传入Namespace 对象，可以移除表示特定命名空间前缀和URI的命名空间声明；注意，必须传入丝毫不差的表示命名空间的Namespace 对象。例如：<br />
+<pre>messages.removeNamespace(new Namespace("wrox", "http://www.wrox.com/"));</pre>
+这行代码可以移除wrox 命名空间。不过，引用前缀的限定名不会受影响。<br />
+有两个方法可以返回与节点相关的Namespace 对象的数组：namespaceDeclarations()和inScopeNamespaces()。前者返回在给定节点上声明的所有命名空间的数组，后者返回位于给定节点作用域中（即包括在节点自身和祖先元素中声明的）所有命名空间的数组。如下面的例子所示：<br />
+<pre>var messages = &lt;messages xmlns:wrox="http://www.wrox.com/"&gt;
+&lt;message&gt;Hello world!&lt;/message&gt;
+&lt;/messages&gt;;
+alert(messages.namespaceDeclarations()); //"http://www.wrox.com"
+alert(messages.inScopeNamespaces()); //",http://www.wrox.com"
+alert(messages.message.namespaceDeclarations()); //""
+alert(messages.message.inScopeNamespaces()); //",http://www.wrox.com"</pre>
+这里，&lt;messages/&gt;元素在调用namespaceDeclarations()时，会返回包含一个命名空间的数组，而在调用inScopeNamespaces()时，则会返回包含两个命名空间的数组。作用域中的这两个命名空间，分别是默认命名空间（由空字符串表示）和wrox 命名空间。在&lt;message/&gt;元素上调用这些方法时，namespaceDeclarations()，会返回一个空数组，而inScopeNamespaces()方法返回的结果与在&lt;messages/&gt;元素上调用时的返回结果相同。使用双冒号（::）也可以基于Namespace 对象来查询XML 结构中具有特定命名空间的元素。例如，要取得包含在wrox 命名空间中的所有&lt;message/&gt;元素，可以参考下面的代码。<br />
+<pre>var messages = &lt;messages xmlns:wrox="http://www.wrox.com/"&gt;
+&lt;wrox:message&gt;Hello world!&lt;/message&gt;
+&lt;/messages&gt;;
+var wroxNS = new Namespace("wrox", "http://www.wrox.com/");
+var wroxMessages = messages.wroxNS::message;</pre>
+这里的双冒号表示返回的元素应该位于其中的命名空间。注意，这里使用的是JavaScript 变量，而不是命名空间前缀。<br />
+还可以为某个作用域中的所有XML 对象设置默认命名空间。为此，要使用default xml namespace语句，并将一个Namespace 对象或一个命名空间URI 作为值赋给它。例如：<br />
+<pre>default xml namespace = "http://www.wrox.com/";
+function doSomething(){
+    //只为这个函数设置默认的命名空间
+    default xml namespace = new Namespace("your", "http://www.yourdomain.com");
+}</pre>
+在doSomething()函数体内设置默认命名空间并不会改变全局作用域中的默认XML 命名空间。<br />
+在给定作用域中，当所有XML 数据都需要使用特定的命名空间时，就可以使用这个语句，从而避免多次引用命名空间的麻烦。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15389">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

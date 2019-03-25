@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>18.4 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">18.4 小结</h1>
+	<hr>
+		JavaScript 对XML 及其相关技术有相当大的支持。然而，由于缺乏规范，共同的功能却存在一些不同的实现。DOM2 级提供了创建空XML 文档的API，但没有涉及解析和序列化。既然规范没有对这些功能作出规定，浏览器提供商就各行其是，拿出了自己的实现方案。IE 采取了下列方式。<br />
+<ul>
+	<li>
+		通过ActiveX 对象来支持处理XML，而相同的对象也可以用来构建桌面应用程序。
+	</li>
+	<li>
+		Windows 携带了MSXML 库，JavaScript 能够访问这个库。
+	</li>
+	<li>
+		这个库中包含对基本XML 解析和序列化的支持，同时也支持XPath 和XSLT 等技术。
+	</li>
+</ul>
+Firefox 为处理XML 的解析和序列化，实现了两个新类型，简介如下。<br />
+<ul>
+	<li>
+		DOMParser 类型比较简单，其对象可以将XML 字符串解析为DOM 文档。
+	</li>
+	<li>
+		XMLSerializer 类型执行相反的操作，即将DOM 文档序列化为XML 字符串。
+	</li>
+</ul>
+由于Firefox 中的类型比较简单，用户众多，IE9、Opera、Chrome 和Safari 都相继实现了相同的类型。因此，这些类型也就成为了Web 开发中的事实标准。<br />
+<p>
+	DOM3 级引入了一个针对XPath API 的规范，该规范已经由Firefox、Safari、Chrome 和Opera 实现。
+</p>
+<p>
+	这些API 可以让JavaScript 基于DOM文档运行任何XPath 查询，并且能够返回任何数据的结果。IE 以自己的方式实现了对XPath 的支持； 具体来说， 就是两个方法： selectSingleNode() 和selectNodes()。虽然与DOM3 级API 相比还存在诸多限制，但使用这两个方法仍然能够执行基本的XPath 功能，即在DOM 文档中查找节点或节点集合。
+</p>
+<p>
+	与XML 相关的最后一种技术是XSLT，没有公开发布的标准针对这种技术的功能定义相应的API。
+</p>
+<p>
+	Firefox 为通过JavaScript 处理转换创建了XSLTProcessor 类型；此后不久，Safari、Chrome、和Opera也都实现了同样的类型。IE 则针对XSLT 提供了自己的方案，一个是简单的transformNode()方法，另一个是较为复杂的模板/处理器手段。
+</p>
+<p>
+	目前，IE、Firefox、Chrome 和Opera 都能够较好地支持XML。虽然IE 的实现与其他浏览器相比差异比较大，但仍然还是有较多的公共功能可供我们实现跨浏览器的方案。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15386">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

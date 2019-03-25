@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>18.2 浏览器对XPath 的支持</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">18.2 浏览器对XPath 的支持</h1>
+	<hr>
+		XPath 是设计用来在DOM文档中查找节点的一种手段，因而对XML 处理也很重要。但是，DOM3级以前的标准并没有就XPath 的API 作出规定；XPath 是在DOM3 级XPath 模块中首次跻身推荐标准行列的。很多浏览器都实现了这个推荐标准，但IE 则以自己的方式实现了XPath。<br />
+<h2>
+	18.2.1 DOM3 级XPath
+</h2>
+DOM3级XPath 规范定义了在DOM中对XPath 表达式求值的接口。要确定某浏览器是否支持DOM3级XPath，可以使用以下JavaScript 代码：<br />
+<pre>var supportsXPath = document.implementation.hasFeature("XPath", "3.0");</pre>
+在DOM3 级XPath 规范定义的类型中，最重要的两个类型是XPathEvaluator 和XPathResult。<br />
+XPathEvaluator 用于在特定的上下文中对XPath 表达式求值。这个类型有下列3 个方法。<br />
+<ul>
+	<li>
+		createExpression(expression, nsresolver)：将XPath 表达式及相应的命名空间信息转换成一个XPathExpression，这是查询的编译版。在多次使用同一个查询时很有用。
+	</li>
+	<li>
+		createNSResolver(node)：根据node 的命名空间信息创建一个新的XPathNSResolver 对象。在基于使用命名空间的XML 文档求值时，需要使用XPathNSResolver 对象。
+	</li>
+	<li>
+		evaluate(expression, context, nsresolver, type, result)：在给定的上下文中，基于特定的命名空间信息来对XPath 表达式求值。剩下的参数指定如何返回结果。
+	</li>
+</ul>
+在Firefox、Safari、Chrome 和Opera 中，Document 类型通常都是与XPathEvaluator 接口一起实现的。换句话说，在这些浏览器中，既可以创建XPathEvaluator 的新实例，也可以使用Document实例中的方法（XML 或HTML 文档均是如此）。<br />
+在上面这三个方法中，evaluate()是最常用的。这个方法接收5 个参数：XPath 表达式、上下文节点、命名空间求解器、返回结果的类型和保存结果的XPathResult 对象（通常是null，因为结果也会以函数值的形式返回）。其中，第三个参数（命名空间求解器）只在XML 代码中使用了XML 命名空间时有必要指定；如果XML 代码中没有使用命名空间，则这个参数应该指定为null。第四个参数（返回结果的类型）的取值范围是下列常量之一。<br />
+<ul>
+	<li>
+		XPathResult.ANY_TYPE：返回与XPath 表达式匹配的数据类型。
+	</li>
+	<li>
+		XPathResult.NUMBER_TYPE：返回数值。
+	</li>
+	<li>
+		XPathResult.STRING_TYPE：返回字符串值。
+	</li>
+	<li>
+		XPathResult.BOOLEAN_TYPE：返回布尔值。
+	</li>
+	<li>
+		XPathResult.UNORDERED_NODE_ITERATOR_TYPE：返回匹配的节点集合，但集合中节点的次序不一定与它们在文档中的次序一致。
+	</li>
+	<li>
+		XPathResult.ORDERED_NODE_ITERATOR_TYPE：返回匹配的节点集合，集合中节点的次序与它们在文档中的次序一致。这是最常用的结果类型。
+	</li>
+	<li>
+		XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE：返回节点集合的快照，由于是在文档外部捕获节点，因此对文档的后续操作不会影响到这个节点集合。集合中节点的次序不一定与它们在文档中的次序一致。
+	</li>
+	<li>
+		XPathResult.ORDERED_NODE_SNAPSHOT_TYPE：返回节点集合的快照，由于是在文档外部捕获节点，因此对文档的后续操作不会影响到这个节点集合。集合中节点的次序与它们在文档中的次序一致。
+	</li>
+	<li>
+		XPathResult.ANY_UNORDERED_NODE_TYPE：返回匹配的节点集合，但集合中节点的次序不一定与它们在文档中的次序一致。
+	</li>
+	<li>
+		XPathResult.FIRST_ORDERED_NODE_TYPE：返回只包含一个节点的节点集合，包含的这个节点就是文档中第一个匹配的节点。
+	</li>
+</ul>
+指定的结果类型决定了如何取得结果的值。下面来看一个典型的例子。<br />
+<pre>var result = xmldom.evaluate("employee/name", xmldom.documentElement, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+if (result !== null) {
+	var node = result.iterateNext();
+	while (node) {
+		alert(node.tagName);
+		node = node.iterateNext();
+	}
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8798" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子中为返回结果指定的是XPathResult.ORDERED_NODE_ITERATOR_TYPE，也是最常用的结果类型。如果没有节点匹配XPath 表达式，evaluate()返回null；否则，它会返回一个XPathResult对象。这个XPathResult 对象带有的属性和方法，可以用来取得特定类型的结果。如果节点是一个节点迭代器，无论是次序一致还是次序不一致的，都必须要使用iterateNext()方法从节点中取得匹配的节点。在没有更多的匹配节点时，iterateNext()返回null。<br />
+如果指定的是快照结果类型（不管是次序一致还是次序不一致的），就必须使用snapshotItem()方法和snapshotLength 属性，例如：<br />
+<pre>var result = xmldom.evaluate("employee/name", xmldom.documentElement, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+if (result !== null) {
+	for (var i = 0,
+	len = result.snapshotLength; i &lt; len; i++) {
+		alert(result.snapshotItem(i).tagName);
+	}
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8799" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里，snapshotLength 返回的是快照中节点的数量，而snapshotItem()则返回快照中给定位置的节点（与NodeList 中的length 和item()相似）。<br />
+<h3>
+	1. 单节点结果
+</h3>
+指定常量XPathResult.FIRST_ORDERED_NODE_TYPE 会返回第一个匹配的节点，可以通过结果的singleNodeValue 属性来访问该节点。例如：<br />
+<pre>var result = xmldom.evaluate("employee/name", xmldom.documentElement, null,XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+if (result !== null) {
+    alert(result.singleNodeValue.tagName);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8800" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+与前面的查询一样，在没有匹配节点的情况下，evaluate()返回null。如果有节点返回，那么就可以通过singleNodeValue 属性来访问它。<br />
+<h3>
+	2. 简单类型结果
+</h3>
+通过XPath 也可以取得简单的非节点数据类型，这时候就要使用XPathResult 的布尔值、数值和字符串类型了。这几个结果类型分别会通过booleanValue、numberValue 和stringValue 属性返回一个值。对于布尔值类型，如果至少有一个节点与XPath 表达式匹配，则求值结果返回true，否则返回false。来看下面的例子。<br />
+<pre>var result = xmldom.evaluate("employee/name", xmldom.documentElement, null,XPathResult.BOOLEAN_TYPE, null);
+alert(result.booleanValue);</pre>
+<a href="http://www.z-ai.net/study/api/s/8801" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，如果有节点匹配"employee/name"，则booleanValue 属性的值就是true。<br />
+对于数值类型，必须在XPath 表达式参数的位置上指定一个能够返回数值的XPath 函数，例如计算与给定模式匹配的所有节点数量的count()。来看下面的例子。<br />
+<pre>var result = xmldom.evaluate("count(employee/name)", xmldom.documentElement,null, XPathResult.NUMBER_TYPE, null);
+alert(result.numberValue);</pre>
+<a href="http://www.z-ai.net/study/api/s/8802" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码会输出与"employee/name"匹配的节点数量（即2）。如果使用这个方法的时候没有指定与前例类似的XPath 函数，那么numberValue 的值将等于NaN。<br />
+对于字符串类型，evaluate()方法会查找与XPath 表达式匹配的第一个节点，然后返回其第一个子节点的值（实际上是假设第一个子节点为文本节点）。如果没有匹配的节点，结果就是一个空字符串。<br />
+来看一个例子。<br />
+<pre>var result = xmldom.evaluate("employee/name", xmldom.documentElement, null,XPathResult.STRING_TYPE, null);
+alert(result.stringValue);</pre>
+<a href="http://www.z-ai.net/study/api/s/8803" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子的输出结果中包含着与"element/name"匹配的第一个元素的第一个子节点中包含的字符串。<br />
+<h3>
+	3. 默认类型结果
+</h3>
+所有XPath 表达式都会自动映射到特定的结果类型。像前面那样设置特定的结果类型，可以限制表达式的输出。而使用XPathResult.ANY_TYPE 常量可以自动确定返回结果的类型。一般来说，自动选择的结果类型可能是布尔值、数值、字符串值或一个次序不一致的节点迭代器。要确定返回的是什么结果类型，可以检测结果的resultType 属性，如下面的例子所示。<br />
+<pre>var result = xmldom.evaluate("employee/name", xmldom.documentElement, null, XPathResult.ANY_TYPE, null);
+if (result !== null) {
+	switch (result.resultType) {
+	case XPathResult.STRING_TYPE:
+		//处理字符串类型
+		break;
+	case XPathResult.NUMBER_TYPE:
+		//处理数值类型
+		break;
+	case XPathResult.BOOLEAN_TYPE:
+		//处理布尔值类型
+		break;
+	case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+		//处理次序不一致的节点迭代器类型
+		break;
+	default:
+		//处理其他可能的结果类型
+	}
+}</pre>
+显然，XPathResult.ANY_TYPE 可以让我们更灵活地使用XPath，但是却要求有更多的处理代码来处理返回的结果。<br />
+<h3>
+	4. 命名空间支持
+</h3>
+对于利用了命名空间的XML 文档，XPathEvaluator 必须知道命名空间信息，然后才能正确地进行求值。处理命名空间的方法也不止一种。我们以下面的XML 代码为例。<br />
+<pre>&lt;?xml version="1.0"?&gt;
+&lt;wrox:books xmlns:wrox="http://www.wrox.com/"&gt;
+	&lt;wrox:book&gt;
+		&lt;wrox:title&gt;Professional JavaScript for Web Developers&lt;/wrox:title&gt;
+		&lt;wrox:author&gt;Nicholas C. Zakas&lt;/wrox:author&gt;
+	&lt;/wrox:book&gt;
+	&lt;wrox:book&gt;
+		&lt;wrox:title&gt;Professional Ajax&lt;/wrox:title&gt;
+		&lt;wrox:author&gt;Nicholas C. Zakas&lt;/wrox:author&gt;
+		&lt;wrox:author&gt;Jeremy McPeak&lt;/wrox:author&gt;
+		&lt;wrox:author&gt;Joe Fawcett&lt;/wrox:author&gt;
+	&lt;/wrox:book&gt;
+&lt;/wrox:books&gt;</pre>
+在这个XML 文档中，所有元素定义都来自http://www.wrox.com/命名空间，以前缀wrox 标识。如果要对这个文档使用XPath，就需要定义要使用的命名空间；否则求值将会失败。处理命名空间的第一种方法是通过createNSResolver()来创建XPathNSResolver 对象。这个方法接受一个参数，即文档中包含命名空间定义的节点。对于前面的XML 文档来说，这个节点就是文档元素&lt;wrox:books&gt;，它的xmlns 特性定义了命名空间。可以把这个节点传递给createNSResolver()，然后可以像下面这样在evaluate()中使用返回的结果。<br />
+<pre>var nsresolver = xmldom.createNSResolver(xmldom.documentElement);
+var result = xmldom.evaluate("wrox:book/wrox:author",xmldom.documentElement, nsresolver,
+XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+alert(result.snapshotLength);</pre>
+<a href="http://www.z-ai.net/study/api/s/8804" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在将nsresolver 对象传入到evaluate()之后，就可以确保它能够理解XPath 表达式中使用的wrox 前缀。读者可以试一试使用相同的表达式，如果不使用XPathNSResolver 的话，就会导致错误。处理命名空间的第二种方法就是定义一个函数，让它接收一个命名空间前缀，返回关联的URI，<br />
+例如：<br />
+<pre>var nsresolver = function(prefix) {
+	switch (prefix) {
+	case "wrox":
+		return "http://www.wrox.com/";
+		//其他前缀
+	}
+};
+var result = xmldom.evaluate("count(wrox:book/wrox:author)", xmldom.documentElement, nsresolver, XPathResult.NUMBER_TYPE, null);
+alert(result.numberValue);</pre>
+<a href="http://www.z-ai.net/study/api/s/8805" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在不确定文档中的哪个节点包含命名空间定义的情况下，这个命名空间解析函数就可以派上用场了。只要你知道前缀和URI，就可以定义一个返回该信息的函数，然后将它作为第三个参数传递给evaluate()即可。<br />
+<h2>
+	18.2.2 IE中的XPath
+</h2>
+IE 对XPath 的支持是内置在基于ActiveX 的XML DOM文档对象中的，没有使用DOMParser 返回的DOM 对象。因此，为了在IE9 及之前的版本中使用XPath，必须使用基于ActiveX 的实现。这个接口在每个节点上额外定义了两个的方法： selectSingleNode() 和selectNodes() 。其中，selectSingleNode()方法接受一个XPath 模式，在找到匹配节点时返回第一个匹配的节点，如果没有找到匹配的节点就返回null。例如：<br />
+<pre>var element = xmldom.documentElement.selectSingleNode("employee/name");
+if (element !== null) {
+	alert(element.xml);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8806" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里，会返回匹配"employee/name"的第一个节点。上下文节点是xmldom.documentElement，因此就调用了该节点上的selectSingleNode()。由于调用这个方法可能会返回null 值，因而有必要在使用返回的节点之前，先检查确定它不是null。<br />
+另一个方法selectNodes()也接收一个XPath 模式作为参数，但它返回与模式匹配的所有节点的NodeList（如果没有匹配的节点，则返回一个包含零项的NodeList）。来看下面的例子。<br />
+<pre>var elements = xmldom.documentElement.selectNodes("employee/name");
+alert(elements.length);</pre>
+<a href="http://www.z-ai.net/study/api/s/8807" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+对这个例子而言，匹配"employee/name"的所有元素都会通过NodeList 返回。由于不可能返回null 值，因此可以放心地使用返回的结果。但要记住，既然结果是NodeList，而其包含的元素可能会动态变化，所以每次访问它都有可能得到不同的结果。<br />
+IE 对XPath 的支持非常简单。除了能够取得一个节点或一个NodeList 外，不可能取得其他结果类型。<br />
+IE 对命名空间的支持要在IE 中处理包含命名空间的XPath 表达式，你必须知道自己使用的命名空间，并按照下列格式创建一个字符串：<br />
+<pre>"xmlns:prefix1='uri1' xmlns:prefix2='uri2' xmlns:prefix3='uri3'"</pre>
+然后，必须将这个字符串传入到XML DOM 文档对象的特殊方法setProperty()中，这个方法接收两个参数：要设置的属性名和属性值。在这里，属性名应该是"SelectionNamespaces"，属性值就是按照前面格式创建的字符串。下面来看一个在DOM XPath 命名空间中对XML 文档求值的例子。<br />
+<pre>xmldom.setProperty("SelectionNamespaces", "xmlns:wrox=’http://www.wrox.com/’");
+var result = xmldom.documentElement.selectNodes("wrox:book/wrox:author");
+alert(result.length);</pre>
+<a href="http://www.z-ai.net/study/api/s/8808" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+对于这个DOM XPath 的例子来说，如果不提供命名空间解析信息，就会在对表达式求值时导致一个错误。<br />
+<h2>
+	18.2.3 跨浏览器使用XPath
+</h2>
+鉴于IE 对XPath 功能的支持有限，因此跨浏览器XPath 只能保证达到IE 支持的功能。换句话说，也就是要在其他使用DOM3 级XPath 对象的浏览器中， 重新创建selectSingleNode() 和selectNodes()方法。第一个函数是selectSingleNode()，它接收三个参数：上下文节点、XPath表达式和可选的命名空间对象。命名空间对象应该是下面这种字面量的形式。<br />
+<pre>{
+	prefix1: "uri1",
+	prefix2: "uri2",
+	prefix3: "uri3"
+}</pre>
+以这种方式提供的命名空间信息，可以方便地转换为针对特定浏览器的命名空间解析格式。下面给出了selectSingleNode()函数的完整代码。<br />
+<pre>function selectSingleNode(context, expression, namespaces) {
+	var doc = (context.nodeType != 9 ? context.ownerDocument: context);
+	if (typeof doc.evaluate != "undefined") {
+		var nsresolver = null;
+		if (namespaces instanceof Object) {
+			nsresolver = function(prefix) {
+				return namespaces[prefix];
+			};
+		}
+		var result = doc.evaluate(expression, context, nsresolver, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+		return (result !== null ? result.singleNodeValue: null);
+	} else if (typeof context.selectSingleNode != "undefined") {
+		//创建命名空间字符串
+		if (namespaces instanceof Object) {
+			var ns = "";
+			for (var prefix in namespaces) {
+				if (namespaces.hasOwnProperty(prefix)) {
+					ns += "xmlns:" + prefix + "='" + namespaces[prefix] + "' ";
+				}
+			}
+			doc.setProperty("SelectionNamespaces", ns);
+		}
+		return context.selectSingleNode(expression);
+	} else {
+		throw new Error("No XPath engine found.");
+	}
+}</pre>
+这个函数首先要确定XML 文档，以便基于该文档对表达式求值。由于上下文节点可能是文档，所以必须要检测nodeType 属性。此后，变量doc 中就会保存对XML 文档的引用。然后，可以检测文档中是否存在evaluate()方法，即是否支持DOM3 级XPath。如果支持，接下来就是检测传入的namespaces 对象。在这里使用instanceof 操作符而不是typeof，是因为后者对null 也返回"object"。然后将nsresolver 变量初始化为null，如果提供了命名空间信息的话，就将其改为一个函数。这个函数是一个闭包，它使用传入的namespaces 对象来返回命名空间的URI。此后，调用evaluate()方法，并对其结果进行检测，在确定是节点之后再返回该结果。<br />
+在这个函数针对IE 的分支中，需要检查context 节点中是否存在selectSingleNode()方法。与DOM分支一样，这里的第一步是有选择地构建命名空间信息。如果传入了namespaces 对象，则迭代其属性并以适当格式创建一个字符串。注意，这里使用了hasOwnProperty()方法来确保对Object.prototype 的任何修改都不会影响到当前函数。最后，调用原生的selectSingleNode()方法并返回结果。<br />
+如果前面两种方法都没有得到支持，这个函数就会抛出一个错误，表示找不到XPath 处理引擎。下面是使用selectSingleNode()函数的示例。<br />
+<pre>var result = selectSingleNode(xmldom.documentElement, "wrox:book/wrox:author",{ wrox: "http://www.wrox.com/" });
+alert(serializeXml(result));</pre>
+<a href="http://www.z-ai.net/study/api/s/8809" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+类似地，也可以创建一个跨浏览器的selectNodes()函数。这个函数接收与selectSingle-Node()相同的三个参数，而且大部分逻辑都相似。为了便于看清楚，我们用加粗字体突出了这两个函数的差别所在。<br />
+<pre>function selectNodes(context, expression, namespaces) {
+	var doc = (context.nodeType != 9 ? context.ownerDocument: context);
+	if (typeof doc.evaluate != "undefined") {
+		var nsresolver = null;
+		if (namespaces instanceof Object) {
+			nsresolver = function(prefix) {
+				return namespaces[prefix];
+			};
+		}
+		var result = doc.evaluate(expression, context, nsresolver, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+		var nodes = new Array();
+		if (result !== null) {
+			for (var i = 0,
+			len = result.snapshotLength; i &lt; len; i++) {
+				nodes.push(result.snapshotItem(i));
+			}
+		}
+		return nodes;
+	} else if (typeof context.selectNodes != "undefined") {
+		//创建命名空间字符串
+		if (namespaces instanceof Object) {
+			var ns = "";
+			for (var prefix in namespaces) {
+				if (namespaces.hasOwnProperty(prefix)) {
+					ns += "xmlns:" + prefix + "='" + namespaces[prefix] + "' ";
+				}
+			}
+			doc.setProperty("SelectionNamespaces", ns);
+		}
+		var result = context.selectNodes(expression);
+		var nodes = new Array();
+		for (var i = 0,
+		len = result.length; i &lt; len; i++) {
+			nodes.push(result[i]);
+		}
+		return nodes;
+	} else {
+		throw new Error("No XPath engine found.");
+	}
+}</pre>
+<p>
+	很明显，其中有很多逻辑都与selectSingleNode()方法相同。在函数针对DOM 的部分，使用了有序快照结果类型，然后将结果保存在了一个数组中。为了与IE 的实现看齐，这个函数应该在没找到匹配项的情况下也返回一个数组，因而最终都要返回数组nodes。在函数针对IE 的分支中，调用了selectNodes()方法并将结果复制到了一个数组中。因为IE 返回的是一个NodeList，所以最好将节点都复制到一个数组中，这样就可以确保在不同浏览器下，函数都能返回相同的数据类型。使用这个函数的示例如下：
+</p>
+<pre>var result = selectNodes(xmldom.documentElement, "wrox:book/wrox:author",{ wrox: "http://www.wrox.com/" });
+alert(result.length);</pre>
+<a href="http://www.z-ai.net/study/api/s/8810" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+为了求得最佳的浏览器兼容性，我们建议在JavaScript 中使用XPath 时，只考虑使用这两个方法。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15384">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

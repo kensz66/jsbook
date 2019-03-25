@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>24.3 部署</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">24.3 部署</h1>
+	<hr>
+		也许所有JavaScript 解决方案最重要的部分，便是最后部署到运营中的网站或者是Web 应用的过程。在这之前可能你已经做了相当多的工作，为普通的使用进行架构并优化一个解决方案。现在是时候从开发环境中走出来并进入Web 阶段了，在此将会和真正的用户交互。然而，在这之前还有一系列需要解决的问题。<br />
+<h2>
+	24.3.1 构建过程
+</h2>
+<p>
+	完备JavaScript 代码可以用于部署的一件很重要的事情，就是给它开发某些类型的构建过程。软件开发的典型模式是写代码—编译—测试，即首先书写好代码，将其编译通过，然后运行并确保其正常工作。
+</p>
+由于JavaScript 并非一个编译型语言，模式变成了写代码—测试，这里你写的代码就是你要在浏览器中测试的代码。这个方法的问题在于它不是最优的，你写的代码不应该原封不动地放入浏览器中，理由如下所示。<br />
+<ul>
+	<li>
+		知识产权问题 —— 如果把带有完整注释的代码放到线上，那别人就更容易知道你的意图，对它再利用，并且可能找到安全漏洞。
+	</li>
+	<li>
+		文件大小 —— 书写代码要保证容易阅读，才能更好地维护，但是这对于性能是不利的。浏览器并不能从额外的空白字符或者是冗长的函数名和变量名中获得什么好处。
+	</li>
+	<li>
+		代码组织 —— 组织代码要考虑到可维护性并不一定是传送给浏览器的最好方式。
+	</li>
+</ul>
+<p>
+	基于这些原因，最好给JavaScript 文件定义一个构建过程。
+</p>
+<p>
+	构建过程始于在源控制中定义用于存储文件的逻辑结构。最好避免使用一个文件存放所有的JavaScript，遵循以下面向对象语言中的典型模式：将每个对象或自定义类型分别放入其单独的文件中。
+</p>
+<p>
+	这样可以确保每个文件包含最少量的代码，使其在不引入错误的情况下更容易修改。另外，在使用像CVS 或Subversion 这类并发源控制系统的时候，这样做也减少了在合并操作中产生冲突的风险。
+</p>
+<p>
+	记住将代码分离成多个文件只是为了提高可维护性，并非为了部署。要进行部署的时候，需要将这些源代码合并为一个或几个归并文件。推荐Web 应用中尽可能使用最少的JavaScript 文件，是因为HTTP请求是Web 中的主要性能瓶颈之一。记住通过&lt;script&gt;标记引用JavaScript 文件是一个阻塞操作，当代码下载并运行的时候会停止其他所有的下载。因此，尽量从逻辑上将JavaScript 代码分组成部署文件。
+</p>
+<p>
+	一旦组织好文件和目录结构，并确定哪些要出现在部署文件中，就可以创建构建系统了。Ant 构建工具（http://ant.apache.org）是为了自动化Java 构建过程而诞生的，不过因为其易用性和应用广泛，而在Web 应用开发人员中也颇流行，诸如Julien Lecomte 的软件工程师，已经写了教程指导如何使用Ant进行JavaScript 和
+</p>
+<blockquote>
+	CSS 的构建自动化（Lecomte 的文章在 www.julienlecomte.net/blog/2007/09/16/ ）。
+</blockquote>
+<p>
+</p>
+Ant 由于其简便的文件处理能力而非常适合JavaScript 编译系统。例如，可以很方便地获得目录中的所有文件的列表，然后将其合并为一个文件，如下所示：<br />
+<pre>&lt;project name="JavaScript Project" default="js.concatenate"&gt;
+	&lt;!-- 输出的目录 --&gt;
+	&lt;property name="build.dir" value="./js" /&gt;
+	&lt;!-- 包含源文件的目录 --&gt;
+	&lt;property name="src.dir" value="./dev/src" /&gt;
+	&lt;!-- 合并所有JS 文件的目标 --&gt;
+	&lt;!-- Credit: Julien Lecomte, http://www.julienlecomte.net/blog/2007/09/16/
+	--&gt;
+	&lt;target name="js.concatenate"&gt;
+		&lt;concat destfile="${build.dir}/output.js"&gt;
+			&lt;filelist dir="${src.dir}/js" files="a.js, b.js" /&gt;
+			&lt;fileset dir="${src.dir}/js" includes="*.js" excludes="a.js, b.js" /&gt;
+		&lt;/concat&gt;
+	&lt;/target&gt;
+&lt;/project&gt;</pre>
+SampleAntDir/build.xml<br />
+<p>
+	该 build.xml 文件定义了两个属性：输出最终文件的构建目录，以及JavaScript 源文件所在的源目录。
+</p>
+<p>
+	目标js.concatenate 使用了&lt;concat&gt;元素来指定需要进行合并的文件的列表以及结果文件所要输出的位置。&lt;filelist&gt;元素用于指定a.js 和b.js 要首先出现在合并的文件中，&lt;fileset&gt;元素指定了之后要添加到目录中的其他所有文件，a.js 和b.js 除外。结果文件最后输出到/js/output.js。
+</p>
+如果安装了Ant，就可以进入build.xml 文件所在的目录，并运行以下命令：<br />
+<code>ant</code><br />
+<p>
+	然后构建过程就开始了，最后生成合并了的文件。如果在文件中还有其他目标，可以使用以下代码仅执行js.concatenate 目标：
+</p>
+<p>
+	<code>ant js.concatenate</code>
+</p>
+可以根据需求，修改构建过程以包含其他步骤。在开发周期中引入构建这一步能让你在部署之前对JavaScript 文件进行更多的处理。<br />
+<h2>
+	24.3.2 验证
+</h2>
+<p>
+	尽管现在出现了一些可以理解并支持JavaScript 的IDE，大多数开发人员还是要在浏览器中运行代码以检查其语法。这种方法有一些问题。首先，验证过程难以自动化或者在不同系统间直接移植。其次，除了语法错误外，很多问题只有在执行代码的时候才会遇到，这给错误留下了空间；有些工具可以帮助确定JavaScript 代码中潜在的问题，其中最著名的就是Douglas Crockford 的JSLint (www.jslint.com)。
+</p>
+JSLint 可以查找JavaScript 代码中的语法错误以及常见的编码错误。它可以发掘的一些潜在问题如下：<br />
+<ul>
+	<li>
+		eval()的使用；
+	</li>
+	<li>
+		未声明变量的使用；
+	</li>
+	<li>
+		遗漏的分号；
+	</li>
+	<li>
+		不恰当的换行；
+	</li>
+	<li>
+		错误的逗号使用；
+	</li>
+	<li>
+		语句周围遗漏的括号；
+	</li>
+	<li>
+		switch 分支语句中遗漏的break；
+	</li>
+	<li>
+		重复声明的变量；
+	</li>
+	<li>
+		with 的使用；
+	</li>
+	<li>
+		错误使用的等号（替代了双等号或三等号）；
+	</li>
+	<li>
+		无法到达的代码。
+	</li>
+</ul>
+为了方便访问，它有一个在线版本，不过它也可以使用基于Java 的Rhino JavaScript 引擎（www.mozilla.org/rhino/）运行于命令行模式下。要在命令行中运行JSLint，首先要下载Rhino，并从 www.jslint.com/下载Rhino 版本的JSLint。一旦安装完成，便可以使用下面的语法从命令行运行JSLint 了：<br />
+<pre>java -jar rhino-1.6R7.jar jslint.js [input files]</pre>
+如这个例子：<br />
+<pre>java -jar rhino-1.6R7.jar jslint.js a.js b.js c.js</pre>
+如果给定文件中有任何语法问题或者是潜在的错误，则会输出有关错误和警告的报告。如果没有问题，代码会直接结束而不显示任何信息。<br />
+可以使用Ant 将JSLint 作为构建过程的一部分运行，添加如下一个目标：<br />
+<pre>&lt;target name="js.verify"&gt;
+	&lt;apply executable="java" parallel="false"&gt;
+		&lt;fileset dir="${build.dir}" includes="output.js" /&gt;
+		&lt;arg line="-jar" /&gt;
+		&lt;arg path="${rhino.jar}" /&gt;
+		&lt;arg path="${jslint.js}" /&gt;
+		&lt;srcfile/&gt;
+	&lt;/apply&gt;
+&lt;/target&gt;</pre>
+SampleAntDir/build.xml<br />
+<p>
+	这个目标假设Rhino jar 文件的位置已经由叫做rhino.jar 的属性指定了，同时JSLint Rhino 文件的位置由叫做jslint.js 的属性指定了。output.js 文件被传递给JSLint 进行校验，然后显示找到的任何问题。
+</p>
+<p>
+	给开发周期添加代码验证这个环节有助于避免将来可能出现的一些错误。建议开发人员给构建过程加入某种类型的代码验证作为确定潜在问题的一个方法，防患于未然。JavaScript 代码校验工具的列表可以在附录D 中找到。
+</p>
+<p>
+</p>
+<h2>
+	24.3.3 压缩
+</h2>
+当谈及JavaScript 文件压缩，其实在讨论两个东西：代码长度和配重（Wire weight）。代码长度指的是浏览器所需解析的字节数，配重指的是实际从服务器传送到浏览器的字节数。在Web 开发的早期，这两个数字几乎是一样的，因为从服务器端到客户端原封不动地传递了源文件。而在今天的Web 上，这两者很少相等，实际上也不应相等。<br />
+<h3>
+	1. 文件压缩
+</h3>
+因为JavaScript 并非编译为字节码，而是按照源代码传送的，代码文件通常包含浏览器执行所不需要的额外的信息和格式。注释，额外的空白，以及长长的变量名和函数名虽然提高了可读性，但却是传送给浏览器时不必要的字节。不过，我们可以使用压缩工具减少文件的大小。压缩器一般进行如下一些步骤：<br />
+<ul>
+	<li>
+		删除额外的空白（包括换行）；
+	</li>
+	<li>
+		删除所有注释；
+	</li>
+	<li>
+		缩短变量名。
+	</li>
+</ul>
+<p>
+	JavaScript 有不少压缩工具可用（附录D 中有一个完整列表），其中最优秀的（有争议的）是YUI 压缩器，http://yuilibrary.com /projects/yuicompressor。YUI 压缩器使用了Rhino JavaScript 解析器将JavaScript代码令牌化。然后使用这个令牌流创建代码不包含空白和注释的优化版本。与一般的基于表达式的压缩器不同的地方在于，YUI 压缩可以确保不引入任何语法错误，并可以安全地缩短局部变量名。
+</p>
+<p>
+	YUI 压缩器是作为Java 的一个jar 文件发布的，名字叫yuicompressor-x.y.z.jar，其中x.y.z是版本号。在写本书的时候，2.3.5 是最新的版本。可以使用以下命令行格式来使用YUI 压缩器：
+</p>
+<pre>java -jar yuicompressor-x.y.z.jar [options] [input files]</pre>
+<p>
+	YUI 压缩器的选项列在了下面的表格内。
+</p>
+--charset charset 指定输入文件所使用的字符集。输出文件会使用同样的字符集 --preserve-semi 保留本来要被删除的无用的分号例如，以下命令行可以用来将CookieUtil.js 压缩成一个叫做cookie.js 的文件：<br />
+<pre>java -jar yuicompressor-2.3.5.jar -o cookie.js CookieUtil.js</pre>
+YUI 压缩器也可以通过直接调用java 可执行文件在Ant 中使用，如下面的例子所示：<br />
+<pre>&lt;!-- Credit: Julien Lecomte, http://www.julienlecomte.net/blog/2007/09/16/ --&gt;
+&lt;target name="js.compress"&gt;
+	&lt;apply executable="java" parallel="false"&gt;
+		&lt;fileset dir="${build.dir}" includes="output.js" /&gt;
+		&lt;arg line="-jar" /&gt;
+		&lt;arg path="${yuicompressor.jar}" /&gt;
+		&lt;arg line="-o ${build.dir}/output-min.js" /&gt;
+		&lt;srcfile/&gt;
+	&lt;/apply&gt;
+&lt;/target&gt;</pre>
+SampleAntDir/build.xml<br />
+该目标包含了一个文件output.js，由构建过程生成的，并传递给YUI 压缩器。输出文件指定为同一目录下的output-min.js。这里假设yuicompressor.jar 属性包含了YUI 压缩器的jar 文件的位置。然后可以使用以下命令运行这个目标：<br />
+<img src="../image/23bb5533693.gif" alt="" /><code>ant js.compress</code><br />
+所有的JavaScript 文件在部署到生产环境之前，都应该使用YUI 压缩器或者类似的工具进行压缩。给构建过程添加一个压缩JavaScript 文件的环节以确保每次都进行这个操作。<br />
+<h3>
+	2. HTTP 压缩
+</h3>
+<p>
+	配重指的是实际从服务器传送到浏览器的字节数。因为现在的服务器和浏览器都有压缩功能，这个字节数不一定和代码长度一样。所有的五大Web 浏览器（IE、Firefox、Safari、Chrome 和Opera）都支持对所接收的资源进行客户端解压缩。这样服务器端就可以使用服务器端相关功能来压缩JavaScript 文件。一个指定了文件使用了给定格式进行了压缩的HTTP 头包含在了服务器响应中。接着浏览器会查看该HTTP 头确定文件是否已被压缩，然后使用合适的格式进行解压缩。结果是和原来的代码量相比在网络中传递的字节数量大大减少了。
+</p>
+<p>
+	对于Apache Web 服务器，有两个模块可以进行HTTP 压缩：mod_gzip（Apache1.3.x）和mod_deflate（Apache 2.0.x）。对于mod_gzip，可以给httpd.conf 文件或者是.htaccess 文件添加以下代码启用对JavaScript 的自动压缩：
+</p>
+<pre>#告诉mod_zip 要包含任何以.js 结尾的文件
+mod_gzip_item_include file \.js$</pre>
+<p>
+	该行代码告诉mod_zip 要包含来自浏览器请求的任何以.js 结尾的文件。假设你所有的JavaScript文件都以.js 结尾，就可以压缩所有请求并应用合适的HTTP 头以表示内容已被压缩。
+</p>
+<blockquote>
+	关于mod_zip的更多信息，请访问项目网站http://www.sourceforge.net/projects/mod-gzip/。
+</blockquote>
+<p>
+</p>
+对于mod_deflate，可以类似添加一行代码以保证JavaScript 文件在被发送之前已被压缩。将以下这一行代码添加到httpd.conf 文件或者是.htaccess 文件中：<br />
+<pre>#告诉mod_deflate 要包含所有的JavaScript 文件
+AddOutputFilterByType DEFLATE application/x-javascript</pre>
+<p>
+	注意这一行代码用到了响应的MIME 类型来确定是否对其进行压缩。记住虽然&lt;script&gt;的type属性用的是text/javascript，但是JavaScript 文件一般还是用application/x-javascript 作为其服务的MIME 类型。
+</p>
+<blockquote>
+	关于mod_deflate 的更多信息，请访问http://httpd.apache.org/docs/2.0/mod/mod_deflate.html。
+</blockquote>
+<p>
+</p>
+<p>
+	mod_gzip 和mod_deflate 都可以节省大约70%的JavaScript 文件大小。这很大程度上是因为JavaScript 都是文本文件，因此可以非常有效地进行压缩。减少文件的配重可以减少需要传输到浏览器的时间。记住有一点点细微的代价，因为服务器必须花时间对每个请求压缩文件，当浏览器接收到这些文件后也需要花一些时间解压缩。不过，一般来说，这个代价还是值得的。
+</p>
+<p>
+	大部分Web 服务器，开源的或是商业的，都有一些HTTP 压缩功能。请查看服务器的文档说明以确定如何合适地配置压缩。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15423">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

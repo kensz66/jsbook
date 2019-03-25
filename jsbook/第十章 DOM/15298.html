@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>10.2 DOM 操作技术</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">10.2 DOM 操作技术</h1>
+	<hr>
+		<p>
+	很多时候，DOM 操作都比较简明，因此用JavaScript 生成那些通常原本是用HTML 代码生成的内容并不麻烦。不过，也有一些时候，操作DOM 并不像表面上看起来那么简单。由于浏览器中充斥着隐藏的陷阱和不兼容问题，用JavaScript 代码处理DOM 的某些部分要比处理其他部分更复杂一些。
+</p>
+<h2>
+	10.2.1 动态脚本
+</h2>
+<p>
+	使用&lt;script&gt;元素可以向页面中插入JavaScript 代码，一种方式是通过其src 特性包含外部文件，另一种方式就是用这个元素本身来包含代码。而这一节要讨论的动态脚本，指的是在页面加载时不存在，但将来的某一时刻通过修改DOM 动态添加的脚本。跟操作HTML 元素一样，创建动态脚本也有两种方式：插入外部文件和直接插入JavaScript 代码。
+</p>
+动态加载的外部JavaScript 文件能够立即运行，比如下面的&lt;script&gt;元素：<br />
+<pre>&lt;script type="text/javascript" src="client.js"&gt;&lt;/script&gt;</pre>
+这个&lt;script&gt;元素包含了第9 章的客户端检测脚本。而创建这个节点的DOM 代码如下所示：<br />
+<pre>var script = document.createElement("script");
+script.type = "text/javascript";
+script.src = "client.js";
+document.body.appendChild(script);</pre>
+<p>
+	显然，这里的DOM 代码如实反映了相应的HTML 代码。不过，在执行最后一行代码把&lt;script&gt;元素添加到页面中之前，是不会下载外部文件的。也可以把这个元素添加到&lt;head&gt;元素中，效果相同。
+</p>
+整个过程可以使用下面的函数来封装：<br />
+<pre>function loadScript(url) {
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	script.src = url;
+	document.body.appendChild(script);
+}</pre>
+然后，就可以通过调用这个函数来加载外部的JavaScript 文件了：<br />
+<pre>loadScript("client.js");</pre>
+<p>
+	加载完成后，就可以在页面中的其他地方使用这个脚本了。问题只有一个：怎么知道脚本加载完成呢？遗憾的是，并没有什么标准方式来探知这一点。不过，与此相关的一些事件倒是可以派上用场，但要取决于所用的浏览器，详细讨论请见第13 章。
+</p>
+另一种指定JavaScript 代码的方式是行内方式，如下面的例子所示：<br />
+<pre>&lt;script type="text/javascript"&gt;
+	function sayHi() {
+		alert("hi");
+	}
+&lt;/script&gt;</pre>
+从逻辑上讲，下面的DOM代码是有效的：<br />
+<pre>var script = document.createElement("script");
+script.type = "text/javascript";
+script.appendChild(document.createTextNode("function sayHi(){alert('hi');}"));
+document.body.appendChild(script);</pre>
+在Firefox、Safari、Chrome 和Opera 中，这些DOM 代码可以正常运行。但在IE 中，则会导致错误。<br />
+IE 将&lt;script&gt;视为一个特殊的元素，不允许DOM 访问其子节点。不过，可以使用&lt;script&gt;元素的text 属性来指定JavaScript 代码，像下面的例子这样：<br />
+<pre>var script = document.createElement("script");
+script.type = "text/javascript";
+script.text = "function sayHi(){alert('hi');}";
+document.body.appendChild(script);</pre>
+<a href="http://www.z-ai.net/study/api/s/8597" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	经过这样修改之后的代码可以在IE、Firefox、Opera 和Safari 3 及之后版本中运行。Safari 3.0 之前的版本虽然不能正确地支持text 属性，但却允许使用文本节点技术来指定代码。如果需要兼容早期版本的Safari，可以使用下列代码：
+</p>
+<pre>var script = document.createElement("script");
+script.type = "text/javascript";
+var code = "function sayHi(){alert('hi');}";
+try {
+&nbsp;&nbsp; &nbsp;script.appendChild(document.createTextNode("code"));
+} catch(ex) {
+&nbsp;&nbsp; &nbsp;script.text = "code";
+}
+document.body.appendChild(script); </pre>
+这里，首先尝试标准的DOM 文本节点方法，因为除了IE（在IE 中会导致抛出错误），所有浏览器都支持这种方式。如果这行代码抛出了错误，那么说明是IE，于是就必须使用text 属性了。整个过程可以用以下函数来表示：<br />
+<pre>function loadScriptString(code) {
+	var script = document.createElement("script");
+	script.type = "text/javascript";
+	try {
+		script.appendChild(document.createTextNode(code));
+	} catch(ex) {
+		script.text = code;
+	}
+	document.body.appendChild(script);
+}</pre>
+下面是调用这个函数的示例：<br />
+<pre>loadScriptString("function sayHi(){alert('hi');}");</pre>
+<a href="http://www.z-ai.net/study/api/s/8598" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以这种方式加载的代码会在全局作用域中执行，而且当脚本执行后将立即可用。实际上，这样执行代码与在全局作用域中把相同的字符串传递给eval()是一样的。<br />
+<h2>
+	10.2.2 动态样式
+</h2>
+<p>
+	能够把CSS 样式包含到HTML 页面中的元素有两个。其中，&lt;link&gt;元素用于包含来自外部的文件，而&lt;style&gt;元素用于指定嵌入的样式。与动态脚本类似，所谓动态样式是指在页面刚加载时不存在的样式；动态样式是在页面加载完成后动态添加到页面中的。
+</p>
+我们以下面这个典型的&lt;link&gt;元素为例：<br />
+<pre>&lt;link rel="stylesheet" type="text/css" href="styles.css"&gt;</pre>
+使用DOM 代码可以很容易地动态创建出这个元素：<br />
+<pre>var link = document.createElement("link");
+link.rel = "stylesheet";
+link.type = "text/css";
+link.href = "style.css";
+var head = document.getElementsByTagName("head")[0];
+head.appendChild(link);</pre>
+<p>
+	以上代码在所有主流浏览器中都可以正常运行。需要注意的是，必须将&lt;link&gt;元素添加到&lt;head&gt;而不是&lt;body&gt;元素，才能保证在所有浏览器中的行为一致。整个过程可以用以下函数来表示：
+</p>
+<pre>function loadStyles(url) {
+	var link = document.createElement("link");
+	link.rel = "stylesheet";
+	link.type = "text/css";
+	link.href = url;
+	var head = document.getElementsByTagName("head")[0];
+	head.appendChild(link);
+}</pre>
+调用loadStyles()函数的代码如下所示：<br />
+<pre>loadStyles("styles.css");</pre>
+<p>
+	加载外部样式文件的过程是异步的，也就是加载样式与执行JavaScript 代码的过程没有固定的次序。
+</p>
+<p>
+	一般来说，知不知道样式已经加载完成并不重要；不过，也存在几种利用事件来检测这个过程是否完成的技术，这些技术将在第13 章讨论。
+</p>
+另一种定义样式的方式是使用&lt;style&gt;元素来包含嵌入式CSS，如下所示：<br />
+<pre>&lt;style type="text/css"&gt;
+	body { background-color: red; }
+&lt;/style&gt;</pre>
+按照相同的逻辑，下列DOM 代码应该是有效的：<br />
+<pre>var style = document.createElement("style");
+style.type = "text/css";
+style.appendChild(document.createTextNode("body{background-color:red}"));
+var head = document.getElementsByTagName("head")[0];
+head.appendChild(style);</pre>
+<a href="http://www.z-ai.net/study/api/s/8599" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	以上代码可以在Firefox、Safari、Chrome 和Opera 中运行，在IE 中则会报错。IE 将&lt;style&gt;视为一个特殊的、与&lt;script&gt;类似的节点，不允许访问其子节点。事实上，IE 此时抛出的错误与向&lt;script&gt;元素添加子节点时抛出的错误相同。解决IE 中这个问题的办法，就是访问元素的styleSheet 属性，该属性又有一个cssText 属性，可以接受CSS 代码（第13 章将进一步讨论这两个属性），如下面的例子所示。
+</p>
+<pre>var style = document.createElement("style");
+style.type = "text/css";
+try {
+	style.appendChild(document.createTextNode("body{background-color:red}"));
+} catch(ex) {
+	style.styleSheet.cssText = "body{background-color:red}";
+}
+var head = document.getElementsByTagName("head")[0];
+head.appendChild(style);</pre>
+与动态添加嵌入式脚本类似，重写后的代码使用了try-catch 语句来捕获IE 抛出的错误，然后再使用针对IE 的特殊方式来设置样式。因此，通用的解决方案如下。<br />
+<pre>function loadStyleString(css) {
+	var style = document.createElement("style");
+	style.type = "text/css";
+	try {
+		style.appendChild(document.createTextNode(css));
+	} catch(ex) {
+		style.styleSheet.cssText = css;
+	}
+	var head = document.getElementsByTagName("head")[0];
+	head.appendChild(style);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8600" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+调用这个函数的示例如下：<br />
+<pre>loadStyleString("body{background-color:red}");</pre>
+这种方式会实时地向页面中添加样式，因此能够马上看到变化。<br />
+<blockquote>
+	如果专门针对IE 编写代码，务必小心使用styleSheet.cssText 属性。在重用同一个&lt;style&gt;元素并再次设置这个属性时，有可能会导致浏览器崩溃。同样，将cssText 属性设置为空字符串也可能导致浏览器崩溃。我们希望IE 中的这个bug 能够在将来被修复。
+</blockquote>
+<h2>
+	10.2.3 操作表格
+</h2>
+&lt;table&gt;元素是HTML 中最复杂的结构之一。要想创建表格，一般都必须涉及表示表格行、单元格、表头等方面的标签。由于涉及的标签多，因而使用核心DOM 方法创建和修改表格往往都免不了要编写大量的代码。假设我们要使用DOM 来创建下面的HTML 表格。<br />
+<pre>&lt;table border="1" width="100%"&gt;
+	&lt;tbody&gt;
+		&lt;tr&gt;
+			&lt;td&gt;
+				Cell 1,1
+			&lt;/td&gt;
+			&lt;td&gt;
+				Cell 2,1
+			&lt;/td&gt;
+		&lt;/tr&gt;
+		&lt;tr&gt;
+			&lt;td&gt;
+				Cell 1,2
+			&lt;/td&gt;
+			&lt;td&gt;
+				Cell 2,2
+			&lt;/td&gt;
+		&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;</pre>
+要使用核心DOM方法创建这些元素，得需要像下面这么多的代码：<br />
+<pre>//创建table
+var table = document.createElement("table");
+table.border = 1;
+table.width = "100%";
+//创建tbody
+var tbody = document.createElement("tbody");
+table.appendChild(tbody);
+//创建第一行
+var row1 = document.createElement("tr");
+tbody.appendChild(row1);
+var cell1_1 = document.createElement("td");
+cell1_1.appendChild(document.createTextNode("Cell 1,1"));
+row1.appendChild(cell1_1);
+var cell2_1 = document.createElement("td");
+cell2_1.appendChild(document.createTextNode("Cell 2,1"));
+row1.appendChild(cell2_1);
+//创建第二行
+var row2 = document.createElement("tr");
+tbody.appendChild(row2);
+var cell1_2 = document.createElement("td");
+cell1_2.appendChild(document.createTextNode("Cell 1,2"));
+row2.appendChild(cell1_2);
+var cell2_2 = document.createElement("td");
+cell2_2.appendChild(document.createTextNode("Cell 2,2"));
+row2.appendChild(cell2_2);
+//将表格添加到文档主体中
+document.body.appendChild(table);</pre>
+<a href="http://www.z-ai.net/study/api/s/8601" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+显然，DOM代码很长，还有点不太好懂。为了方便构建表格，HTML DOM 还为&lt;table&gt;、&lt;tbody&gt;和&lt;tr&gt;元素添加了一些属性和方法。为&lt;table&gt;元素添加的属性和方法如下。<br />
+<ul>
+	<li>
+		caption：保存着对&lt;caption&gt;元素（如果有）的指针。
+	</li>
+	<li>
+		tBodies：是一个&lt;tbody&gt;元素的HTMLCollection。
+	</li>
+	<li>
+		tFoot：保存着对&lt;tfoot&gt;元素（如果有）的指针。
+	</li>
+	<li>
+		tHead：保存着对&lt;thead&gt;元素（如果有）的指针。
+	</li>
+	<li>
+		rows：是一个表格中所有行的HTMLCollection。
+	</li>
+	<li>
+		createTHead()：创建&lt;thead&gt;元素，将其放到表格中，返回引用。
+	</li>
+	<li>
+		createTFoot()：创建&lt;tfoot&gt;元素，将其放到表格中，返回引用。
+	</li>
+	<li>
+		createCaption()：创建&lt;caption&gt;元素，将其放到表格中，返回引用。
+	</li>
+	<li>
+		deleteTHead()：删除&lt;thead&gt;元素。
+	</li>
+	<li>
+		deleteTFoot()：删除&lt;tfoot&gt;元素。
+	</li>
+	<li>
+		deleteCaption()：删除&lt;caption&gt;元素。
+	</li>
+	<li>
+		deleteRow(pos)：删除指定位置的行。
+	</li>
+	<li>
+		insertRow(pos)：向rows 集合中的指定位置插入一行。
+	</li>
+</ul>
+为&lt;tbody&gt;元素添加的属性和方法如下。<br />
+<ul>
+	<li>
+		rows：保存着&lt;tbody&gt;元素中行的HTMLCollection。
+	</li>
+	<li>
+		deleteRow(pos)：删除指定位置的行。
+	</li>
+	<li>
+		insertRow(pos)：向rows 集合中的指定位置插入一行，返回对新插入行的引用。
+	</li>
+</ul>
+为&lt;tr&gt;元素添加的属性和方法如下。<br />
+<ul>
+	<li>
+		cells：保存着&lt;tr&gt;元素中单元格的HTMLCollection。
+	</li>
+	<li>
+		deleteCell(pos)：删除指定位置的单元格。
+	</li>
+	<li>
+		insertCell(pos)：向cells 集合中的指定位置插入一个单元格，返回对新插入单元格的引用。
+	</li>
+</ul>
+使用这些属性和方法，可以极大地减少创建表格所需的代码数量。例如，使用这些属性和方法可以将前面的代码重写如下（加阴影的部分是重写后的代码）。<br />
+<pre>//创建table
+var table = document.createElement("table");
+table.border = 1;
+table.width = "100%";
+//创建tbody
+var tbody = document.createElement("tbody");
+table.appendChild(tbody);
+//创建第一行
+tbody.insertRow(0);
+tbody.rows[0].insertCell(0);
+tbody.rows[0].cells[0].appendChild(document.createTextNode("Cell 1,1"));
+tbody.rows[0].insertCell(1);
+tbody.rows[0].cells[1].appendChild(document.createTextNode("Cell 2,1"));
+//创建第二行
+tbody.insertRow(1);
+tbody.rows[1].insertCell(0);
+tbody.rows[1].cells[0].appendChild(document.createTextNode("Cell 1,2"));
+tbody.rows[1].insertCell(1);
+tbody.rows[1].cells[1].appendChild(document.createTextNode("Cell 2,2"));
+//将表格添加到文档主体中
+document.body.appendChild(table);</pre>
+<a href="http://www.z-ai.net/study/api/s/8602" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	在这次的代码中，创建&lt;table&gt;和&lt;tbody&gt;的代码没有变化。不同的是创建两行的部分，其中使用HTML DOM 定义的表格属性和方法。在创建第一行时，通过&lt;tbody&gt;元素调用了insertRow()方法，传入了参数0——表示应该将插入的行放在什么位置上。执行这一行代码后，就会自动创建一行并将其插入到&lt;tbody&gt;元素的位置0 上，因此就可以马上通过tbody.rows[0]来引用新插入的行。
+</p>
+<p>
+	创建单元格的方式也十分相似，即通过&lt;tr&gt;元素调用insertCell()方法并传入放置单元格的位置。然后，就可以通过tbody.rows[0].cells[0]来引用新插入的单元格，因为新创建的单元格被插入到了这一行的位置0 上。
+</p>
+总之，使用这些属性和方法创建表格的逻辑性更强，也更容易看懂，尽管技术上这两套代码都是正确的。<br />
+<h2>
+	10.2.4 使用NodeList
+</h2>
+理解NodeList 及其“近亲”NamedNodeMap 和HTMLCollection，是从整体上透彻理解DOM的关键所在。这三个集合都是“动态的”；换句话说，每当文档结构发生变化时，它们都会得到更新。因此，它们始终都会保存着最新、最准确的信息。从本质上说，所有NodeList 对象都是在访问DOM文档时实时运行的查询。例如，下列代码会导致无限循环：<br />
+<pre>var divs = document.getElementsByTagName("div"),
+i,
+div;
+for (i = 0; i &lt; divs.length; i++) {
+	div = document.createElement("div");
+	document.body.appendChild(div);
+}</pre>
+<p>
+	第一行代码会取得文档中所有&lt;div&gt;元素的HTMLCollection。由于这个集合是“动态的”，因此只要有新&lt;div&gt;元素被添加到页面中，这个元素也会被添加到该集合中。浏览器不会将创建的所有集合都保存在一个列表中，而是在下一次访问集合时再更新集合。结果，在遇到上例中所示的循环代码时，就会导致一个有趣的问题。每次循环都要对条件i &lt; divs.length 求值，意味着会运行取得所有&lt;div&gt;元素的查询。考虑到循环体每次都会创建一个新&lt;div&gt;元素并将其添加到文档中，因此divs.length 的值在每次循环后都会递增。既然i 和divs.length 每次都会同时递增，结果它们的值永远也不会相等。
+</p>
+<p>
+	如果想要迭代一个NodeList，最好是使用length 属性初始化第二个变量，然后将迭代器与该变量进行比较，如下面的例子所示：
+</p>
+<pre>var divs = document.getElementsByTagName("div"),
+i,
+len,
+div;
+for (i = 0, len = divs.length; i &lt; len; i++) {
+	div = document.createElement("div");
+	document.body.appendChild(div);
+}</pre>
+<p>
+	这个例子中初始化了第二个变量len。由于len 中保存着对divs.length 在循环开始时的一个快照，因此就会避免上一个例子中出现的无限循环问题。在本章演示迭代NodeList 对象的例子中，使用的都是这种更为保险的方式。
+</p>
+<p>
+	一般来说，应该尽量减少访问NodeList 的次数。因为每次访问NodeList，都会运行一次基于文档的查询。所以，可以考虑将从NodeList 中取得的值缓存起来。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15298">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

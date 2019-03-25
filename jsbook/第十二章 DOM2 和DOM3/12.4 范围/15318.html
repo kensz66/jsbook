@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>12.4.2 IE8 及更早版本中的范围</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">12.4.2 IE8 及更早版本中的范围</h1>
+	<hr>
+		虽然IE9 支持DOM 范围，但IE8 及之前版本不支持DOM范围。不过，IE8 及早期版本支持一种类似的概念，即文本范围（text range）。文本范围是IE 专有的特性，其他浏览器都不支持。顾名思义，文本范围处理的主要是文本（不一定是DOM 节点）。通过&lt;body&gt;、&lt;button&gt;、&lt;input&gt;和&lt;textarea&gt;等这几个元素，可以调用createTextRange()方法来创建文本范围。以下是一个例子：<br />
+<pre>var range = document.body.createTextRange();</pre>
+像这样通过document 创建的范围可以在页面中的任何地方使用（通过其他元素创建的范围则只能在相应的元素中使用）。与DOM 范围类似，使用IE 文本范围的方式也有很多种。<br />
+<h2>
+	1. 用IE 范围实现简单的选择
+</h2>
+选择页面中某一区域的最简单方式，就是使用范围的findText()方法。这个方法会找到第一次出现的给定文本，并将范围移过来以环绕该文本。如果没有找到文本，这个方法返回false；否则返回true。同样，仍然以下面的HTML 代码为例。<br />
+<pre>&lt;p id="p1"&gt;&lt;b&gt;Hello&lt;/b&gt; world!&lt;/p&gt;</pre>
+要选择"Hello"，可以使用下列代码。<br />
+<pre>var range = document.body.createTextRange();
+var found = range.findText("Hello");</pre>
+<a href="http://www.z-ai.net/study/api/s/8653" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在执行完第二行代码之后，文本"Hello"就被包围在范围之内了。为此，可以检查范围的text 属性来确认（这个属性返回范围中包含的文本），或者也可以检查findText()的返回值——在找到了文本的情况下返回值为true。例如：<br />
+<pre>alert(found); //true
+alert(range.text); //"Hello"</pre>
+还可以为findText()传入另一个参数，即一个表示向哪个方向继续搜索的数值。负值表示应该从当前位置向后搜索，而正值表示应该从当前位置向前搜索。因此，要查找文档中前两个"Hello"的实例，应该使用下列代码。<br />
+<pre>var found = range.findText("Hello");
+var foundAgain = range.findText("Hello", 1);</pre>
+IE 中与DOM 中的selectNode()方法最接近的方法是moveToElementText()，这个方法接受一个DOM 元素，并选择该元素的所有文本，包括HTML 标签。下面是一个例子。<br />
+<pre>var range = document.body.createTextRange();
+var p1 = document.getElementById("p1");
+range.moveToElementText(p1);</pre>
+<a href="http://www.z-ai.net/study/api/s/8654" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在文本范围中包含HTML 的情况下，可以使用htmlText 属性取得范围的全部内容，包括HTML和文本，如下面的例子所示。<br />
+<pre>alert(range.htmlText);</pre>
+IE 的范围没有任何属性可以随着范围选区的变化而动态更新。不过，其parentElement()方法倒是与DOM 的commonAncestorContainer 属性类似。<br />
+<pre>var ancestor = range.parentElement();</pre>
+这样得到的父元素始终都可以反映文本选区的父节点。<br />
+<h2>
+	2. 使用IE 范围实现复杂的选择
+</h2>
+在IE 中创建复杂范围的方法，就是以特定的增量向四周移动范围。为此，IE 提供了4 个方法：<br />
+move()、moveStart()、moveEnd()和expand()。这些方法都接受两个参数：移动单位和移动单位的数量。其中，移动单位是下列一种字符串值。<br />
+<ul>
+	<li>
+		"character"：逐个字符地移动。
+	</li>
+	<li>
+		"word"：逐个单词（一系列非空格字符）地移动。
+	</li>
+	<li>
+		"sentence"：逐个句子（一系列以句号、问号或叹号结尾的字符）地移动。
+	</li>
+	<li>
+		"textedit"：移动到当前范围选区的开始或结束位置。
+	</li>
+</ul>
+通过moveStart()方法可以移动范围的起点，通过moveEnd()方法可以移动范围的终点，移动的幅度由单位数量指定，如下面的例子所示。<br />
+<pre>range.moveStart("word", 2); //起点移动2 个单词
+range.moveEnd("character", 1); //终点移动1 个字符</pre>
+使用expand()方法可以将范围规范化。换句话说，expand()方法的作用是将任何部分选择的文本全部选中。例如，当前选择的是一个单词中间的两个字符，调用expand("word")可以将整个单词都包含在范围之内。<br />
+而move()方法则首先会折叠当前范围（让起点和终点相等），然后再将范围移动指定的单位数量，如下面的例子所示。<br />
+<pre>range.move("character", 5); //移动5 个字符</pre>
+调用move()之后，范围的起点和终点相同，因此必须再使用moveStart()或moveEnd()创建新的选区。<br />
+<h2>
+	3. 操作IE 范围中的内容
+</h2>
+在IE 中操作范围中的内容可以使用text 属性或pasteHTML()方法。如前所述，通过text 属性可以取得范围中的内容文本；但是，也可以通过这个属性设置范围中的内容文本。来看一个例子。<br />
+<pre>var range = document.body.createTextRange();
+range.findText("Hello");
+range.text = "Howdy";</pre>
+如果仍以前面的Hello World 代码为例，执行以上代码后的HTML 代码如下。<br />
+<pre>&lt;p id="p1"&gt;&lt;b&gt;Howdy&lt;/b&gt; world!&lt;/p&gt;</pre>
+注意，在设置text 属性的情况下，HTML 标签保持不变。<br />
+要向范围中插入HTML 代码，就得使用pasteHTML()方法，如下面的例子所示。<br />
+<pre>var range = document.body.createTextRange();
+range.findText("Hello");
+range.pasteHTML("&lt;em&gt;Howdy&lt;/em&gt;");</pre>
+<a href="http://www.z-ai.net/study/api/s/8655" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+执行这些代码后，会得到如下HTML。<br />
+<pre>&lt;p id="p1"&gt;&lt;b&gt;&lt;em&gt;Howdy&lt;/em&gt;&lt;/b&gt; world!&lt;/p&gt;</pre>
+不过，在范围中包含HTML 代码时，不应该使用pasteHTML()，因为这样很容易导致不可预料的结果——很可能是格式不正确的HTML。<br />
+<h2>
+	4. 折叠IE 范围
+</h2>
+IE 为范围提供的collapse()方法与相应的DOM 方法用法一样：传入true 把范围折叠到起点，传入false 把范围折叠到终点。例如：<br />
+<pre>range.collapse(true); //折叠到起点</pre>
+可惜的是，没有对应的collapsed 属性让我们知道范围是否已经折叠完毕。为此，必须使用boundingWidth 属性，该属性返回范围的宽度（以像素为单位）。如果boundingWidth 属性等于0，就说明范围已经折叠了：<br />
+<pre>var isCollapsed = (range.boundingWidth == 0);</pre>
+此外，还有boundingHeight、boundingLeft 和boundingTop 等属性，虽然它们都不像boundingWidth 那么有用，但也可以提供一些有关范围位置的信息。<br />
+<h2>
+	5. 比较IE 范围
+</h2>
+IE 中的compareEndPoints()方法与DOM范围的compareBoundaryPoints()方法类似。这个方法接受两个参数：比较的类型和要比较的范围。比较类型的取值范围是下列几个字符串值："StartToStart"、"StartToEnd"、"EndToEnd"和"EndToStart"。这几种比较类型与比较DOM范围时使用的几个值是相同的。<br />
+同样与DOM类似的是，compareEndPoints()方法也会按照相同的规则返回值，即如果第一个范围的边界位于第二个范围的边界前面，返回-1；如果二者边界相同，返回0；如果第一个范围的边界位于第二个范围的边界后面，返回1。仍以前面的Hello World 代码为例，下列代码将创建两个范围，一个选择"Hello world!"（包括&lt;b&gt;标签），另一个选择"Hello"。<br />
+<pre>var range1 = document.body.createTextRange();
+var range2 = document.body.createTextRange();
+range1.findText("Hello world!");
+range2.findText("Hello");
+alert(range1.compareEndPoints("StartToStart", range2)); //0
+alert(range1.compareEndPoints("EndToEnd", range2)); //1</pre>
+<a href="http://www.z-ai.net/study/api/s/8656" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+由于这两个范围共享同一个起点，所以使用compareEndPoints()比较起点返回0。而range1的终点在range2 的终点后面，所以compareEndPoints()返回1。<br />
+IE 中还有两个方法，也是用于比较范围的：isEqual()用于确定两个范围是否相等，inRange()用于确定一个范围是否包含另一个范围。下面是相应的示例。<br />
+<pre>var range1 = document.body.createTextRange();
+var range2 = document.body.createTextRange();
+range1.findText("Hello World");
+range2.findText("Hello");
+alert("range1.isEqual(range2): " + range1.isEqual(range2)); //false
+alert("range1.inRange(range2):" + range1.inRange(range2)); //true</pre>
+<a href="http://www.z-ai.net/study/api/s/8657" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子使用了与前面相同的范围来示范这两个方法。由于这两个范围的终点不同，所以它们不相等，调用isEqual()返回false。由于range2 实际位于range1 内部，它的终点位于后者的终点之前、起点之后，所以range2 被包含在range1 内部，调用inRange()返回true。<br />
+<h2>
+	6. 复制IE 范围
+</h2>
+在IE 中使用duplicate()方法可以复制文本范围，结果会创建原范围的一个副本，如下面的例子所示。<br />
+<pre>var newRange = range.duplicate();</pre>
+新创建的范围会带有与原范围完全相同的属性。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15318">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

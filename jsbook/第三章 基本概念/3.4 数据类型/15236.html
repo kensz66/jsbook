@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.4.5 Number类型</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.4.5 Number类型</h1>
+	<hr>
+		<p>
+	Number 类型应该是 ECMAScript 中最令人关注的数据类型了，这种类型使用 IEEE754 格式来表示整数和浮点数值（浮点数值在某些语言中也被称为双精度数值）。为支持各种数值类型， ECMA-262 定义了不同的数值字面量格式。
+</p>
+<p>
+	最基本的数值字面量格式是十进制整数，十进制整数可以像下面这样直接在代码中输入：
+</p>
+<pre>var intNum = 55; // 整数</pre>
+<p>
+	除了以十进制表示外，整数还可以通过八进制（以 8 为基数）或十六进制（以 16 为基数）的字面值来表示。其中，八进制字面值的第一位必须是零（0） ，然后是八进制数字序列（0～7） 。如果字面值中的数值超出了范围，那么前导零将被忽略，后面的数值将被当作十进制数值解析。请看下面的例子：
+</p>
+<pre>var octalNum1 = 070; // 八进制的 56
+var octalNum2 = 079; // 无效的八进制数值——解析为 79
+var octalNum3 = 08; // 无效的八进制数值——解析为 8</pre>
+<p>
+	八进制字面量在严格模式下是无效的，会导致支持的 JavaScript 引擎抛出错误。十六进制字面值的前两位必须是 0x，后跟任何十六进制数字（0～9 及 A～F）。其中，字母 A～F可以大写，也可以小写。如下面的例子所示：
+</p>
+<pre>var hexNum2 = 0x1f; // 十六进制的 31</pre>
+<p>
+	在进行算术计算时，所有以八进制和十六进制表示的数值最终都将被转换成十进制数值。
+</p>
+<pre>var hexNum1 = 0xA; // 十六进制的 10
+var hexNum2 = 0x1f; // 十六进制的 31</pre>
+<blockquote>
+	① n/a（或 N/A），是 not applicable 的缩写，意思是“不适用”。
+</blockquote>
+<p>
+	鉴于 JavaScript 中保存数值的方式，可以保存正零（<code>+0</code>）和负零（<code>-0</code>）。正零和负零被认为相等，但为了读者更好地理解上下文，这里特别做此说明。
+</p>
+<h2>
+	1. 浮点数值
+</h2>
+<p>
+	所谓浮点数值，就是该数值中必须包含一个小数点，并且小数点后面必须至少有一位数字。虽然小数点前面可以没有整数，但我们不推荐这种写法。以下是浮点数值的几个例子：
+</p>
+<pre>var floatNum1 = 1.1;
+var floatNum2 = 0.1;
+var floatNum3 = .1; // 有效，但不推荐</pre>
+<p>
+	由于保存浮点数值需要的内存空间是保存整数值的两倍，因此 ECMAScript 会不失时机地将浮点数值转换为整数值。显然，如果小数点后面没有跟任何数字，那么这个数值就可以作为整数值来保存。同样地，如果浮点数值本身表示的就是一个整数（如 1.0） ，那么该值也会被转换为整数，如下面的例子所示：
+</p>
+<pre>var floatNum1 = 1.; // 小数点后面没有数字——解析为 1
+var floatNum2 = 10.0; // 整数——解析为 10</pre>
+<p>
+	对于那些极大或极小的数值，可以用 e 表示法（即科学计数法）表示的浮点数值表示。用 e 表示法表示的数值等于 e 前面的数值乘以 10 的指数次幂。 ECMAScript 中 e 表示法的格式也是如此，即前面是一个数值（可以是整数也可以是浮点数），中间是一个大写或小写的字母 E，后面是 10 的幂中的指数，该幂值将用来与前面的数相乘。下面是一个使用 e 表示法表示数值的例子：
+</p>
+<pre>var floatNum = 3.125e7; // 等于 31250000</pre>
+<p>
+	在这个例子中，使用 e 表示法表示的变量 floatNum 的形式虽然简洁，但它的实际值则是 31250000。在此， e 表示法的实际含义就是“ 3.125 乘以 107”。
+</p>
+<p>
+	也可以使用 e 表示法表示极小的数值，如 0.00000000000000003，这个数值可以使用更简洁的 3e17表示。在默认情况下， ECMASctipt 会将那些小数点后面带有 6 个零以上的浮点数值转换为以 e 表示法表示的数值（例如， 0.0000003 会被转换成 3e7）。
+</p>
+<p>
+	浮点数值的最高精度是 17 位小数，但在进行算术计算时其精确度远远不如整数。例如， 0.1 加 0.2的结果不是 0.3，而是 0.30000000000000004。这个小小的舍入误差会导致无法测试特定的浮点数值。例如：
+</p>
+<pre>if (a + b == 0.3){ // 不要做这样的测试！
+    alert("You got 0.3.");
+}</pre>
+<p>
+	在这个例子中，我们测试的是两个数的和是不是等于 0.3。如果这两个数是 0.05 和 0.25， 或者是 0.15和 0.15 都不会有问题。而如前所述，如果这两个数是 0.1 和 0.2，那么测试将无法通过。因此，永远不要测试某个特定的浮点数值。
+</p>
+<p>
+</p>
+<blockquote>
+	关于浮点数值计算会产生舍入误差的问题，有一点需要明确：这是使用基于IEEE754 数值的浮点计算的通病， ECMAScript 并非独此一家；其他使用相同数值格式的语言也存在这个问题。
+</blockquote>
+<p>
+</p>
+<h2>
+	2. 数值范围
+</h2>
+<p>
+	由于内存的限制， ECMAScript 并不能保存世界上所有的数值。 ECMAScript 能够表示的最小数值保存在 Number.MIN_VALUE 中——在大多数浏览器中，这个值是 5e-324；能够表示的最大数值保存在Number.MAX_VALUE 中——在大多数浏览器中，这个值是 1.7976931348623157e+308。如果某次计算的结果得到了一个超出 JavaScript 数值范围的值，那么这个数值将被自动转换成特殊的 Infinity 值。具体来说，如果这个数值是负数，则会被转换成-Infinity（负无穷），如果这个数值是正数，则会被转换成 Infinity（正无穷）。
+</p>
+<p>
+	如上所述，如果某次计算返回了正或负的 Infinity 值，那么该值将无法继续参与下一次的计算，因为 Infinity 不是能够参与计算的数值。要想确定一个数值是不是有穷的（换句话说，是不是位于最小和最大的数值之间），可以使用 isFinite()函数。这个函数在参数位于最小与最大数值之间时会返回 true，如下面的例子所示：
+</p>
+<pre>var result = Number.MAX_VALUE + Number.MAX_VALUE;
+alert(isFinite(result)); //false</pre>
+<p>
+	<a href="http://www.z-ai.net/study/api/s/8358" target="_blank" class="btn btn-sm btn-success">运行一下</a>
+</p>
+<p>
+	尽管在计算中很少出现某些值超出表示范围的情况，但在执行极小或极大数值的计算时，检测监控这些值是可能的，也是必需的。
+</p>
+<p>
+</p>
+<blockquote>
+	访问 Number.NEGATIVE_INFINITY 和 Number.POSITIVE_INFINITY 也可以得到负和正 Infinity 的值。可以想见，这两个属性中分别保存着-Infinity 和Infinity。
+</blockquote>
+<p>
+</p>
+<h2>
+	3. NaN
+</h2>
+<p>
+	NaN，即非数值（Not a Number）是一个特殊的数值，这个数值用于表示一个本来要返回数值的操作数未返回数值的情况（这样就不会抛出错误了）。例如，在其他编程语言中，任何数值除以 0 都会导致错误，从而停止代码执行。但在 ECMAScript 中，任何数值除以 0 会返回 NaN①，因此不会影响其他代码的执行。
+</p>
+<p>
+	NaN 本身有两个非同寻常的特点。首先，任何涉及 NaN 的操作（例如 NaN/10）都会返回 NaN，这个特点在多步计算中有可能导致问题。其次， NaN 与任何值都不相等，包括 NaN 本身。例如，下面的代码会返回 false：
+</p>
+<pre>alert(NaN == NaN); //false</pre>
+<p>
+	针对 NaN 的这两个特点， ECMAScript 定义了 isNaN()函数。这个函数接受一个参数，该参数可以是任何类型，而函数会帮我们确定这个参数是否“不是数值”。 isNaN()在接收到一个值之后，会尝试将这个值转换为数值。某些不是数值的值会直接转换为数值，例如字符串"10"或 Boolean 值。而任何不能被转换为数值的值都会导致这个函数返回 true。请看下面的例子：
+</p>
+<pre>alert(isNaN(NaN)); //true
+alert(isNaN(10)); //false（ 10 是一个数值）
+alert(isNaN("10")); //false（可以被转换成数值 10）
+alert(isNaN("blue")); //true（不能转换成数值）
+alert(isNaN(true)); //false（可以被转换成数值 1）
+</pre>
+<a href="http://www.z-ai.net/study/api/s/8359" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	<blockquote>
+		① 原书如此，但实际上只有 0 除以 0 才会返回 NaN，正数除以 0 返回 Infinity，负数除以 0 返回-Infinity。
+	</blockquote>
+</p>
+<p>
+	这个例子测试了 5 个不同的值。测试的第一个值是 NaN 本身，结果当然会返回 true。然后分别测试了数值 10 和字符串"10"，结果这两个测试都返回了 false，因为前者本身就是数值，而后者可以被转换成数值。但是，字符串"blue"不能被转换成数值，因此函数返回了 true。由于 Boolean 值 true可以转换成数值 1，因此函数返回 false。
+</p>
+<p>
+</p>
+<blockquote>
+	尽管有点儿不可思议，但 isNaN()确实也适用于对象。在基于对象调用 isNaN()函数时，会首先调用对象的 valueOf()方法，然后确定该方法返回的值是否可以转换为数值。如果不能，则基于这个返回值再调用 toString()方法，再测试返回值。而这个过程也是 ECMAScript 中内置函数和操作符的一般执行流程，更详细的内容请参见 3.5 节。
+</blockquote>
+<p>
+</p>
+<h2>
+	4. 数值转换
+</h2>
+<p>
+	有 3 个函数可以把非数值转换为数值： Number()、 parseInt()和 parseFloat()。第一个函数，即转型函数 Number()可以用于任何数据类型，而另两个函数则专门用于把字符串转换成数值。这 3 个函数对于同样的输入会有返回不同的结果。
+</p>
+<p>
+	Number()函数的转换规则如下。
+</p>
+<ul>
+	<li>
+		如果是数字值，只是简单的传入和返回。
+	</li>
+	<li>
+		如果是 Boolean 值， true 和 false 将分别被转换为 1 和 0。<br />
+	</li>
+	<li>
+		如果是 null 值，返回 0。
+	</li>
+	<li>
+		如果是 undefined，返回 NaN。
+	</li>
+	<li>
+		如果是字符串，遵循下列规则：
+	</li>
+	<li>
+		如果字符串中只包含数字（包括前面带正号或负号的情况），则将其转换为十进制数值，即"1"会变成 1， "123"会变成 123，而"011"会变成 11（注意：前导的零被忽略了）；
+	</li>
+	<li>
+		如果字符串中包含有效的浮点格式，如"1.1"，则将其转换为对应的浮点数值（同样，也会忽略前导零）；
+	</li>
+	<li>
+		如果字符串中包含有效的十六进制格式，例如"0xf"，则将其转换为相同大小的十进制整数值；
+	</li>
+	<li>
+		如果字符串是空的（不包含任何字符），则将其转换为 0；
+	</li>
+	<li>
+		如果字符串中包含除上述格式之外的字符，则将其转换为 NaN。
+	</li>
+	<li>
+		如果是对象，则调用对象的 valueOf()方法，然后依照前面的规则转换返回的值。如果转换的结果是 NaN，则调用对象的 toString()方法，然后再次依照前面的规则转换返回的字符串值。
+	</li>
+</ul>
+<p>
+	根据这么多的规则使用 Number()把各种数据类型转换为数值确实有点复杂。下面还是给出几个具体的例子吧。
+</p>
+<pre>var num1 = Number("Hello world!"); //NaN
+var num2 = Number(""); //0
+var num3 = Number("000011"); //11
+var num4 = Number(true); //1</pre>
+<a href="http://www.z-ai.net/study/api/s/8360" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	首先，字符串"Hello world!"会被转换为 NaN，因为其中不包含任何有意义的数字值。空字符串会被转换为 0。字符串"000011"会被转换为 11，因为忽略了其前导的零。最后， true 值被转换为 1。
+</p>
+<p>
+</p>
+<blockquote>
+	一元加操作符（3.5.1 节将介绍）的操作与 Number()函数相同。
+</blockquote>
+<p>
+</p>
+<p>
+	由于 Number()函数在转换字符串时比较复杂而且不够合理，因此在处理整数的时候更常用的是parseInt()函数。 parseInt()函数在转换字符串时，更多的是看其是否符合数值模式。它会忽略字符串前面的空格，直至找到第一个非空格字符。如果第一个字符不是数字字符或者负号， parseInt()就会返回 NaN；也就是说，用 parseInt()转换空字符串会返回 NaN（Number()对空字符返回 0） 。如果第一个字符是数字字符， parseInt()会继续解析第二个字符，直到解析完所有后续字符或者遇到了一个非数字字符。例如， "1234blue"会被转换为 1234，因为"blue"会被完全忽略。类似地， "22.5"会被转换为 22，因为小数点并不是有效的数字字符。
+</p>
+<p>
+	如果字符串中的第一个字符是数字字符， parseInt()也能够识别出各种整数格式（即前面讨论的十进制、八进制和十六进制数）。也就是说，如果字符串以"0x"开头且后跟数字字符，就会将其当作一个十六进制整数；如果字符串以"0"开头且后跟数字字符，则会将其当作一个八进制数来解析。
+</p>
+<p>
+	为了更好地理解 parseInt()函数的转换规则，下面给出一些例子：
+</p>
+<pre>var num1 = parseInt("1234blue"); // 1234
+var num2 = parseInt(""); // NaN
+var num3 = parseInt("0xA"); // 10（十六进制数）
+var num4 = parseInt(22.5); // 22
+var num5 = parseInt("070"); // 56（八进制数）
+var num6 = parseInt("70"); // 70（十进制数）
+var num7 = parseInt("0xf"); // 15（十六进制数）</pre>
+<a href="http://www.z-ai.net/study/api/s/8361" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	在使用 parseInt()解析像八进制字面量的字符串时， ECMAScript 3 和 5 存在分歧。例如：
+</p>
+<pre>//ECMAScript 3 认为是 56（八进制）， ECMAScript 5 认为是 70（十进制）
+var num = parseInt("070");</pre>
+<p>
+	在 ECMAScript 3 JavaScript 引擎中， "070"被当成八进制字面量，因此转换后的值是十进制的 56。而在 ECMAScript 5 JavaScript 引擎中， parseInt()已经不具有解析八进制值的能力，因此前导的零会被认为无效，从而将这个值当成"70"，结果就得到十进制的 70。在 ECMAScript 5 中，即使是在非严格模式下也会如此。
+</p>
+<p>
+	为了消除在使用 parseInt()函数时可能导致的上述困惑，可以为这个函数提供第二个参数：转换时使用的基数（即多少进制）。如果知道要解析的值是十六进制格式的字符串，那么指定基数 16 作为第二个参数，可以保证得到正确的结果，例如：
+</p>
+<pre>var num = parseInt("0xAF", 16); //175</pre>
+<p>
+	实际上，如果指定了 16 作为第二个参数，字符串可以不带前面的"0x"，如下所示：
+</p>
+<pre>var num1 = parseInt("AF", 16); //175
+var num2 = parseInt("AF"); //NaN</pre>
+<a href="http://www.z-ai.net/study/api/s/8362" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	这个例子中的第一个转换成功了，而第二个则失败了。差别在于第一个转换传入了基数，明确告诉parseInt()要解析一个十六进制格式的字符串；而第二个转换发现第一个字符不是数字字符，因此就自动终止了。
+</p>
+<p>
+	指定基数会影响到转换的输出结果。例如：
+</p>
+<pre>var num1 = parseInt("10", 2); //2 （按二进制解析）
+var num2 = parseInt("10", 8); //8 （按八进制解析）
+var num3 = parseInt("10", 10); //10 （按十进制解析）
+var num4 = parseInt("10", 16); //16 （按十六进制解析）</pre>
+<a href="http://www.z-ai.net/study/api/s/8363" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	不指定基数意味着让 parseInt()决定如何解析输入的字符串，因此为了避免错误的解析，我们建议无论在什么情况下都明确指定基数。
+</p>
+<p>
+</p>
+<blockquote>
+	多数情况下，我们要解析的都是十进制数值，因此始终将 10 作为第二个参数是非常必要的。
+</blockquote>
+<p>
+</p>
+<p>
+	与 parseInt()函数类似， parseFloat()也是从第一个字符（位置 0）开始解析每个字符。而且也是一直解析到字符串末尾，或者解析到遇见一个无效的浮点数字字符为止。也就是说，字符串中的第一个小数点是有效的，而第二个小数点就是无效的了，因此它后面的字符串将被忽略。举例来说，
+</p>
+<p>
+</p>
+<pre>"22.34.5"将会被转换为 22.34。</pre>
+<p>
+</p>
+<p>
+	除了第一个小数点有效之外， parseFloat()与 parseInt()的第二个区别在于它始终都会忽略前导的零。 parseFloat()可以识别前面讨论过的所有浮点数值格式，也包括十进制整数格式。但十六进制格式的字符串则始终会被转换成 0。由于 parseFloat()只解析十进制值，因此它没有用第二个参数指定基数的用法。最后还要注意一点：如果字符串包含的是一个可解析为整数的数（没有小数点，或者小数点后都是零） ， parseFloat()会返回整数。以下是使用 parseFloat()转换数值的几个典型示例。
+</p>
+<pre>var num1 = parseFloat("1234blue"); //1234 （整数）
+var num2 = parseFloat("0xA"); //0
+var num3 = parseFloat("22.5"); //22.5
+var num4 = parseFloat("22.34.5"); //22.34
+var num5 = parseFloat("0908.5"); //908.5
+var num6 = parseFloat("3.125e7"); //31250000</pre>
+<a href="http://www.z-ai.net/study/api/s/8364" target="_blank" class="btn btn-sm btn-success">运行一下</a></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15236">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>14.2 文本框脚本</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">14.2 文本框脚本</h1>
+	<hr>
+		在HTML 中，有两种方式来表现文本框：一种是使用&lt;input&gt;元素的单行文本框，另一种是使用&lt;textarea&gt;的多行文本框。这两个控件非常相似，而且多数时候的行为也差不多。不过，它们之间仍然存在一些重要的区别。<br />
+要表现文本框，必须将&lt;input&gt;元素的type 特性设置为"text"。而通过设置size 特性，可以指定文本框中能够显示的字符数。通过value 特性，可以设置文本框的初始值，而maxlength 特性则用于指定文本框可以接受的最大字符数。如果要创建一个文本框，让它能够显示25 个字符，但输入不能超过50 个字符，可以使用以下代码：<br />
+<pre>&lt;input type="text" size="25" maxlength="50" value="initial value"&gt;</pre>
+相对而言，&lt;textarea&gt;元素则始终会呈现为一个多行文本框。要指定文本框的大小，可以使用rows和cols 特性。其中，rows 特性指定的是文本框的字符行数，而cols 特性指定的是文本框的字符列数（类似于&lt;inpu&gt;元素的size 特性）。与&lt;input&gt;元素不同，&lt;textarea&gt;的初始值必须要放在&lt;textarea&gt;和&lt;/textarea&gt;之间，如下面的例子所示。<br />
+<pre>&lt;textarea rows="25" cols="5"&gt;initial value&lt;/textarea&gt;</pre>
+另一个与&lt;input&gt;的区别在于，不能在HTML 中给&lt;textarea&gt;指定最大字符数。<br />
+无论这两种文本框在标记中有什么区别，但它们都会将用户输入的内容保存在value 属性中。可以通过这个属性读取和设置文本框的值，如下面的例子所示：<br />
+<pre>var textbox = document.forms[0].elements["textbox1"];
+alert(textbox.value);
+textbox.value = "Some new value";</pre>
+我们建议读者像上面这样使用value 属性读取或设置文本框的值，不建议使用标准的DOM 方法。<br />
+换句话说，不要使用setAttribute()设置&lt;input&gt;元素的value 特性，也不要去修改&lt;textarea&gt;元素的第一个子节点。原因很简单：对value 属性所作的修改，不一定会反映在DOM中。因此，在处理文本框的值时，最好不要使用DOM 方法。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15342">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

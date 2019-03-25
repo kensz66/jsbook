@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>8.5 history 对象</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">8.5 history 对象</h1>
+	<hr>
+		<p>
+	history 对象保存着用户上网的历史记录，从窗口被打开的那一刻算起。因为history 是window对象的属性，因此每个浏览器窗口、每个标签页乃至每个框架，都有自己的history 对象与特定的window 对象关联。出于安全方面的考虑，开发人员无法得知用户浏览过的URL。不过，借由用户访问过的页面列表，同样可以在不知道实际URL 的情况下实现后退和前进。
+</p>
+<p>
+	使用go()方法可以在用户的历史记录中任意跳转，可以向后也可以向前。这个方法接受一个参数，表示向后或向前跳转的页面数的一个整数值。负数表示向后跳转（类似于单击浏览器的“后退”按钮），正数表示向前跳转（类似于单击浏览器的“前进”按钮）。来看下面的例子。
+</p>
+<pre>//后退一页
+history.go(-1);
+//前进一页
+history.go(1);
+//前进两页
+history.go(2);</pre>
+<p>
+	也可以给go()方法传递一个字符串参数，此时浏览器会跳转到历史记录中包含该字符串的第一个位置——可能后退，也可能前进，具体要看哪个位置最近。如果历史记录中不包含该字符串，那么这个方法什么也不做，例如：
+</p>
+<pre>//跳转到最近的wrox.com 页面
+history.go("wrox.com");
+//跳转到最近的nczonline.net 页面
+history.go("nczonline.net");</pre>
+<p>
+	另外，还可以使用两个简写方法back()和forward()来代替go()。顾名思义，这两个方法可以模仿浏览器的“后退”和“前进”按钮。
+</p>
+<pre>//后退一页
+history.back();
+//前进一页
+history.forward();</pre>
+<p>
+	除了上述几个方法外，history 对象还有一个length 属性，保存着历史记录的数量。这个数量包括所有历史记录history.length 等于0。通过像下面这样测试该属性的值，可以确定用户是否一开始就打开了你的页面。
+</p>
+<pre>if (history.length == 0){
+    //这应该是用户打开窗口后的第一个页面
+}</pre>
+<p>
+	虽然history 并不常用，但在创建自定义的“后退”和“前进”按钮，以及检测当前页面是不是用户历史记录中的第一个页面时，还是必须使用它。
+</p>
+<p>
+	当页面的URL 改变时，就会生成一条历史记录。在IE8 及更高版本、Opera、Firefox、Safari 3 及更高版本以及Chrome 中，这里所说的改变包括URL 中hash 的变化（因此，设置location.hash 会在这些浏览器中生成一条新的历史记录）。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15284">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

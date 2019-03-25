@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.5.5 加性操作符</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.5.5 加性操作符</h1>
+	<hr>
+		加法和减法这两个加性操作符应该说是编程语言中最简单的算术操作符了。但是在 ECMAScript 中，这两个操作符却都有一系列的特殊行为。与乘性操作符类似，加性操作符也会在后台转换不同的数据类型。然而，对于加性操作符而言，相应的转换规则还稍微有点复杂。<br />
+<h2>
+	1. 加法
+</h2>
+加法操作符（+）的用法如下所示：<br />
+<pre>var result = 1 + 2;</pre>
+如果两个操作符都是数值，执行常规的加法计算，然后根据下列规则返回结果：<br />
+<ul>
+	<li>
+		如果有一个操作数是 NaN，则结果是 NaN；
+	</li>
+	<li>
+		如果是 Infinity 加 Infinity，则结果是 Infinity；
+	</li>
+	<li>
+		如果是-Infinity 加-Infinity，则结果是-Infinity；
+	</li>
+	<li>
+		如果是 Infinity 加-Infinity，则结果是 NaN；
+	</li>
+	<li>
+		如果是+0 加+0，则结果是+0；
+	</li>
+	<li>
+		如果是-0 加-0，则结果是-0；
+	</li>
+	<li>
+		如果是+0 加-0，则结果是+0。
+	</li>
+</ul>
+不过，如果有一个操作数是字符串，那么就要应用如下规则：<br />
+<ul>
+	<li>
+		如果两个操作数都是字符串，则将第二个操作数与第一个操作数拼接起来；
+	</li>
+	<li>
+		果只有一个操作数是字符串，则将另一个操作数转换为字符串，然后再将两个字符串拼接起来。
+	</li>
+</ul>
+如果有一个操作数是对象、数值或布尔值，则调用它们的 toString()方法取得相应的字符串值，然后再应用前面关于字符串的规则。对于 undefined 和 null，则分别调用 String()函数并取得字符串"undefined"和"null"。<br />
+下面来举几个例子：<br />
+<pre>var result1 = 5 + 5; // 两个数值相加
+alert(result1); // 10
+var result2 = 5 + "5"; // 一个数值和一个字符串相加
+alert(result2); // "55"</pre>
+<a href="http://www.z-ai.net/study/api/s/8388" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	以上代码演示了加法操作符在两种模式下的差别。第一行代码演示了正常的情况，即 5+5 等于 10（数值）。但是，如果将一个操作数改为字符串"5"，结果就变成了"55"（字符串值），因为第一个操作数也被转换成了"5"。
+</p>
+<p>
+	忽视加法操作中的数据类型是 ECMAScript 编程中最常见的一个错误。再来看一个例子：
+</p>
+<pre>var num1 = 5;
+var num2 = 10;
+var message = "The sum of 5 and 10 is " + num1 + num2;
+alert(message); // "The sum of 5 and 10 is 510"</pre>
+<a href="http://www.z-ai.net/study/api/s/8389" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，变量 message 的值是执行两个加法操作之后的结果。有人可能以为最后得到的字符串是"The sum of 5 and 10 is 15"，但实际的结果却是"The sum of 5 and 10 is 510"。之所以会这样，是因为每个加法操作是独立执行的。第一个加法操作将一个字符串和一个数值（5）拼接了起来，结果是一个字符串。而第二个加法操作又用这个字符串去加另一个数值（10） ，当然也会得到一个字符串。如果想先对数值执行算术计算，然后再将结果与字符串拼接起来，应该像下面这样使用圆括号：<br />
+<pre>var num1 = 5;
+var num2 = 10;
+var message = "The sum of 5 and 10 is " + (num1 + num2);
+alert(message); //"The sum of 5 and 10 is 15"</pre>
+<a href="http://www.z-ai.net/study/api/s/8390" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，一对圆括号把两个数值变量括在了一起，这样就会告诉解析器先计算其结果，然后再将结果与字符串拼接起来。因此，就得到了结果"The sum of 5 and 10 is 15"。<br />
+<h2>
+	2. 减法
+</h2>
+减法操作符（-）是另一个极为常用的操作符，其用法如下所示：<br />
+<pre>var result = 2 - 1;</pre>
+与加法操作符类似， ECMAScript 中的减法操作符在处理各种数据类型转换时，同样需要遵循一些<br />
+特殊规则，如下所示：<br />
+<ul>
+	<li>
+		如果两个操作符都是数值，则执行常规的算术减法操作并返回结果；
+	</li>
+	<li>
+		如果有一个操作数是 NaN，则结果是 NaN；
+	</li>
+	<li>
+		如果是 Infinity 减 Infinity，则结果是 NaN；
+	</li>
+	<li>
+		如果是-Infinity 减-Infinity，则结果是 NaN；
+	</li>
+	<li>
+		如果是 Infinity 减-Infinity，则结果是 Infinity；
+	</li>
+	<li>
+		如果是-Infinity 减 Infinity，则结果是-Infinity；
+	</li>
+	<li>
+		如果是+0 减+0，则结果是+0；
+	</li>
+	<li>
+		如果是+0 减-0，则结果是-0；
+	</li>
+	<li>
+		如果是-0 减-0，则结果是+0；
+	</li>
+	<li>
+		如果有一个操作数是字符串、布尔值、 null 或 undefined，则先在后台调用 Number()函数将其转换为数值，然后再根据前面的规则执行减法计算。如果转换的结果是 NaN，则减法的结果就是 NaN；
+	</li>
+	<li>
+		如果有一个操作数是对象，则调用对象的 valueOf()方法以取得表示该对象的数值。如果得到的值是 NaN，则减法的结果就是 NaN。如果对象没有 valueOf()方法，则调用其 toString()方法并将得到的字符串转换为数值。
+	</li>
+</ul>
+下面几个例子展示了上面的规则：<br />
+<pre>var result1 = 5 - true; // 4，因为 true 被转换成了 1
+var result2 = NaN - 1; // NaN
+var result3 = 5 - 3; // 2
+var result4 = 5 - ""; // 5，因为"" 被转换成了 0
+var result5 = 5 - "2"; // 3，因为"2"被转换成了 2
+var result6 = 5 - null; // 5，因为 null 被转换成了 0</pre>
+<p>
+	<a href="http://www.z-ai.net/study/api/s/8391" target="_blank" class="btn btn-sm btn-success">运行一下</a>
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15244">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

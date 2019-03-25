@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>14.4 表单序列化</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">14.4 表单序列化</h1>
+	<hr>
+		随着Ajax 的出现，表单序列化已经成为一种常见需求（第21 章将讨论Ajax）。在JavaScript 中，可以利用表单字段的type 属性，连同name 和value 属性一起实现对表单的序列化。在编写代码之前，有必须先搞清楚在表单提交期间，浏览器是怎样将数据发送给服务器的。<br />
+<ul>
+	<li>
+		对表单字段的名称和值进行URL 编码，使用和号（&amp;）分隔。
+	</li>
+	<li>
+		不发送禁用的表单字段。
+	</li>
+	<li>
+		只发送勾选的复选框和单选按钮。
+	</li>
+	<li>
+		不发送type 为"reset"和"button"的按钮。
+	</li>
+	<li>
+		多选选择框中的每个选中的值单独一个条目。
+	</li>
+	<li>
+		在单击提交按钮提交表单的情况下，也会发送提交按钮；否则，不发送提交按钮。也包括type为"image"的&lt;input&gt;元素。
+	</li>
+	<li>
+		&lt;select&gt;元素的值，就是选中的&lt;option&gt;元素的value 特性的值。如果&lt;option&gt;元素没有value 特性，则是&lt;option&gt;元素的文本值。<br />
+	</li>
+</ul>
+在表单序列化过程中，一般不包含任何按钮字段，因为结果字符串很可能是通过其他方式提交的。<br />
+除此之外的其他上述规则都应该遵循。以下就是实现表单序列化的代码。<br />
+<pre>function serialize(form) {
+	var parts = [],
+	field = null,
+	i,
+	len,
+	j,
+	optLen,
+	option,
+	optValue;
+	for (i = 0, len = form.elements.length; i &lt; len; i++) {
+		field = form.elements[i];
+		switch (field.type) {
+		case "select-one":
+		case "select-multiple":
+			if (field.name.length) {
+				for (j = 0, optLen = field.options.length; j &lt; optLen; j++) {
+					option = field.options[j];
+					if (option.selected) {
+						optValue = "";
+						if (option.hasAttribute) {
+							optValue = (option.hasAttribute("value") ? option.value: option.text);
+						} else {
+							optValue = (option.attributes["value"].specified ? option.value: option.text);
+						}
+						parts.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(optValue));
+					}
+				}
+			}
+			break;
+		case undefined:
+			//字段集
+		case "file":
+			//文件输入
+		case "submit":
+			//提交按钮
+		case "reset":
+			//重置按钮
+		case "button":
+			//自定义按钮
+			break;
+		case "radio":
+			//单选按钮
+		case "checkbox":
+			//复选框
+			if (!field.checked) {
+				break;
+			}
+			/* 执行默认操作 */
+		default:
+			//不包含没有名字的表单字段
+			if (field.name.length) {
+				parts.push(encodeURIComponent(field.name) + "=" + encodeURIComponent(field.value));
+			}
+		}
+	}
+	return parts.join("&amp;");
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8739" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	上面这个serialize()函数首先定义了一个名为parts 的数组，用于保存将要创建的字符串的各个部分。然后，通过for 循环迭代每个表单字段，并将其保存在field 变量中。在获得了一个字段的引用之后，使用switch 语句检测其type 属性。序列化过程中最麻烦的就是&lt;select&gt;元素，它可能是单选框也可能是多选框。为此，需要遍历控件中的每一个选项，并在相应选项被选中的情况下向数组中添加一个值。对于单选框，只可能有一个选中项，而多选框则可能有零或多个选中项。这里的代码适用于这两种选择框，至于可选项的数量则是由浏览器控制的。在找到一个选中项之后，需要确定使用什么值。如果不存在value 特性，或者虽然存在该特性，但值为空字符串，都要使用选项的文本来代替。
+</p>
+<p>
+	为检查这个特性，在DOM 兼容的浏览器中需要使用hasAttribute()方法，而在IE 中需要使用特性的specified 属性。
+</p>
+<p>
+	如果表单中包含&lt;fieldset&gt;元素，则该元素会出现在元素集合中，但没有type 属性。因此，如果type属性未定义，则不需要对其进行序列化。同样，对于各种按钮以及文件输入字段也是如此（文件输入字段在表单提交过程中包含文件的内容；但是，这个字段是无法模仿的，序列化时一般都要忽略）。对于单选按钮和复选框，要检查其checked 属性是否被设置为false，如果是则退出switch 语句。如果checked 属性为true，则继续执行default 语句，即将当前字段的名称和值进行编码，然后添加到parts 数组中。函数的最后一步，就是使用join()格式化整个字符串，也就是用和号来分隔每一个表单字段。
+</p>
+<p>
+	最后，serialize()函数会以查询字符串的格式输出序列化之后的字符串。当然，要序列化成其他格式，也不是什么困难的事。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15348">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

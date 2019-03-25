@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>14.6 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">14.6 小结</h1>
+	<hr>
+		虽然HTML 和Web 应用自诞生以来已经发生了天翻地覆的变化，但Web 表单相对却没有什么改变。使用JavaScript 可以增强已有的表单字段，从而创造出新的功能，或者提升表单的易用性。为此，表单、表单字段都引入了相应的属性和方法，以便JavaScript 使用。下面是本章介绍的几个概念。<br />
+<ul>
+	<li>
+		可以使用一些标准或非标准的方法选择文本框中的全部或部分文本。
+	</li>
+	<li>
+		大多数浏览器都采用了Firefox 操作选择文本的方式，但IE 仍然坚持自己的实现。
+	</li>
+	<li>
+		在文本框的内容变化时，可以通过侦听键盘事件以及检测插入的字符，来允许或禁止用户输入某些字符。
+	</li>
+</ul>
+除Opera 之外的所有浏览器都支持剪贴板事件，包括copy、cut 和paste。其他浏览器在实现剪贴板事件时也可以分为几种不同的情况。<br />
+<ul>
+	<li>
+		IE、Firefox、Chrome 和Safari 允许通过JavaScript 访问剪贴板中的数据，而Opera 不允许这种访问方式。
+	</li>
+	<li>
+		即使是IE、Chrome 和Safari，它们各自的实现方式也不相同。
+	</li>
+	<li>
+		Firefox、Safari 和Chrome 只允许在paste 事件发生时读取剪贴板数据，而IE 没有这个限制。
+	</li>
+	<li>
+		Firefox、Safari 和Chrome 只允许在发生剪贴板事件时访问与剪贴板相关的信息，而IE 允许在任何时候访问相关信息。
+	</li>
+</ul>
+在文本框内容必须限制为某些特定字符的情况下，就可以利用剪贴板事件来屏蔽通过粘贴向文本框中插入内容的操作。<br />
+选择框也是经常要通过JavaScript 来控制的一个表单字段。由于有了DOM，对选择框的操作比以前要方便多了。添加选项、移除选项、将选项从一个选择框移动到另一个选择框，甚至对选项进行排序等操作，都可以使用标准的DOM技术来实现。<br />
+富文本编辑功能是通过一个包含空HTML 文档的iframe 元素来实现的。通过将空文档的designMode 属性设置为"on"，就可以将该页面转换为可编辑状态，此时其表现如同字处理软件。另外，也可以将某个元素设置为contenteditable。在默认情况下，可以将字体加粗或者将文本转换为斜体，还可以使用剪贴板。JavaScript 通过使用execCommand()方法也可以实现相同的一些功能。另外，使用queryCommandEnabled()、queryCommandState()和queryCommandValue()方法则可以取得有关文本选区的信息。由于以这种方式构建的富文本编辑器并不是一个表单字段，因此在将其内容提交给服务器之前，必须将iframe 或contenteditable 元素中的HTML 复制到一个表单字段中。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15350">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

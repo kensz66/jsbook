@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>17.5 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">17.5 小结</h1>
+	<hr>
+		错误处理对于今天复杂的Web 应用程序开发而言至关重要。不能提前预测到可能发生的错误，不能提前采取恢复策略，可能导致较差的用户体验，最终引发用户不满。多数浏览器在默认情况下都不会向用户报告错误，因此在开发和调试期间需要启用浏览器的错误报告功能。然而，在投入运行的产品代码中，则不应该再有诸如此类的错误报告出现。<br />
+下面是几种避免浏览器响应JavaScript 错误的方法。<br />
+<ul>
+	<li>
+		在可能发生错误的地方使用try-catch 语句，这样你还有机会以适当的方式对错误给出响应，而不必沿用浏览器处理错误的机制。
+	</li>
+	<li>
+		使用window.onerror 事件处理程序，这种方式可以接受try-catch 不能处理的所有错误（仅限于IE、Firefox 和Chrome）。
+	</li>
+</ul>
+另外，对任何Web 应用程序都应该分析可能的错误来源，并制定处理错误的方案。<br />
+<ul>
+	<li>
+		首先，必须要明确什么是致命错误，什么是非致命错误。
+	</li>
+	<li>
+		其次，再分析代码，以判断最可能发生的错误。JavaScript 中发生错误的主要原因如下。
+	</li>
+	<li>
+		类型转换
+	</li>
+	<li>
+		未充分检测数据类型
+	</li>
+	<li>
+		发送给服务器或从服务器接收到的数据有错误
+	</li>
+</ul>
+IE、Firefox、Chrome、Opera 和Safari 都有JavaScript 调试器，有的是内置的，有的是以需要下载的扩展形式存在的。这些调试器都支持设置断点、控制代码执行及在运行时检测变量的值。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15381">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>13.3 事件对象</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">13.3 事件对象</h1>
+	<hr>
+		在触发DOM上的某个事件时，会产生一个事件对象event，这个对象中包含着所有与事件有关的信息。包括导致事件的元素、事件的类型以及其他与特定事件相关的信息。例如，鼠标操作导致的事件对象中，会包含鼠标位置的信息，而键盘操作导致的事件对象中，会包含与按下的键有关的信息。所有浏览器都支持event 对象，但支持方式不同。<br />
+<h2>
+	13.3.1 DOM中的事件对象
+</h2>
+兼容DOM 的浏览器会将一个event 对象传入到事件处理程序中。无论指定事件处理程序时使用什么方法（DOM0 级或DOM2 级），都会传入event 对象。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(event) {
+	alert(event.type); //"click"
+};
+btn.addEventListener("click",
+function(event) {
+	alert(event.type); //"click"
+},
+false);</pre>
+这个例子中的两个事件处理程序都会弹出一个警告框，显示由event.type 属性表示的事件类型。<br />
+这个属性始终都会包含被触发的事件类型， 例如"click" （ 与传入addEventListener() 和removeEventListener()中的事件类型一致）。<br />
+在通过HTML 特性指定事件处理程序时，变量event 中保存着event 对象。请看下面的例子。<br />
+<pre>&lt;input type="button" value="Click Me" onclick="alert(event.type)"/&gt;</pre>
+以这种方式提供event 对象，可以让HTML 特性事件处理程序与JavaScript 函数执行相同的操作。<br />
+<p>
+	event 对象包含与创建它的特定事件有关的属性和方法。触发的事件类型不一样，可用的属性和方法也不一样。不过，所有事件都会有下表列出的成员。
+</p>
+<p>
+	<img src="../image/51aae13342e.gif" alt="" />
+</p>
+<p>
+	<img src="../image/38402a789ce.gif" alt="" />
+</p>
+在事件处理程序内部，对象this 始终等于currentTarget 的值，而target 则只包含事件的实际目标。如果直接将事件处理程序指定给了目标元素，则this、currentTarget 和target 包含相同的值。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(event) {
+	alert(event.currentTarget === this); //true
+	alert(event.target === this); //true
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8665" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子检测了currentTarget 和target 与this 的值。由于click 事件的目标是按钮，因此这三个值是相等的。如果事件处理程序存在于按钮的父节点中（例如document.body），那么这些值是不相同的。再看下面的例子。<br />
+<pre>document.body.onclick = function(event) {
+	alert(event.currentTarget === document.body); //true
+	alert(this === document.body); //true
+	alert(event.target === document.getElementById("myBtn")); //true
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8666" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+当单击这个例子中的按钮时，this 和currentTarget 都等于document.body，因为事件处理程序是注册到这个元素上的。然而，target 元素却等于按钮元素，因为它是click 事件真正的目标。由于按钮上并没有注册事件处理程序，结果click 事件就冒泡到了document.body，在那里事件才得到了处理。<br />
+在需要通过一个函数处理多个事件时，可以使用type 属性。例如：<br />
+<pre>var btn = document.getElementById("myBtn");
+var handler = function(event) {
+	switch (event.type) {
+	case "click":
+		alert("Clicked");
+		break;
+	case "mouseover":
+		event.target.style.backgroundColor = "red";
+		break;
+	case "mouseout":
+		event.target.style.backgroundColor = "";
+		break;
+	}
+};
+btn.onclick = handler;
+btn.onmouseover = handler;
+btn.onmouseout = handler;</pre>
+<a href="http://www.z-ai.net/study/api/s/8667" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子定义了一个名为handler 的函数，用于处理3 种事件：click、mouseover 和mouseout。<br />
+当单击按钮时，会出现一个与前面例子中一样的警告框。当按钮移动到按钮上面时，背景颜色应该会变成红色，而当鼠标移动出按钮的范围时，背景颜色应该会恢复为默认值。这里通过检测event.type属性，让函数能够确定发生了什么事件，并执行相应的操作。<br />
+要阻止特定事件的默认行为，可以使用preventDefault()方法。例如，链接的默认行为就是在被单击时会导航到其href 特性指定的URL。如果你想阻止链接导航这一默认行为，那么通过链接的onclick 事件处理程序可以取消它，如下面的例子所示。<br />
+<pre>var link = document.getElementById("myLink");
+link.onclick = function(event){
+    event.preventDefault();
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8668" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+只有cancelable 属性设置为true 的事件，才可以使用preventDefault()来取消其默认行为。<br />
+另外，stopPropagation()方法用于立即停止事件在DOM 层次中的传播，即取消进一步的事件捕获或冒泡。例如，直接添加到一个按钮的事件处理程序可以调用stopPropagation()，从而避免触发注册在document.body 上面的事件处理程序，如下面的例子所示。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(event) {
+	alert("Clicked");
+	event.stopPropagation();
+};
+document.body.onclick = function(event) {
+	alert("Body clicked");
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8669" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+对于这个例子而言，如果不调用stopPropagation()，就会在单击按钮时出现两个警告框。可是，由于click 事件根本不会传播到document.body，因此就不会触发注册在这个元素上的onclick 事件处理程序。<br />
+事件对象的eventPhase 属性，可以用来确定事件当前正位于事件流的哪个阶段。如果是在捕获阶段调用的事件处理程序，那么eventPhase 等于1；如果事件处理程序处于目标对象上，则event-Phase 等于2；如果是在冒泡阶段调用的事件处理程序，eventPhase 等于3。这里要注意的是，尽管“处于目标”发生在冒泡阶段，但eventPhase 仍然一直等于2。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(event) {
+	alert(event.eventPhase); //2
+};
+document.body.addEventListener("click",
+function(event) {
+	alert(event.eventPhase); //1
+},
+true);
+document.body.onclick = function(event) {
+	alert(event.eventPhase); //3
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8670" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+当单击这个例子中的按钮时，首先执行的事件处理程序是在捕获阶段触发的添加到document.body中的那一个，结果会弹出一个警告框显示表示eventPhase 的1。接着，会触发在按钮上注册的事件处理程序，此时的eventPhase 值为2。最后一个被触发的事件处理程序，是在冒泡阶段执行的添加到document.body 上的那一个，显示eventPhase 的值为3。而当eventPhase 等于2 时，this、target和currentTarget 始终都是相等的。<br />
+<blockquote>
+	只有在事件处理程序执行期间，event 对象才会存在；一旦事件处理程序执行完成，event 对象就会被销毁。
+</blockquote>
+<h2>
+	13.3.2 IE中的事件对象
+</h2>
+与访问DOM中的event 对象不同，要访问IE 中的event 对象有几种不同的方式，取决于指定事件处理程序的方法。在使用DOM0 级方法添加事件处理程序时，event 对象作为window 对象的一个属性存在。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+var event = window.event;
+    alert(event.type); //"click"
+};</pre>
+在此，我们通过window.event 取得了event 对象，并检测了被触发事件的类型（IE 中的type属性与DOM中的type 属性是相同的）。可是，如果事件处理程序是使用attachEvent()添加的，那么就会有一个event 对象作为参数被传入事件处理程序函数中，如下所示。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.attachEvent("onclick", function(event){
+    alert(event.type); //"click"
+});</pre>
+在像这样使用attachEvent()的情况下，也可以通过window 对象来访问event 对象，就像使用DOM0 级方法时一样。不过为方便起见，同一个对象也会作为参数传递。<br />
+如果是通过HTML特性指定的事件处理程序，那么还可以通过一个名叫event 的变量来访问event对象（与DOM 中的事件模型相同）。再看一个例子。<br />
+<pre>&lt;input type="button" value="Click Me" onclick="alert(event.type)"&gt;</pre>
+IE 的event 对象同样也包含与创建它的事件相关的属性和方法。其中很多属性和方法都有对应的或者相关的DOM属性和方法。与DOM的event 对象一样，这些属性和方法也会因为事件类型的不同而不同，但所有事件对象都会包含下表所列的属性和方法。<br />
+<img src="../image/0516ece119f.gif" alt="" /><br />
+因为事件处理程序的作用域是根据指定它的方式来确定的，所以不能认为this 会始终等于事件目标。故而，最好还是使用event.srcElement 比较保险。例如：<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+    alert(window.event.srcElement === this); //true
+};
+btn.attachEvent("onclick", function(event){
+    alert(event.srcElement === this); //false
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8671" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在第一个事件处理程序中（使用DOM0 级方法指定的），srcElement 属性等于this，但在第二个事件处理程序中，这两者的值不相同。<br />
+如前所述，returnValue 属性相当于DOM 中的preventDefault()方法，它们的作用都是取消给定事件的默认行为。只要将returnValue 设置为false，就可以阻止默认行为。来看下面的例子。<br />
+<pre>var link = document.getElementById("myLink");
+link.onclick = function(){
+    window.event.returnValue = false;
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8672" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子在onclick 事件处理程序中使用returnValue 达到了阻止链接默认行为的目的。与DOM不同的是，在此没有办法确定事件是否能被取消。<br />
+相应地，cancelBubble 属性与DOM 中的stopPropagation()方法作用相同，都是用来停止事件冒泡的。由于IE 不支持事件捕获，因而只能取消事件冒泡；但stopPropagatioin()可以同时取消事件捕获和冒泡。例如：<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+alert("Clicked");
+    window.event.cancelBubble = true;
+};
+document.body.onclick = function(){
+    alert("Body clicked");
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8673" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+通过在onclick 事件处理程序中将cancelBubble 设置为true，就可阻止事件通过冒泡而触发document.body 中注册的事件处理程序。结果，在单击按钮之后，只会显示一个警告框。<br />
+<h2>
+	13.3.3 跨浏览器的事件对象
+</h2>
+虽然DOM 和IE 中的event 对象不同，但基于它们之间的相似性依旧可以拿出跨浏览器的方案来。<br />
+IE 中event 对象的全部信息和方法DOM 对象中都有，只不过实现方式不一样。不过，这种对应关系让实现两种事件模型之间的映射非常容易。可以对前面介绍的EventUtil 对象加以增强，添加如下方法以求同存异。<br />
+<pre>var EventUtil = {
+	addHandler: function(element, type, handler) {
+		//省略的代码
+	},
+	getEvent: function(event) {
+		return event ? event: window.event;
+	},
+	getTarget: function(event) {
+		return event.target || event.srcElement;
+	},
+	preventDefault: function(event) {
+		if (event.preventDefault) {
+			event.preventDefault();
+		} else {
+			event.returnValue = false;
+		}
+	},
+	removeHandler: function(element, type, handler) {
+		//省略的代码
+	},
+	stopPropagation: function(event) {
+		if (event.stopPropagation) {
+			event.stopPropagation();
+		} else {
+			event.cancelBubble = true;
+		}
+	}
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8674" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码显示，我们为EventUtil 添加了4 个新方法。第一个是getEvent()，它返回对event对象的引用。考虑到IE 中事件对象的位置不同，可以使用这个方法来取得event 对象，而不必担心指定事件处理程序的方式。在使用这个方法时，必须假设有一个事件对象传入到事件处理程序中，而且要把该变量传给这个方法，如下所示。<br />
+<pre>btn.onclick = function(event){
+    event = EventUtil.getEvent(event);
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8675" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在兼容DOM 的浏览器中，event 变量只是简单地传入和返回。而在IE 中，event 参数是未定义的（undefined），因此就会返回window.event。将这一行代码添加到事件处理程序的开头，就可以确保随时都能使用event 对象，而不必担心用户使用的是什么浏览器。<br />
+第二个方法是getTarget()，它返回事件的目标。在这个方法内部，会检测event 对象的target属性，如果存在则返回该属性的值；否则，返回srcElement 属性的值。可以像下面这样使用这个方法。<br />
+<pre>btn.onclick = function(event){
+   event = EventUtil.getEvent(event);
+    var target = EventUtil.getTarget(event);
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8675" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+第三个方法是preventDefault()，用于取消事件的默认行为。在传入event 对象后，这个方法会检查是否存在preventDefault()方法，如果存在则调用该方法。如果preventDefault()方法不存在，则将returnValue 设置为false。下面是使用这个方法的例子。<br />
+<pre>var link = document.getElementById("myLink");
+link.onclick = function(event){
+    event = EventUtil.getEvent(event);
+    EventUtil.preventDefault(event);
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8676" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码可以确保在所有浏览器中单击该链接都不会打开另一个页面。首先，使用EventUtil.getEvent()取得event 对象，然后将其传入到EventUtil.preventDefault()以取消默认行为。<br />
+第四个方法是stopPropagation()，其实现方式类似。首先尝试使用DOM 方法阻止事件流，否则就使用cancelBubble 属性。下面看一个例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(event) {
+	alert("Clicked");
+	event = EventUtil.getEvent(event);
+	EventUtil.stopPropagation(event);
+};
+document.body.onclick = function(event) {
+	alert("Body clicked");
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8677" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在此，首先使用EventUtil.getEvent()取得了event 对象，然后又将其传入到EventUtil.stopPropagation()。别忘了由于IE 不支持事件捕获，因此这个方法在跨浏览器的情况下，也只能用来阻止事件冒泡。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15323">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

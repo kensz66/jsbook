@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>21.6 安全</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">21.6 安全</h1>
+	<hr>
+		讨论Ajax 和Comet 安全的文章可谓连篇累牍，而相关主题的书也已经出了很多本了。大型Ajax 应用程序的安全问题涉及面非常之广，但我们可以从普遍意义上探讨一些基本的问题。<br />
+首先，可以通过XHR 访问的任何URL 也可以通过浏览器或服务器来访问。下面的URL 就是一个例子。<br />
+<pre>/getuserinfo.php?id=23</pre>
+如果是向这个URL 发送请求，可以想象结果会返回ID 为23 的用户的某些数据。谁也无法保证别人不会将这个URL 的用户ID 修改为24、56 或其他值。因此，getuserinfo.php 文件必须知道请求者是否真的有权限访问要请求的数据；否则，你的服务器就会门户大开，任何人的数据都可能被泄漏出去。<br />
+对于未被授权系统有权访问某个资源的情况，我们称之为CSRF（Cross-Site Request Forgery，跨站点请求伪造）。未被授权系统会伪装自己，让处理请求的服务器认为它是合法的。受到CSRF 攻击的Ajax程序有大有小，攻击行为既有旨在揭示系统漏洞的恶作剧，也有恶意的数据窃取或数据销毁。<br />
+为确保通过XHR 访问的URL 安全，通行的做法就是验证发送请求者是否有权限访问相应的资源。有下列几种方式可供选择。<br />
+<ul>
+	<li>
+		要求以SSL 连接来访问可以通过XHR 请求的资源。
+	</li>
+	<li>
+		要求每一次请求都要附带经过相应算法计算得到的验证码。
+	</li>
+</ul>
+请注意，下列措施对防范CSRF 攻击不起作用。<br />
+<ul>
+	<li>
+		要求发送POST 而不是GET 请求——很容易改变。
+	</li>
+	<li>
+		检查来源URL 以确定是否可信——来源记录很容易伪造。
+	</li>
+	<li>
+		基于cookie 信息进行验证——同样很容易伪造。
+	</li>
+</ul>
+XHR 对象也提供了一些安全机制，虽然表面上看可以保证安全，但实际上却相当不可靠。实际上，前面介绍的open()方法还能再接收两个参数：要随请求一起发送的用户名和密码。带有这两个参数的请求可以通过SSL 发送给服务器上的页面，如下面的例子所示。<br />
+<pre>xhr.open("get", "example.php", true, "username", "password"); //不要这样做！！</pre>
+即便可以考虑这种安全机制，但还是尽量不要这样做。把用户名和密码保存在JavaScript 代码中本身就是极为不安全的。任何人，只要他会使用JavaScript 调试器，就可以通过查看相应的变量发现纯文本形式的用户名和密码。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15402">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

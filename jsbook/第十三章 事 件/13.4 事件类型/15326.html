@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>13.4.2 焦点事件</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">13.4.2 焦点事件</h1>
+	<hr>
+		焦点事件会在页面元素获得或失去焦点时触发。利用这些事件并与document.hasFocus()方法及<br />
+document.activeElement 属性配合，可以知晓用户在页面上的行踪。有以下6 个焦点事件。<br />
+<ul>
+	<li>
+		blur：在元素失去焦点时触发。这个事件不会冒泡；所有浏览器都支持它。
+	</li>
+	<li>
+		DOMFocusIn：在元素获得焦点时触发。这个事件与HTML 事件focus 等价，但它冒泡。只有Opera 支持这个事件。DOM3 级事件废弃了DOMFocusIn，选择了focusin。
+	</li>
+	<li>
+		DOMFocusOut：在元素失去焦点时触发。这个事件是HTML 事件blur 的通用版本。只有Opera支持这个事件。DOM3 级事件废弃了DOMFocusOut，选择了focusout。
+	</li>
+	<li>
+		focus：在元素获得焦点时触发。这个事件不会冒泡；所有浏览器都支持它。
+	</li>
+	<li>
+		focusin：在元素获得焦点时触发。这个事件与HTML 事件focus 等价，但它冒泡。支持这个事件的浏览器有IE5.5+、Safari 5.1+、Opera 11.5+和Chrome。
+	</li>
+	<li>
+		focusout：在元素失去焦点时触发。这个事件是HTML 事件blur 的通用版本。支持这个事件的浏览器有IE5.5+、Safari 5.1+、Opera 11.5+和Chrome。
+	</li>
+</ul>
+这一类事件中最主要的两个是focus 和blur，它们都是JavaScript 早期就得到所有浏览器支持的事件。这些事件的最大问题是它们不冒泡。因此，IE 的focusin 和focusout 与Opera 的DOMFocusIn和DOMFocusOut 才会发生重叠。IE 的方式最后被DOM3 级事件采纳为标准方式。<br />
+当焦点从页面中的一个元素移动到另一个元素，会依次触发下列事件：<br />
+<ul>
+	<li>
+		(1) focusout 在失去焦点的元素上触发；
+	</li>
+	<li>
+		(2) focusin 在获得焦点的元素上触发；
+	</li>
+	<li>
+		(3) blur 在失去焦点的元素上触发；
+	</li>
+	<li>
+		(4) DOMFocusOut 在失去焦点的元素上触发；
+	</li>
+	<li>
+		(5) focus 在获得焦点的元素上触发；
+	</li>
+	<li>
+		(6) DOMFocusIn 在获得焦点的元素上触发。
+	</li>
+</ul>
+其中，blur、DOMFocusOut 和focusout 的事件目标是失去焦点的元素；而focus、DOMFocusIn和focusin 的事件目标是获得焦点的元素。<br />
+要确定浏览器是否支持这些事件，可以使用如下代码：<br />
+var isSupported = document.implementation.hasFeature("FocusEvent", "3.0");<br />
+<blockquote>
+	即使focus 和blur 不冒泡，也可以在捕获阶段侦听到它们。Peter-Paul Koch 就此写过一篇非常棒的文章：www.quirksmode.org/blog/archives/2008/04/delegating_the.html。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15326">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

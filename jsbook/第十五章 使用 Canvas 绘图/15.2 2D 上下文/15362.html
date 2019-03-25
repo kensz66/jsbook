@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.2.9 模式</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.2.9 模式</h1>
+	<hr>
+		模式其实就是重复的图像， 可以用来填充或描边图形。要创建一个新模式， 可以调用createPattern()方法并传入两个参数：一个HTML &lt;img&gt;元素和一个表示如何重复图像的字符串。<br />
+<p>
+	其中，第二个参数的值与CSS 的background-repeat 属性值相同，包括"repeat"、"repeat-x"、"repeat-y"和"no-repeat"。看一个例子。
+</p>
+<pre>var image = document.images[0],
+pattern = context.createPattern(image, "repeat");
+//绘制矩形
+context.fillStyle = pattern;
+context.fillRect(10, 10, 150, 150);</pre>
+<a href="http://www.z-ai.net/study/api/s/8757" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+需要注意的是，模式与渐变一样，都是从画布的原点(0,0)开始的。将填充样式（fillStyle）设置为模式对象，只表示在某个特定的区域内显示重复的图像，而不是要从某个位置开始绘制重复的图像。<br />
+上面的代码会得到如图15-13 所示的结果。<br />
+<img src="../../image/ab78c70d554.gif" alt="" /><br />
+createPattern()方法的第一个参数也可以是一个&lt;video&gt;元素，或者另一个&lt;canvas&gt;元素。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15362">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

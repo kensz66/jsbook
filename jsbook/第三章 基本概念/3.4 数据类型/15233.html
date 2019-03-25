@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.4.2 Undefined类型</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.4.2 Undefined类型</h1>
+	<hr>
+		<p>
+	Undefined 类型只有一个值，即特殊的 undefined。在使用 var 声明变量但未对其加以初始化时，这个变量的值就是 undefined，例如：
+</p>
+<pre>var message;
+alert(message == undefined); //true</pre>
+<a href="http://www.z-ai.net/study/api/s/8350" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+UndefinedExample01.htm<br />
+<p>
+	这个例子只声明了变量 message，但未对其进行初始化。比较这个变量与 undefined 字面量，结果表明它们是相等的。这个例子与下面的例子是等价的：
+</p>
+<pre>var message = undefined;
+alert(message == undefined); //true</pre>
+<a href="http://www.z-ai.net/study/api/s/8351" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	这个例子使用 undefined 值显式初始化了变量 message。但我们没有必要这么做，因为未经初始化的值默认就会取得 undefined 值。
+</p>
+<p>
+</p>
+<blockquote>
+	一般而言，不存在需要显式地把一个变量设置为 undefined 值的情况。字面值undefined 的主要目的是用于比较，而 ECMA-262 第 3 版之前的版本中并没有规定这个值。第 3 版引入这个值是为了正式区分空对象指针与未经初始化的变量。
+</blockquote>
+<p>
+</p>
+不过，包含 undefined 值的变量与尚未定义的变量还是不一样的。看看下面这个例子：<br />
+<pre>var message; // 这个变量声明之后默认取得了 undefined 值
+// 下面这个变量并没有声明
+// var age
+alert(message); // "undefined"
+alert(age); // 产生错误</pre>
+<a href="http://www.z-ai.net/study/api/s/8352" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	运行以上代码，第一个警告框会显示变量 message 的值，即"undefined"。而第二个警告框——由于传递给 alert()函数的是尚未声明的变量 age——则会导致一个错误。对于尚未声明过的变量，只能执行一项操作，即使用 typeof 操作符检测其数据类型（对未经声明的变量调用 delete 不会导致错误，但这样做没什么实际意义，而且在严格模式下确实会导致错误）。
+</p>
+<p>
+	然而，令人困惑的是：对未初始化的变量执行 typeof 操作符会返回 undefined 值，而对未声明的变量执行 typeof 操作符同样也会返回 undefined 值。来看下面的例子：
+</p>
+<pre>var message; // 这个变量声明之后默认取得了 undefined 值
+// 下面这个变量并没有声明
+// var age
+alert(typeof message); // "undefined"
+alert(typeof age); // "undefined"</pre>
+<a href="http://www.z-ai.net/study/api/s/8353" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	结果表明，对未初始化和未声明的变量执行 typeof 操作符都返回了 undefined 值；这个结果有其逻辑上的合理性。因为虽然这两种变量从技术角度看有本质区别，但实际上无论对哪种变量也不可能执行真正的操作。
+</p>
+<blockquote>
+	即便未初始化的变量会自动被赋予 undefined 值，但显式地初始化变量依然是明智的选择。如果能够做到这一点，那么当 typeof 操作符返回"undefined"值时，我们就知道被检测的变量还没有被声明，而不是尚未初始化。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15233">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

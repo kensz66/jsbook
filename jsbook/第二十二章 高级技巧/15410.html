@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>22.6 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">22.6 小结</h1>
+	<hr>
+		JavaScript 中的函数非常强大，因为它们是第一类对象。使用闭包和函数环境切换，还可以有很多使用函数的强大方法。可以创建作用域安全的构造函数，确保在缺少new 操作符时调用构造函数不会改变错误的环境对象。<br />
+<ul>
+	<li>
+		可以使用惰性载入函数，将任何代码分支推迟到第一次调用函数的时候。
+	</li>
+	<li>
+		函数绑定可以让你创建始终在指定环境中运行的函数，同时函数柯里化可以让你创建已经填了某些参数的函数。
+	</li>
+	<li>
+		将绑定和柯里化组合起来，就能够给你一种在任意环境中以任意参数执行任意函数的方法。
+	</li>
+</ul>
+ECMAScript 5 允许通过以下几种方式来创建防篡改对象。<br />
+<ul>
+	<li>
+		不可扩展的对象，不允许给对象添加新的属性或方法。
+	</li>
+	<li>
+		密封的对象，也是不可扩展的对象，不允许删除已有的属性和方法。
+	</li>
+	<li>
+		冻结的对象，也是密封的对象，不允许重写对象的成员。
+	</li>
+</ul>
+JavaScript 中可以使用setTimeout()和setInterval()如下创建定时器。<br />
+<ul>
+	<li>
+		定时器代码是放在一个等待区域，直到时间间隔到了之后，此时将代码添加到JavaScript 的处理队列中，等待下一次JavaScript 进程空闲时被执行。
+	</li>
+	<li>
+		每次一段代码执行结束之后，都会有一小段空闲时间进行其他浏览器处理。
+	</li>
+	<li>
+		这种行为意味着，可以使用定时器将长时间运行的脚本切分为一小块一小块可以在以后运行的
+	</li>
+</ul>
+<p>
+	代码段。这种做法有助于Web 应用对用户交互有更积极的响应。
+</p>
+<p>
+	JavaScript 中经常以事件的形式应用观察者模式。虽然事件常常和DOM 一起使用，但是你也可以通过实现自定义事件在自己的代码中应用。使用自定义事件有助于将不同部分的代码相互之间解耦，让维护更加容易，并减少引入错误的机会。
+</p>
+<p>
+	拖放对于桌面和Web 应用都是一个非常流行的用户界面范例，它能够让用户非常方便地以一种直观的方式重新排列或者配置东西。在JavaScrip 中可以使用鼠标事件和一些简单的计算来实现这种功能类型。将拖放行为和自定义事件结合起来可以创建一个可重复使用的框架，它能应用于各种不同的情况下。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15410">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

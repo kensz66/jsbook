@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.3.1 类型化数组</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.3.1 类型化数组</h1>
+	<hr>
+		WebGL 涉及的复杂计算需要提前知道数值的精度，而标准的JavaScript 数值无法满足需要。为此，WebGL 引入了一个概念，叫类型化数组（typed arrays）。类型化数组也是数组，只不过其元素被设置为特定类型的值。<br />
+类型化数组的核心就是一个名为ArrayBuffer 的类型。每个ArrayBuffer 对象表示的只是内存中指定的字节数，但不会指定这些字节用于保存什么类型的数据。通过ArrayBuffer 所能做的，就是为了将来使用而分配一定数量的字节。例如，下面这行代码会在内存中分配20B。<br />
+<pre>var buffer = new ArrayBuffer(20);</pre>
+创建了ArrayBuffer 对象后，能够通过该对象获得的信息只有它包含的字节数，方法是访问其byteLength 属性：<br />
+<pre>var bytes = buffer.byteLength;</pre>
+虽然ArrayBuffer 对象本身没有多少可说的，但对WebGL 而言，使用它是极其重要的。而且，在涉及视图的时候，你才会发现它原来还是很有意思的。<br />
+<h2>
+	1. 视图
+</h2>
+使用ArrayBuffer（数组缓冲器类型）的一种特别的方式就是用它来创建数组缓冲器视图。其中，最常见的视图是DataView，通过它可以选择ArrayBuffer 中一小段字节。为此，可以在创建DataView实例的时候传入一个ArrayBuffer、一个可选的字节偏移量（从该字节开始选择）和一个可选的要选择的字节数。例如：<br />
+<pre>//基于整个缓冲器创建一个新视图
+var view = new DataView(buffer);
+//创建一个开始于字节9 的新视图
+var view = new DataView(buffer, 9);
+//创建一个从字节9 开始到字节18 的新视图
+var view = new DataView(buffer, 9, 10);
+实例化之后，DataView 对象会把字节偏移量以及字节长度信息分别保存在byteOffset 和byteLength 属性中。
+alert(view.byteOffset);
+alert(view.byteLength);</pre>
+通过这两个属性可以在以后方便地了解视图的状态。另外，通过其buffer 属性也可以取得数组缓冲器。<br />
+读取和写入DataView 的时候，要根据实际操作的数据类型，选择相应的getter 和setter 方法。下表列出了DataView 支持的数据类型以及相应的读写方法。<br />
+<p>
+	<img src="../../image/8c1dd989aeb.gif" alt="" />
+</p>
+<p>
+	<img src="../../image/a65830f2bb5.gif" alt="" />
+</p>
+所有这些方法的第一个参数都是一个字节偏移量，表示要从哪个字节开始读取或写入。不要忘了，要保存有些数据类型的数据，可能需要不止1B。比如，无符号8 位整数要用1B，而32 位浮点数则要用4B。使用DataView，就需要你自己来管理这些细节，即要明确知道自己的数据需要多少字节，并选择正确的读写方法。例如：<br />
+<pre>var buffer = new ArrayBuffer(20),
+view = new DataView(buffer),
+value;
+view.setUint16(0, 25);
+view.setUint16(2, 50); //不能从字节1 开始，因为16 位整数要用2B
+value = view.getUint16(0);</pre>
+<a href="http://www.z-ai.net/study/api/s/8761" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码把两个无符号16 位整数保存到了数组缓冲器中。因为每个16 位整数要用2B，所以保存第一个数的字节偏移量为0，而保存第二个数的字节偏移量为2。<br />
+用于读写16 位或更大数值的方法都有一个可选的参数littleEndian。这个参数是一个布尔值，表示读写数值时是否采用小端字节序（即将数据的最低有效位保存在低内存地址中），而不是大端字节序（即将数据的最低有效位保存在高内存地址中）。如果你也不确定应该使用哪种字节序，那不用管它，就采用默认的大端字节序方式保存即可。<br />
+因为在这里使用的是字节偏移量，而非数组元素数，所以可以通过几种不同的方式来访问同一字节。例如：<br />
+<pre>var buffer = new ArrayBuffer(20),
+view = new DataView(buffer),
+value;
+view.setUint16(0, 25);
+value = view.getInt8(0);
+alert(value); //0</pre>
+<a href="http://www.z-ai.net/study/api/s/8762" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，数值25 以16 位无符号整数的形式被写入，字节偏移量为0。然后，再以8 位有符号整数的方式读取该数据，得到的结果是0。这是因为25 的二进制形式的前8 位（第一个字节）全部是0，如图15-14 所示。<br />
+<img src="../../image/84d0eead229.gif" alt="" /><br />
+可见，虽然DataView 能让我们在字节级别上读写数组缓冲器中的数据，但我们必须自己记住要将数据保存到哪里，需要占用多少字节。这样一来，就会带来很多工作量，因此类型化视图也就应运而生。<br />
+<h2>
+	2. 类型化视图
+</h2>
+类型化视图一般也被称为类型化数组，因为它们除了元素必须是某种特定的数据类型外，与常规的数组无异。类型化视图也分几种，而且它们都继承了DataView。<br />
+<ul>
+	<li>
+		Int8Array：表示8 位二补整数。
+	</li>
+	<li>
+		Uint8Array：表示8 位无符号整数。
+	</li>
+	<li>
+		Int16Array：表示16 位二补整数。
+	</li>
+	<li>
+		Uint16Array：表示16 位无符号整数。
+	</li>
+	<li>
+		Int32Array：表示32 位二补整数。
+	</li>
+	<li>
+		Uint32Array：表示32 位无符号整数。
+	</li>
+	<li>
+		Float32Array：表示32 位IEEE 浮点值。
+	</li>
+	<li>
+		Float64Array：表示64 位IEEE 浮点值。
+	</li>
+</ul>
+每种视图类型都以不同的方式表示数据，而同一数据视选择的类型不同有可能占用一或多字节。例如，20B 的ArrayBuffer 可以保存20 个Int8Array 或Uint8Array，或者10 个Int16Array 或Uint16Array，或者5 个Int32Array、Uint32Array 或Float32Array，或者2 个Float64Array。<br />
+由于这些视图都继承自DataView，因而可以使用相同的构造函数参数来实例化。第一个参数是要使用ArrayBuffer 对象，第二个参数是作为起点的字节偏移量（默认为0），第三个参数是要包含的字节数。三个参数中只有第一个是必需的。下面来看几个例子。<br />
+<pre>//创建一个新数组，使用整个缓冲器
+var int8s = new Int8Array(buffer);
+//只使用从字节9 开始的缓冲器
+var int16s = new Int16Array(buffer, 9);
+//只使用从字节9 到字节18 的缓冲器
+var uint16s = new Uint16Array(buffer, 9, 10);</pre>
+能够指定缓冲器中可用的字节段，意味着能在同一个缓冲器中保存不同类型的数值。比如，下面的代码就是在缓冲器的开头保存8 位整数，而在其他字节中保存16 位整数。<br />
+<pre>//使用缓冲器的一部分保存8 位整数，另一部分保存16 位整数
+var int8s = new Int8Array(buffer, 0, 10);
+var uint16s = new Uint16Array(buffer, 11, 10);</pre>
+每个视图构造函数都有一个名为BYTES_PER_ELEMENT 的属性，表示类型化数组的每个元素需要多少字节。因此，Uint8Array.BYTES_PER_ELEMENT 就是1，而Float32Array.BYTES_PER_ELEMENT则为4。可以利用这个属性来辅助初始化。<br />
+<pre>//需要10 个元素空间
+var int8s = new Int8Array(buffer, 0, 10 * Int8Array.BYTES_PER_ELEMENT);
+//需要5 个元素空间
+var uint16s = new Uint16Array(buffer, int8s.byteOffset + int8s.byteLength,
+5 * Uint16Array.BYTES_PER_ELEMENT);</pre>
+以上代码基于同一个数组缓冲器创建了两个视图。缓冲器的前10B 用于保存8 位整数，而其他字节用于保存无符号16 位整数。在初始化Uint16Array 的时候，使用了Int8Array 的byteOffset 和byteLength 属性，以确保uint16s 开始于8 位数据之后。<br />
+如前所述，类型化视图的目的在于简化对二进制数据的操作。除了前面看到的优点之外，创建类型化视图还可以不用首先创建ArrayBuffer 对象。只要传入希望数组保存的元素数，相应的构造函数就可以自动创建一个包含足够字节数的ArrayBuffer 对象，例如：<br />
+<pre>//创建一个数组保存10 个8 位整数（10 字节）
+var int8s = new Int8Array(10);
+//创建一个数组保存10 个16 位整数（20 字节）
+var int16s = new Int16Array(10);
+</pre>
+另外，也可以把常规数组转换为类型化视图，只要把常规数组传入类型化视图的构造函数即可：<br />
+<pre>//创建一个数组保存5 个8 位整数（10 字节）
+var int8s = new Int8Array([10, 20, 30, 40, 50]);</pre>
+这是用默认值来初始化类型化视图的最佳方式，也是WebGL 项目中最常用的方式。<br />
+以这种方式来使用类型化视图，可以让它们看起来更像Array 对象，同时也能确保在读写信息的时候使用正确的数据类型。<br />
+使用类型化视图时，可以通过方括号语法访问每一个数据成员，可以通过length 属性确定数组中有多少元素。这样，对类型化视图的迭代与对Array 对象的迭代就是一样的了。<br />
+<pre>for (var i=0, len=int8s.length; i &lt; len; i++){
+   console.log("Value at position " + i + " is " + int8s[i]);
+}</pre>
+当然，也可以使用方括号语法为类型化视图的元素赋值。如果为相应元素指定的字节数放不下相应的值，则实际保存的值是最大可能值的模。例如，无符号16 位整数所能表示的最大数值是65535，如果你想保存65536，那实际保存的值是0；如果你想保存65537，那实际保存的值是1，依此类推。<br />
+<pre>var uint16s = new Uint16Array(10);
+uint16s[0] = 65537;
+alert(uint16s[0]); //1</pre>
+数据类型不匹配时不会抛出错误，所以你必须自己保证所赋的值不会超过相应元素的字节限制。类型化视图还有一个方法，即subarray()，使用这个方法可以基于底层数组缓冲器的子集创建一个新视图。这个方法接收两个参数：开始元素的索引和可选的结束元素的索引。返回的类型与调用该方法的视图类型相同。例如：<br />
+<pre>var uint16s = new Uint16Array(10),
+sub = uint16s.subarray(2, 5);</pre>
+在以上代码中，sub 也是Uint16Array 的一个实例，而且底层与uint16s 都基于同一个ArrayBuffer。通过大视图创建小视图的主要好处就是，在操作大数组中的一部分元素时，无需担心意外修改了其他元素。类型化数组是WebGL 项目中执行各种操作的重要基础。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15366">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

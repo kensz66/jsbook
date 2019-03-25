@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>8.3 navigator 对象</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">8.3 navigator 对象</h1>
+	<hr>
+		<p>
+	最早由Netscape Navigator 2.0 引入的navigator 对象，现在已经成为识别客户端浏览器的事实标准。虽然其他浏览器也通过其他方式提供了相同或相似的信息（例如，IE 中的window.clientInformation和Opera 中的window.opera），但navigator 对象却是所有支持JavaScript 的浏览器所共有的。与其他BOM 对象的情况一样，每个浏览器中的navigator 对象也都有一套自己的属性。下表列出了存在于所有浏览器中的属性和方法，以及支持它们的浏览器版本。
+</p>
+<p>
+	<table style="width:100%;" cellspacing="0" cellpadding="2" bordercolor="#000000" border="1">
+		<tbody>
+			<tr>
+				<td align="center">
+					<strong>属性或</strong><strong>方法</strong><br />
+				</td>
+				<td align="center">
+					&nbsp;<strong>说 </strong><strong>明</strong><br />
+				</td>
+				<td align="center">
+					<strong>IE</strong><br />
+				</td>
+				<td align="center">
+					<strong>Fire</strong><strong>fox</strong><br />
+				</td>
+				<td align="center">
+					<strong>Safari/</strong><strong>Chrome</strong><br />
+				</td>
+				<td align="center">
+					<strong>Op</strong><strong>era</strong><br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					appCodeName<br />
+				</td>
+				<td>
+					浏览器的名称。通常都是Mozilla，即使在非Mozilla浏览器中也是如此<br />
+				</td>
+				<td>
+					3.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					appMinorVersion<br />
+				</td>
+				<td>
+					次版本信息<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					-<br />
+				</td>
+				<td>
+					-<br />
+				</td>
+				<td>
+					9.5+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					appName<br />
+				</td>
+				<td>
+					完整的浏览器名称<br />
+				</td>
+				<td>
+					3.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					appVersion<br />
+				</td>
+				<td>
+					浏览器的版本。一般不与实际的浏览器版本对应<br />
+				</td>
+				<td>
+					3.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					buildID<br />
+				</td>
+				<td>
+					浏览器编译版本<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					2.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					cookieEnabled<br />
+				</td>
+				<td>
+					表示cookie是否启用<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					cpuClass<br />
+				</td>
+				<td>
+					客户端计算机中使用的CPU类型（x86、68K、Alpha、PPC或Other）<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					javaEnabled()<br />
+				</td>
+				<td>
+					表示当前浏览器中是否启用了Java<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					language<br />
+				</td>
+				<td>
+					浏览器的主语言<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					mimeTypes<br />
+				</td>
+				<td>
+					在浏览器中注册的MIME类型数组<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					onLine<br />
+				</td>
+				<td>
+					表示浏览器是否连接到了因特网<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					9.5+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					opsProfile<br />
+				</td>
+				<td>
+					似乎早就不用了。查不到相关文档<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					oscpu<br />
+				</td>
+				<td>
+					客户端计算机的操作系统或使用的CPU<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					platform<br />
+				</td>
+				<td>
+					浏览器所在的系统平台<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					plugins<br />
+				</td>
+				<td>
+					浏览器中安装的插件信息的数组<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					preference()<br />
+				</td>
+				<td>
+					设置用户的首选项<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.5+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					product<br />
+				</td>
+				<td>
+					产品名称（如 Gecko）<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					productSub<br />
+				</td>
+				<td>
+					关于产品的次要信息（如Gecko的版本）<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					register-ContentHandler()<br />
+				</td>
+				<td>
+					针对特定的MIME类型将一个站点注册为处理程序<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					2.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					register-ProtocolHandler()<br />
+				</td>
+				<td>
+					针对特定的协议将一个站点注册为处理程序<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					2.0<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					securityPolicy<br />
+				</td>
+				<td>
+					已经废弃。安全策略的名称。为了与Netscape Navigator 4向后兼容而保留下来<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					systemLanguage<br />
+				</td>
+				<td>
+					操作系统的语言<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					taintEnabled()<br />
+				</td>
+				<td>
+					已经废弃。表示是否允许变量被修改（taint）。为了与Netscape Navigator 3向后兼容而保留下来<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					userAgent<br />
+				</td>
+				<td>
+					浏览器的用户代理字符串<br />
+				</td>
+				<td>
+					3.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					userLanguage<br />
+				</td>
+				<td>
+					操作系统的默认语言<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					7.0+<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					userProfile<br />
+				</td>
+				<td>
+					借以访问用户个人信息的对象<br />
+				</td>
+				<td>
+					4.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					vendor<br />
+				</td>
+				<td>
+					浏览器的品牌<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					vendorSub<br />
+				</td>
+				<td>
+					有关供应商的次要信息<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					1.0+<br />
+				</td>
+				<td>
+					－<br />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</p>
+<p>
+	表中的这些navigator 对象的属性通常用于检测显示网页的浏览器类型（第9 章会详细讨论）。
+</p>
+<h2>
+	8.3.1 检测插件
+</h2>
+<p>
+	检测浏览器中是否安装了特定的插件是一种最常见的检测例程。对于非IE 浏览器，可以使用plugins 数组来达到这个目的。该数组中的每一项都包含下列属性。
+</p>
+<ul>
+	<li>
+		name：插件的名字。
+	</li>
+	<li>
+		description：插件的描述。
+	</li>
+	<li>
+		filename：插件的文件名。
+	</li>
+	<li>
+		length：插件所处理的MIME 类型数量。
+	</li>
+</ul>
+<p>
+	一般来说，name 属性中会包含检测插件必需的所有信息，但有时候也不完全如此。在检测插件时，需要像下面这样循环迭代每个插件并将插件的name 与给定的名字进行比较。
+</p>
+<pre>//检测插件（在IE 中无效）
+function hasPlugin(name) {
+	name = name.toLowerCase();
+	for (var i = 0; i &lt; navigator.plugins.length; i++) {
+		if (navigator.plugins[i].name.toLowerCase().indexOf(name) &gt; -1) {
+			return true;
+		}
+	}
+	return false;
+}
+//检测Flash
+alert(hasPlugin("Flash"));
+//检测QuickTime
+alert(hasPlugin("QuickTime"));</pre>
+<a href="http://www.z-ai.net/study/api/s/8587" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	这个hasPlugin()函数接受一个参数：要检测的插件名。第一步是将传入的名称转换为小写形式，以便于比较。然后，迭代plugins 数组，通过indexOf()检测每个name 属性，以确定传入的名称是否出现在字符串的某个地方。比较的字符串都使用小写形式可以避免因大小写不一致导致的错误。而传入的参数应该尽可能具体，以避免混淆。应该说，像Flash 和QuickTime 这样的字符串就比较具体了，不容易导致混淆。在Firefox、Safari、Opera 和Chrome 中可以使用这种方法来检测插件。
+</p>
+<blockquote>
+	每个插件对象本身也是一个MimeType 对象的数组，这些对象可以通过方括号语法来访问。每个MimeType 对象有4 个属性：包含MIME 类型描述的description、回指插件对象的enabledPlugin、表示与MIME 类型对应的文件扩展名的字符串suffixes（以逗号分隔）和表示完整MIME 类型字符串的type。
+</blockquote>
+<p>
+	检测IE 中的插件比较麻烦，因为IE 不支持Netscape 式的插件。在IE 中检测插件的唯一方式就是使用专有的ActiveXObject 类型，并尝试创建一个特定插件的实例。IE 是以COM对象的方式实现插件的，而COM对象使用唯一标识符来标识。因此，要想检查特定的插件，就必须知道其COM标识符。
+</p>
+<p>
+	例如，Flash 的标识符是ShockwaveFlash.ShockwaveFlash。知道唯一标识符之后，就可以编写类似下面的函数来检测IE 中是否安装相应插件了。
+</p>
+<pre>//检测IE 中的插件
+function hasIEPlugin(name) {
+	try {
+		new ActiveXObject(name);
+		return true;
+	} catch(ex) {
+		return false;
+	}
+}
+//检测Flash
+alert(hasIEPlugin("ShockwaveFlash.ShockwaveFlash"));
+//检测QuickTime
+alert(hasIEPlugin("QuickTime.QuickTime"));</pre>
+<a href="http://www.z-ai.net/study/api/s/8588" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	在这个例子中，函数hasIEPlugin()只接收一个COM 标识符作为参数。在函数内部，首先会尝试创建一个COM 对象的实例。之所以要在try-catch 语句中进行实例化，是因为创建未知COM 对象会导致抛出错误。这样，如果实例化成功，则函数返回true；否则，如果抛出了错误，则执行catch块，结果就会返回false。例子最后检测IE 中是否安装了Flash 和QuickTime 插件。
+</p>
+<p>
+	鉴于检测这两种插件的方法差别太大，因此典型的做法是针对每个插件分别创建检测函数，而不是使用前面介绍的通用检测方法。来看下面的例子。
+</p>
+<pre>//检测所有浏览器中的Flash
+function hasFlash() {
+	var result = hasPlugin("Flash");
+	if (!result) {
+		result = hasIEPlugin("ShockwaveFlash.ShockwaveFlash");
+	}
+	return result;
+}
+//检测所有浏览器中的QuickTime
+function hasQuickTime() {
+	var result = hasPlugin("QuickTime");
+	if (!result) {
+		result = hasIEPlugin("QuickTime.QuickTime");
+	}
+	return result;
+}
+//检测Flash
+alert(hasFlash());
+//检测QuickTime
+alert(hasQuickTime());</pre>
+<a href="http://www.z-ai.net/study/api/s/8589" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+<p>
+	上面代码中定义了两个函数：hasFlash()和hasQuickTime()。每个函数都是先尝试使用不针对IE 的插件检测方法。如果返回了false（在IE 中会这样），那么再使用针对IE 的插件检测方法。如果IE 的插件检测方法再返回false，则整个方法也将返回false。只要任何一次检测返回true，整个方法都会返回true。
+</p>
+<p>
+</p>
+<blockquote>
+	plugins 集合有一个名叫refresh()的方法，用于刷新plugins 以反映最新安装的插件。这个方法接收一个参数：表示是否应该重新加载页面的一个布尔值。如果将这个值设置为true，则会重新加载包含插件的所有页面；否则，只更新plugins集合，不重新加载页面。
+</blockquote>
+<p>
+</p>
+<h2>
+	8.3.2 注册处理程序
+</h2>
+<p>
+	Firefox 2 为navigator 对象新增了registerContentHandler()和registerProtocolHandler()方法（这两个方法是在HTML5 中定义的，相关内容将在第22 章讨论）。这两个方法可以让一个站点指明它可以处理特定类型的信息。随着RSS 阅读器和在线电子邮件程序的兴起，注册处理程序就为像使用桌面应用程序一样默认使用这些在线应用程序提供了一种方式。
+</p>
+<p>
+	其中，registerContentHandler()方法接收三个参数：要处理的MIME 类型、可以处理该MIME类型的页面的URL 以及应用程序的名称。举个例子，要将一个站点注册为处理RSS 源的处理程序，可以使用如下代码。
+</p>
+<pre>navigator.registerContentHandler("application/rss+xml",
+"http://www.somereader.com?feed=%s", "Some Reader");</pre>
+<p>
+	第一个参数是RSS 源的MIME 类型。第二个参数是应该接收RSS 源URL 的URL，其中的%s 表示RSS 源URL，由浏览器自动插入。当下一次请求RSS 源时，浏览器就会打开指定的URL，而相应的Web 应用程序将以适当方式来处理该请求。
+</p>
+<p>
+</p>
+<blockquote>
+	Firefox 4 及之前版本只允许在registerContentHandler()方法中使用三个MIME 类型：application/rss+xml、application/atom+xml 和application/vnd.mozilla.maybe. feed。这三个MIME 类型的作用都一样，即为RSS 或ATOM新闻源（feed）注册处理程序。
+</blockquote>
+<p>
+</p>
+<p>
+	类似的调用方式也适用于registerProtocolHandler()方法，它也接收三个参数：要处理的协议（例如，mailto 或ftp）、处理该协议的页面的URL 和应用程序的名称。例如，要想将一个应用程序注册为默认的邮件客户端，可以使用如下代码。
+</p>
+<pre>navigator.registerProtocolHandler("mailto",
+"http://www.somemailclient.com?cmd=%s", "Some Mail Client");</pre>
+<p>
+	这个例子注册了一个mailto 协议的处理程序，该程序指向一个基于Web 的电子邮件客户端。同样，第二个参数仍然是处理相应请求的URL，而%s 则表示原始的请求。
+</p>
+<blockquote>
+	Firefox 2 虽然实现了registerProtocolHandler()，但该方法还不能用。Firefox 3 完整实现这个方法。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15282">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

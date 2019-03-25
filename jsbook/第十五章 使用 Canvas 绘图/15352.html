@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.1 基本用法</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.1 基本用法</h1>
+	<hr>
+		要使用&lt;canvas&gt;元素，必须先设置其width 和height 属性，指定可以绘图的区域大小。出现在开始和结束标签中的内容是后备信息，如果浏览器不支持&lt;canvas&gt;元素，就会显示这些信息。下面就是&lt;canvas&gt;元素的例子。<br />
+<pre>&lt;canvas id="drawing" width=" 200" height="200"&gt;A drawing of something.&lt;/canvas&gt;</pre>
+与其他元素一样，&lt;canvas&gt;元素对应的DOM 元素对象也有width 和height 属性，可以随意修改。而且，也能通过CSS 为该元素添加样式，如果不添加任何样式或者不绘制任何图形，在页面中是看不到该元素的。<br />
+要在这块画布（canvas）上绘图，需要取得绘图上下文。而取得绘图上下文对象的引用，需要调用getContext()方法并传入上下文的名字。传入"2d"，就可以取得2D 上下文对象。<br />
+<pre>var drawing = document.getElementById("drawing");
+//确定浏览器支持&lt;canvas&gt;元素
+if (drawing.getContext){
+var context = drawing.getContext("2d");
+//更多代码
+}</pre>
+在使用&lt;canvas&gt;元素之前，首先要检测getContext()方法是否存在，这一步非常重要。有些浏览器会为HTML 规范之外的元素创建默认的HTML 元素对象①。在这种情况下，即使drawing 变量中保存着一个有效的元素引用，也检测不到getContext()方法。<br />
+使用toDataURL()方法，可以导出在&lt;canvas&gt;元素上绘制的图像。这个方法接受一个参数，即图像的MIME 类型格式，而且适合用于创建图像的任何上下文。比如，要取得画布中的一幅PNG 格式的图像，可以使用以下代码。<br />
+<pre>var drawing = document.getElementById("drawing");
+//确定浏览器支持&lt;canvas&gt;元素
+if (drawing.getContext){
+	//取得图像的数据URI
+	var imgURI = drawing.toDataURL("image/png");
+	//显示图像
+	var image = document.createElement("img");
+	image.src = imgURI;
+	document.body.appendChild(image);
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8741" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+默认情况下，浏览器会将图像编码为PNG 格式（除非另行指定）。Firefox 和Opera 也支持基于"image/jpeg"参数的JPEG 编码格式。由于这个方法是后来才追加的，所以支持&lt;canvas&gt;的浏览器也是在较新的版本中才加入了对它的支持，比如IE9、Firefox 3.5 和Opera 10。<br />
+<blockquote>
+	如果绘制到画布上的图像源自不同的域，toDataURL()方法会抛出错误。本章后面还将介绍更多相关内容。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15352">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>24.4 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">24.4 小结</h1>
+	<hr>
+		随着JavaScript 开发的成熟，也出现了很多最佳实践。过去一度认为只是一种爱好的东西现在变成了正当的职业，同时还需要经历过去其他编程语言要做的一些研究，如可维护性、性能和部署。<br />
+<p>
+	JavaScript 中的可维护性部分涉及到下面的代码约定。
+</p>
+<ul>
+	<li>
+		来自其他语言中的代码约定可以用于决定何时进行注释，以及如何进行缩进，不过JavaScript需要针对其松散类型的性质创造一些特殊的约定。
+	</li>
+	<li>
+		由于JavaScript 必须与HTML 和CSS 共存，所以让各自完全定义其自己的目的非常重要：JavaScript 应该定义行为，HTML 应该定义内容，CSS 应该定义外观。
+	</li>
+	<li>
+		这些职责的混淆会导致难以调试的错误和维护上的问题。
+	</li>
+</ul>
+<p>
+	随着Web 应用中的JavaScript 数量的增加，性能变得更加重要，因此，你需要牢记以下事项。
+</p>
+<ul>
+	<li>
+		JavaScript 执行所花费的时间直接影响到整个Web 页面的性能，所以其重要性是不能忽略的。
+	</li>
+	<li>
+		针对基于C 的语言的很多性能的建议也适用于JavaScript，如有关循环性能和使用switch 语句替代if 语句。
+	</li>
+	<li>
+		还有一个要记住的重要事情，即DOM 交互开销很大，所以需要限制DOM 操作的次数。
+	</li>
+</ul>
+<p>
+	流程的最后一步是部署。本章讨论了以下一些关键点。
+</p>
+<ul>
+	<li>
+		为了协助部署，推荐设置一个可以将JavaScript 合并为较少文件（理想情况是一个）的构建过程。
+	</li>
+	<li>
+		有了构建过程也可以对源代码自动运行额外的处理和过滤。例如，你可以运行JavaScript 验证器来确保没有语法错误或者是代码没有潜在的问题。
+	</li>
+	<li>
+		在部署前推荐使用压缩器将文件尽可能变小。
+	</li>
+	<li>
+		和HTTP 压缩一起使用可以让JavaScript 文件尽可能小，因此对整体页面性能的影响也会最小。
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15424">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

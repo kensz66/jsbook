@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>20.3 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">20.3 小结</h1>
+	<hr>
+		<p>
+	JSON 是一个轻量级的数据格式，可以简化表示复杂数据结构的工作量。JSON 使用JavaScript 语法的子集表示对象、数组、字符串、数值、布尔值和null。即使XML 也能表示同样复杂的数据结果，但JSON 没有那么烦琐，而且在JavaScript 中使用更便利。
+</p>
+<p>
+	ECMAScript 5 定义了一个原生的JSON 对象，可以用来将对象序列化为JSON 字符串或者将JSON数据解析为JavaScript 对象。JSON.stringify()和JSON.parse()方法分别用来实现上述两项功能。
+</p>
+<p>
+	这两个方法都有一些选项，通过它们可以改变过滤的方式，或者改变序列化的过程。原生的JSON 对象也得到了很多浏览器的支持，比如IE8+、Firefox 3.5+、Safari 4+、Opera 10.5 和Chrome。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15395">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

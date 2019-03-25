@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.2.11 合成</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.2.11 合成</h1>
+	<hr>
+		还有两个会应用到2D 上下文中所有绘制操作的属性：globalAlpha 和globalComposition-Operation。其中，globalAlpha 是一个介于0 和1 之间的值（包括0 和1），用于指定所有绘制的透明度。默认值为0。如果所有后续操作都要基于相同的透明度，就可以先把globalAlpha 设置为适当值，然后绘制，最后再把它设置回默认值0。下面来看一个例子。<br />
+<pre>//绘制红色矩形
+context.fillStyle = "#ff0000";
+context.fillRect(10, 10, 50, 50);
+//修改全局透明度
+context.globalAlpha = 0.5;
+//绘制蓝色矩形
+context.fillStyle = "rgba(0,0,255,1)";
+context.fillRect(30, 30, 50, 50);
+//重置全局透明度
+context.globalAlpha = 0;</pre>
+<a href="http://www.z-ai.net/study/api/s/8759" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，我们把蓝色矩形绘制到了红色矩形上面。因为在绘制蓝色矩形前，globalAlpha已经被设置为0.5，所以蓝色矩形会呈现半透明效果，透过它可以看到下面的红色矩形。<br />
+第二个属性globalCompositionOperation 表示后绘制的图形怎样与先绘制的图形结合。这个属性的值是字符串，可能的值如下。<br />
+<ul>
+	<li>
+		source-over（默认值）：后绘制的图形位于先绘制的图形上方。
+	</li>
+	<li>
+		source-in：后绘制的图形与先绘制的图形重叠的部分可见，两者其他部分完全透明。
+	</li>
+	<li>
+		source-out：后绘制的图形与先绘制的图形不重叠的部分可见，先绘制的图形完全透明。
+	</li>
+	<li>
+		source-atop：后绘制的图形与先绘制的图形重叠的部分可见，先绘制图形不受影响。
+	</li>
+	<li>
+		destination-over：后绘制的图形位于先绘制的图形下方，只有之前透明像素下的部分才可见。
+	</li>
+	<li>
+		destination-in：后绘制的图形位于先绘制的图形下方，两者不重叠的部分完全透明。
+	</li>
+	<li>
+		destination-out：后绘制的图形擦除与先绘制的图形重叠的部分。
+	</li>
+	<li>
+		destination-atop：后绘制的图形位于先绘制的图形下方，在两者不重叠的地方，先绘制的图形会变透明。
+	</li>
+	<li>
+		lighter：后绘制的图形与先绘制的图形重叠部分的值相加，使该部分变亮。
+	</li>
+	<li>
+		copy：后绘制的图形完全替代与之重叠的先绘制图形。
+	</li>
+	<li>
+		xor：后绘制的图形与先绘制的图形重叠的部分执行“异或”操作。
+	</li>
+</ul>
+这个合成操作实际上用语言或者黑白图像是很难说清楚的。要了解每个操作的具体效果，请参见https://developer.mozilla.org/samples/canvas-tutorial/6_1_canvas_composite.html。推荐使用IE9+或Firefox4+访问前面的网页，因为这两款浏览器对Canvas 的实现最完善。下面来看一个例子。<br />
+<pre>//绘制红色矩形
+context.fillStyle = "#ff0000";
+context.fillRect(10, 10, 50, 50);
+//设置合成操作
+context.globalCompositeOperation = "destination-over";
+//绘制蓝色矩形
+context.fillStyle = "rgba(0,0,255,1)";
+context.fillRect(30, 30, 50, 50);</pre>
+<a href="http://www.z-ai.net/study/api/s/8760" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+如果不修改globalCompositionOperation，那么蓝色矩形应该位于红色矩形之上。但把globalCompositionOperation 设置为"destination-over"之后，红色矩形跑到了蓝色矩形上面。<br />
+在使用globalCompositionOperation 的情况下，一定要多测试一些浏览器。因为不同浏览器对这个属性的实现仍然存在较大的差别。Safari 和Chrome 在这方面还有问题，至于有什么问题，大家可以比较在打开上述页面的情况下，IE9+和Firefox 4+与它们有什么差异。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15364">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>21.2 XMLHttpRequest 2 级</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">21.2 XMLHttpRequest 2 级</h1>
+	<hr>
+		鉴于XHR 已经得到广泛接受，成为了事实标准，W3C 也着手制定相应的标准以规范其行为。<br />
+XMLHttpRequest 1 级只是把已有的XHR 对象的实现细节描述了出来。而XMLHttpRequest 2 级则进一步发展了XHR。并非所有浏览器都完整地实现了XMLHttpRequest 2 级规范，但所有浏览器都实现了它规定的部分内容。<br />
+<h2>
+	21.2.1 FormData
+</h2>
+现代Web 应用中频繁使用的一项功能就是表单数据的序列化，XMLHttpRequest 2 级为此定义了FormData 类型。FormData 为序列化表单以及创建与表单格式相同的数据（用于通过XHR 传输）提供了便利。下面的代码创建了一个FormData 对象，并向其中添加了一些数据。<br />
+<pre>var data = new FormData();
+data.append("name", "Nicholas");</pre>
+这个append()方法接收两个参数：键和值，分别对应表单字段的名字和字段中包含的值。可以像这样添加任意多个键值对儿。而通过向FormData 构造函数中传入表单元素，也可以用表单元素的数据预先向其中填入键值对儿：<br />
+<pre>var data = new FormData(document.forms[0]);</pre>
+创建了FormData 的实例后，可以将它直接传给XHR 的send()方法，如下所示：<br />
+<pre>var xhr = createXHR();
+xhr.onreadystatechange = function() {
+	if (xhr.readyState == 4) {
+		if ((xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 300) || xhr.status == 304) {
+			alert(xhr.responseText);
+		} else {
+			alert("Request was unsuccessful: " + xhr.status);
+		}
+	}
+};
+xhr.open("post", "postexample.php", true);
+var form = document.getElementById("user-info");
+xhr.send(new FormData(form));</pre>
+<a href="http://www.z-ai.net/study/api/s/8843" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+使用FormData 的方便之处体现在不必明确地在XHR 对象上设置请求头部。XHR 对象能够识别传入的数据类型是FormData 的实例，并配置适当的头部信息。<br />
+支持FormData 的浏览器有Firefox 4+、Safari 5+、Chrome 和Android 3+版WebKit。<br />
+<h2>
+	21.2.2 超时设定
+</h2>
+IE8 为XHR 对象添加了一个timeout 属性，表示请求在等待响应多少毫秒之后就终止。在给timeout 设置一个数值后，如果在规定的时间内浏览器还没有接收到响应，那么就会触发timeout 事件，进而会调用ontimeout 事件处理程序。这项功能后来也被收入了XMLHttpRequest 2 级规范中。来看下面的例子。<br />
+<pre>var xhr = createXHR();
+xhr.onreadystatechange = function() {
+	if (xhr.readyState == 4) {
+		try {
+			if ((xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 300) || xhr.status == 304) {
+				alert(xhr.responseText);
+			} else {
+				alert("Request was unsuccessful: " + xhr.status);
+			}
+		} catch(ex) {
+			//假设由ontimeout 事件处理程序处理
+		}
+	}
+};
+xhr.open("get", "timeout.php", true);
+xhr.timeout = 1000; //将超时设置为1 秒钟（仅适用于IE8+）
+xhr.ontimeout = function() {
+	alert("Request did not return in a second.");
+};
+xhr.send(null);</pre>
+<a href="http://www.z-ai.net/study/api/s/8844" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子示范了如何使用timeout 属性。将这个属性设置为1000 毫秒，意味着如果请求在1 秒钟内还没有返回，就会自动终止。请求终止时，会调用ontimeout 事件处理程序。但此时readyState可能已经改变为4 了，这意味着会调用onreadystatechange 事件处理程序。可是，如果在超时终止请求之后再访问status 属性，就会导致错误。为避免浏览器报告错误，可以将检查status 属性的语句封装在一个try-catch 语句当中。<br />
+在写作本书时，IE 8+仍然是唯一支持超时设定的浏览器。<br />
+<h2>
+	21.2.3 overrideMimeType()方法
+</h2>
+Firefox 最早引入了overrideMimeType()方法，用于重写XHR 响应的MIME 类型。这个方法后来也被纳入了XMLHttpRequest 2 级规范。因为返回响应的MIME 类型决定了XHR 对象如何处理它，所以提供一种方法能够重写服务器返回的MIME 类型是很有用的。<br />
+比如，服务器返回的MIME 类型是text/plain，但数据中实际包含的是XML。根据MIME 类型，即使数据是XML，responseXML 属性中仍然是null。通过调用overrideMimeType()方法，可以保证把响应当作XML 而非纯文本来处理。<br />
+<pre>var xhr = createXHR();
+xhr.open("get", "text.php", true);
+xhr.overrideMimeType("text/xml");
+xhr.send(null);</pre>
+这个例子强迫XHR 对象将响应当作XML 而非纯文本来处理。调用overrideMimeType()必须在send()方法之前，才能保证重写响应的MIME 类型。<br />
+支持overrideMimeType()方法的浏览器有Firefox、Safari 4+、Opera 10.5 和Chrome。<br /></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15398">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

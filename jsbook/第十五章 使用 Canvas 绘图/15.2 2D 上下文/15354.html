@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.2.1 填充和描边</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.2.1 填充和描边</h1>
+	<hr>
+		2D 上下文的两种基本绘图操作是填充和描边。填充，就是用指定的样式（颜色、渐变或图像）填充图形；描边，就是只在图形的边缘画线。大多数2D 上下文操作都会细分为填充和描边两个操作，而<br />
+<blockquote>
+	① 假设你想在Firefox 3 中使用&lt;canvas&gt;元素。虽然浏览器会为该标签创建一个DOM 对象，而且也可以引用它，但这个对象中并没有getContext()方法。（据作者回复）操作的结果取决于两个属性：fillStyle 和strokeStyle。
+</blockquote>
+这两个属性的值可以是字符串、渐变对象或模式对象，而且它们的默认值都是"#000000"。如果为它们指定表示颜色的字符串值，可以使用CSS 中指定颜色值的任何格式，包括颜色名、十六进制码、rgb、rgba、hsl 或hsla。举个例子：<br />
+<pre>var drawing = document.getElementById("drawing");
+//确定浏览器支持&lt;canvas&gt;元素
+if (drawing.getContext){
+	var context = drawing.getContext("2d");
+	context.strokeStyle = "red";
+	context.fillStyle = "#0000ff";
+}</pre>
+以上代码将strokeStyle 设置为red（CSS 中的颜色名），将fillStyle 设置为#0000ff（蓝色）。<br />
+然后，所有涉及描边和填充的操作都将使用这两个样式，直至重新设置这两个值。如前所述，这两个属性的值也可以是渐变对象或模式对象。本章后面会讨论这两种对象。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15354">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

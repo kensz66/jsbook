@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>1.3 JavaScript 版本</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">1.3 JavaScript 版本</h1>
+	<hr>
+		<p>
+	作为 Netscape“继承人”的 Mozilla 公司，是目前唯一还在沿用最初的 JavaScript 版本编号序列的浏览器开发商。在 Netscape 将源代码提交给开源的 Mozilla 项目的时候， JavaScript 在浏览器中的最后一个版本号是 1.3。（如前所述，1.4 版是只针对服务器的实现。）后来，随着 Mozilla 基金会继续开发 JavaScript，添加新的特性、关键字和语法， JavaScript 的版本号继续递增。下表列出了 Netscape/Mozilla 浏览器中JavaScript 版本号的递增过程：
+</p>
+<img src="../image/8e152d9f1f8.gif" alt="" /><br />
+<p>
+	实际上，上表中的编号方案源自 Firefox 4 将内置 JavaScript 2.0 这一共识。因此， 2.0 版之前每个递增的版本号，表示的是相应实现与 JavaScript 2.0 开发目标还有多大的距离。虽然原计划是这样，但JavaScript 的这种发展速度让这个计划不再可行。目前， JavaScript 2.0 还没有目标实现。
+</p>
+<blockquote>
+	请注意，只有 Netscape/Mozilla 浏览器才遵循这种编号模式。例如， IE 的 JScript就采用了另一种版本命名方案。换句话说， JScript 的版本号与上表中 JavaScript 的版本号之间不存在任何对应关系。而且，大多数浏览器在提及对 JavaScript 的支持情况时，一般都以 ECMAScript 兼容性和对 DOM 的支持情况为准。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15222">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

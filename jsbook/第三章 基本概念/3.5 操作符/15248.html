@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.5.9 赋值操作符</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.5.9 赋值操作符</h1>
+	<hr>
+		简单的赋值操作符由等于号（=）表示，其作用就是把右侧的值赋给左侧的变量，如下面的例子所示：<br />
+<pre>var num = 10;</pre>
+如果在等于号（=）前面再添加乘性操作符、加性操作符或位操作符，就可以完成复合赋值操作。<br />
+这种复合赋值操作相当于是对下面常规表达式的简写形式：<br />
+<pre>var num = 10;
+num = num + 10;</pre>
+其中的第二行代码可以用一个复合赋值来代替：<br />
+<pre>var num = 10;
+num += 10;</pre>
+每个主要算术操作符（以及个别的其他操作符）都有对应的复合赋值操作符。这些操作符如下所示：<br />
+<ul>
+	<li>
+		乘/赋值（*=）；
+	</li>
+	<li>
+		除/赋值（/=）；
+	</li>
+	<li>
+		模/赋值（%=）；
+	</li>
+	<li>
+		加/赋值（+=）；
+	</li>
+	<li>
+		减/赋值（-=）；
+	</li>
+	<li>
+		左移/赋值（&lt;&lt;=）；
+	</li>
+	<li>
+		有符号右移/赋值（&gt;&gt;=）；
+	</li>
+	<li>
+		无符号右移/赋值（&gt;&gt;&gt;=）。
+	</li>
+</ul>
+设计这些操作符的主要目的就是简化赋值操作。使用它们不会带来任何性能的提升。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15248">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

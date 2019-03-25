@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>25.7 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">25.7 小结</h1>
+	<hr>
+		与HTML5 同时兴起的是另外一批JavaScript API。从技术规范角度讲，这批API 不属于HTML5，但从整体上可以称它们为HTML5 JavaScript API。这些API 的标准有不少虽然还在制定当中，但已经得到了浏览器的广泛支持，因此本章重点讨论了它们。<br />
+<ul>
+	<li>
+		requestAnimationFrame()：是一个着眼于优化JavaScript 动画的API，能够在动画运行期间发出信号。通过这种机制，浏览器就能够自动优化屏幕重绘操作。
+	</li>
+	<li>
+		Page Visibility API：让开发人员知道用户什么时候正在看着页面，而什么时候页面是隐藏的。
+	</li>
+	<li>
+		Geolocation API：在得到许可的情况下，可以确定用户所在的位置。在移动Web 应用中，这个API 非常重要而且常用。
+	</li>
+	<li>
+		File API：可以读取文件内容，用于显示、处理和上传。与HTML5 的拖放功能结合，很容易就能创造出拖放上传功能。
+	</li>
+	<li>
+		Web Timing：给出了页面加载和渲染过程的很多信息，对性能优化非常有价值。
+	</li>
+	<li>
+		Web Workers：可以运行异步JavaScript 代码，避免阻塞用户界面。在执行复杂计算和数据处理的时候，这个API 非常有用；要不然，这些任务轻则会占用很长时间，重则会导致用户无法与页面交互。
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15432">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

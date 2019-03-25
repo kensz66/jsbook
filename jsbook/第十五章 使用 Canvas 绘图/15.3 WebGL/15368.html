@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>15.3.3 支持</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">15.3.3 支持</h1>
+	<hr>
+		Firefox 4+和Chrome 都实现了WebGL API。Safari 5.1 也实现了WebGL，但默认是禁用的。WebGL比较特别的地方在于，某个浏览器的某个版本实现了它，并不一定意味着就真能使用它。某个浏览器支持WebGL，至少意味着两件事：首先，浏览器本身必须实现了WebGL API；其次，计算机必须升级显示驱动程序。运行Windows XP 等操作系统的一些老机器，其驱动程序一般都不是最新的。因此，这些计算机中的浏览器都会禁用WebGL。从稳妥的角度考虑，在使用WebGL 之前，最好检测其是否得到了支持，而不是只检测特定的浏览器版本。<br />
+大家别忘了，WebGL 还是一个正在制定和发展中的规范。不管是函数名、函数签名，还是数据类型，都有可能改变。可以说，WebGL 目前只适合实验性地学习，不适合真正开发和应用。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15368">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

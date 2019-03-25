@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>3.2 关键字和保留字</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">3.2 关键字和保留字</h1>
+	<hr>
+		<p>
+	ECMA-262 描述了一组具有特定用途的关键字，这些关键字可用于表示控制语句的开始或结束，或者用于执行特定操作等。按照规则，关键字也是语言保留的，不能用作标识符。以下就是 ECMAScript的全部关键字（带*号上标的是第 5 版新增的关键字）：
+</p>
+<img src="../image/f89f5acecae.gif" alt="" /><br />
+<p>
+	ECMA-262 还描述了另外一组不能用作标识符的保留字。尽管保留字在这门语言中还没有任何特定的用途，但它们有可能在将来被用作关键字。以下是 ECMA-262 第 3 版定义的全部保留字：
+</p>
+<img src="../image/a559cb36bac.gif" alt="" /><br />
+<p>
+	第 5 版把在非严格模式下运行时的保留字缩减为下列这些：
+</p>
+<p>
+	<table style="width:100%;" cellspacing="0" cellpadding="2" bordercolor="#000000" border="1">
+		<tbody>
+			<tr>
+				<td>
+					class<br />
+				</td>
+				<td>
+					enum<br />
+				</td>
+				<td>
+					extends<br />
+				</td>
+				<td>
+					super<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					const<br />
+				</td>
+				<td>
+					export<br />
+				</td>
+				<td>
+					import<br />
+				</td>
+				<td>
+					<br />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+在严格模式下，第 5 版还对以下保留字施加了限制：
+</p>
+<p>
+	<table style="width:100%;" cellspacing="0" cellpadding="2" bordercolor="#000000" border="1">
+		<tbody>
+			<tr>
+				<td>
+					implements<br />
+				</td>
+				<td>
+					package<br />
+				</td>
+				<td>
+					public<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					interface<br />
+				</td>
+				<td>
+					private<br />
+				</td>
+				<td>
+					static<br />
+				</td>
+			</tr>
+			<tr>
+				<td>
+					let<br />
+				</td>
+				<td>
+					protected<br />
+				</td>
+				<td>
+					yield<br />
+				</td>
+			</tr>
+		</tbody>
+	</table>
+注意， let 和 yield 是第 5 版新增的保留字；其他保留字都是第 3 版定义的。为了最大程度地保证兼容性，建议读者将第 3 版定义的保留字外加 let 和 yield 作为编程时的参考。
+</p>
+<p>
+	在实现 ECMAScript 3 的 JavaScript 引擎中使用关键字作标识符，会导致“ Identifier Expected”错误。而使用保留字作标识符可能会也可能不会导致相同的错误，具体取决于特定的引擎。
+</p>
+<p>
+	第 5 版对使用关键字和保留字的规则进行了少许修改。关键字和保留字虽然仍然不能作为标识符使用，但现在可以用作对象的属性名。一般来说，最好都不要使用关键字和保留字作为标识符和属性名，以便与将来的 ECMAScript 版本兼容。
+</p>
+<p>
+	除了上面列出的保留字和关键字， ECMA-262 第 5 版对 eval 和 arguments 还施加了限制。在严格模式下，这两个名字也不能作为标识符或属性名，否则会抛出错误。
+</p></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15229">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

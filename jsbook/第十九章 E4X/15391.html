@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>19.4 全面启用E4X</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">19.4 全面启用E4X</h1>
+	<hr>
+		鉴于E4X 在很多方面给标准JavaScript 带来了不同，因此Firefox 在默认情况下只启用E4X 中与其他代码能够相安无事的那些特性。要想完整地启用E4X，需要将&lt;script&gt;标签的type 特性设置为"text/javascript;e4x=1"，例如：<br />
+<pre>&lt;script type="text/javascript;e4x=1" src="e4x_file.js"&gt;&lt;/script&gt;</pre>
+在打开这个“开关”之后，就会全面启用E4X，从而能够正确地解析嵌入在E4X 字面量中的注释和CData 片段。在没有完整启用E4X 的情况下使用注释和/或CData 片段会导致语法错误。<br />
+<h2>
+	19.5 小结
+</h2>
+E4X 是以ECMA-357 标准的形式发布的对ECMAScript 的一个扩展。E4X 的目的是为操作XML 数<br />
+据提供与标准ECMAScript 更相近的语法。E4X 具有下列特征。<br />
+<ul>
+	<li>
+		与DOM 不同，E4X 只用一个类型来表示XML 中的各种节点。
+	</li>
+	<li>
+		XML 对象中封装了对所有节点都有用的数据和行为。为表现多个节点的集合，这个规范定义了XMLList 类型。
+	</li>
+	<li>
+		另外两个类型，Namespace 和QName，分别表现命名空间和限定名。
+	</li>
+</ul>
+为便于查询XML 结构，E4X 还修改了标准了的ECMAScript 语法，修改的地方如下。<br />
+<ul>
+	<li>
+		使用两个点（..）表示要匹配所有后代元素，使用@字符表示应该返回一或多个特性。
+	</li>
+	<li>
+		星号字符（*）是一个通配符，可以匹配任意类型的节点。
+	</li>
+	<li>
+		所有这些查询都可以通过一组执行相同操作的方法来实现。
+	</li>
+</ul>
+到2011年底，Firefox还是唯一一个支持E4X的浏览器。尽管没有其他浏览器提供商承诺会实现E4X，但在服务器上，由于BEA Workshop for WebLogic 和Yhaoo! YQL 的推动，E4X 已经取得了不小的成功。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15391">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>25.2 Page Visibility API</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">25.2 Page Visibility API</h1>
+	<hr>
+		不知道用户是不是正在与页面交互，这是困扰广大Web 开发人员的一个主要问题。如果页面最小化了或者隐藏在了其他标签页后面，那么有些功能是可以停下来的，比如轮询服务器或者某些动画效果。而Page Visibility API（页面可见性API）就是为了让开发人员知道页面是否对用户可见而推出的。这个API 本身非常简单，由以下三部分组成。<br />
+<ul>
+	<li>
+		document.hidden：表示页面是否隐藏的布尔值。页面隐藏包括页面在后台标签页中或者浏览器最小化。
+	</li>
+	<li>
+		document.visibilityState：表示下列4 个可能状态的值。
+	</li>
+	<li>
+		页面在后台标签页中或浏览器最小化。
+	</li>
+	<li>
+		页面在前台标签页中。
+	</li>
+	<li>
+		实际的页面已经隐藏，但用户可以看到页面的预览（就像在Windows 7 中，用户把鼠标移动到任务栏的图标上，就可以显示浏览器中当前页面的预览）。
+	</li>
+	<li>
+		页面在屏幕外执行预渲染处理。
+	</li>
+	<li>
+		visibilitychange 事件：当文档从可见变为不可见或从不可见变为可见时，触发该事件。
+	</li>
+</ul>
+在编写本书时，只有IE10 和Chrome 支持Page Visibility API。IE 的版本是在每个属性或事件前面加上ms 前缀，而Chrome 则是加上webkit 前缀。因此document.hidden 在IE 的实现中就是document.msHidden，而在Chrome 的实现中则是document.webkitHidden。检查浏览器是否支持这个API 的最佳方式如下：<br />
+<pre>function isHiddenSupported() {
+	return typeof(document.hidden || document.msHidden || document.webkitHidden) != "undefined";
+}</pre>
+类似地，使用同样的模式可以检测页面是否隐藏：<br />
+<pre>if (document.hidden || document.msHidden || document.webKitHidden){
+    //页面隐藏了
+} else {
+    //页面未隐藏
+}</pre>
+注意，以上代码在不支持该API 的浏览器中会提示页面未隐藏。这是Page Visibility API 有意设计的结果，目的是为了向后兼容。<br />
+为了在页面从可见变为不可见或从不可见变为可见时收到通知，可以侦听visibilitychange 事件。在IE 中，这个事件叫msvisibilitychange，而在Chrome 中这个事件叫webkitvisibilitychange。为了在两个浏览器中都能侦听到该事件，可以像下面的例子一样，为每个事件都指定相同的事件处理程序：<br />
+<pre>function handleVisibilityChange() {
+	var output = document.getElementById("output"),
+	msg;
+	if (document.hidden || document.msHidden || document.webkitHidden) {
+		msg = "Page is now hidden. " + (new Date()) + "&lt;br&gt;";
+	} else {
+		msg = "Page is now visible. " + (new Date()) + "&lt;br&gt;";
+	}
+	output.innerHTML += msg;
+}
+//要为两个事件都指定事件处理程序
+EventUtil.addHandler(document, "msvisibilitychange", handleVisibilityChange);
+EventUtil.addHandler(document, "webkitvisibilitychange", handleVisibilityChange);</pre>
+<a href="http://www.z-ai.net/study/api/s/8892" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+以上代码同时适用于IE 和Chrome。而且，API 的这一部分已经相对稳定，因此在实际的Web 开发中也可以使用以上代码。<br />
+关于这一API 的实现，差异最大的是document.visibilityState 属性。IE10 PR 2 的document.msVisibilityState 是一个表示如下4 种状态的数字值。<br />
+<ul>
+	<li>
+		(1) document.MS_PAGE_HIDDEN (0)
+	</li>
+	<li>
+		(2) document.MS_PAGE_VISIBLE (1)
+	</li>
+	<li>
+		(3) document.MS_PAGE_PREVIEW (2)
+	</li>
+	<li>
+		(4) document.MS_PAGE_PRERENDER (3)
+	</li>
+</ul>
+在Chrome 中，document.webkitVisibilityState 可能是下列3 个字符串值：<br />
+<ul>
+	<li>
+		(1) "hidden"
+	</li>
+	<li>
+		(2) "visible"
+	</li>
+	<li>
+		(3) "prerender"
+	</li>
+</ul>
+Chrome 并没有给每个状态定义对应的常量，但最终的实现很可能会使用常量。由于存在以上差异，所以建议大家先不要完全依赖带前缀的document.visibilityState，最好只使用document.hidden 属性。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15427">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

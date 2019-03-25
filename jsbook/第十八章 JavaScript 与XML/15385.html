@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>18.3 浏览器对XSLT 的支持</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">18.3 浏览器对XSLT 的支持</h1>
+	<hr>
+		XSLT 是与XML 相关的一种技术，它利用XPath 将文档从一种表现形式转换成另一种表现形式。与XML 和XPath 不同，XSLT 没有正式的API，在正式的DOM 规范中也没有它的位置。结果，只能依靠浏览器开发商以自己的方式来实现它。IE 是第一个支持通过JavaScript 处理XSLT 的浏览器。<br />
+<h2>
+	18.3.1 IE中的XSLT
+</h2>
+与IE 对其他XML 功能的支持一样，它对XSLT 的支持也是通过ActiveX 对象实现的。从MSXML 3.0（即IE6.0）时代起，IE 就支持通过JavaScript 实现完整的XSLT 1.0 操作。IE9 中通过DOMParser 创建的DOM 文档不能使用XSLT。<br />
+<h3>
+	1. 简单的XSLT 转换
+</h3>
+使用XSLT 样式表转换XML 文档的最简单方式，就是将它们分别加到一个DOM 文档中，然后再使用transformNode()方法。这个方法存在于文档的所有节点中，它接受一个参数，即包含XSLT 样式表的文档。调用transformNode()方法会返回一个包含转换信息的字符串。来看一个例子。<br />
+<pre>//加载XML 和XSLT（仅限于IE）
+xmldom.load("employees.xml");
+xsltdom.load("employees.xslt");
+//转换
+var result = xmldom.transformNode(xsltdom);</pre>
+<a href="http://www.z-ai.net/study/api/s/8811" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子加载了一个XML 的DOM 文档和一个XSLT 样式表的DOM 文档。然后，在XML 文档节点上调用了transformNode()方法，并传入XSLT。变量result 中最后就会保存一个转换之后得到的字符串。需要注意的是，由于是在文档节点级别上调用的transformNode()，因此转换是从文档节点开始的。实际上，XSLT 转换可以在文档的任何级别上进行，只要在想要开始转换的节点上调用transformNode()方法即可。下面我们来看一个例子。<br />
+<pre>result = xmldom.documentElement.transformNode(xsltdom);
+result = xmldom.documentElement.childNodes[1].transformNode(xsltdom);
+result = xmldom.getElementsByTagName("name")[0].transformNode(xsltdom);
+result = xmldom.documentElement.firstChild.lastChild.transformNode(xsltdom);</pre>
+如果不是在文档元素上调用transformNode()，那么转换就会从调用节点上面开始。不过，XSLT样式表则始终都可以针对调用节点所在的整个XML 文档，而无需更换。<br />
+<h3>
+	2. 复杂的XSLT 转换
+</h3>
+虽然transformNode()方法提供了基本的XSLT 转换能力，但还有使用这种语言的更复杂的方式。<br />
+为此，必须要使用XSL 模板和XSL 处理器。第一步是要把XSLT 样式表加载到一个线程安全的XML文档中。而这可以通过使用ActiveX 对象MSXML2.FreeThreadedDOMDocument 来做到。这个ActiveX对象与IE 中常规的DOM 支持相同的接口。此外，创建这个对象时应该尽可能使用最新的版本。例如：<br />
+<pre>function createThreadSafeDocument() {
+	if (typeof arguments.callee.activeXString != "string") {
+		var versions = ["MSXML2.FreeThreadedDOMDocument.6.0", "MSXML2.FreeThreadedDOMDocument.3.0", "MSXML2.FreeThreadedDOMDocument"],
+		i,
+		len;
+		for (i = 0, len = versions.length; i &lt; len; i++) {
+			try {
+				new ActiveXObject(versions[i]);
+				arguments.callee.activeXString = versions[i];
+				break;
+			} catch(ex) {
+				//跳过
+			}
+		}
+	}
+	return new ActiveXObject(arguments.callee.activeXString);
+}</pre>
+除了签名不同之外，线程安全的XML DOM文档与常规XML DOM文档的使用仍然是一样的，如下所示：<br />
+<pre>var xsltdom = createThreadSafeDocument();
+xsltdom.async = false;
+xsltdom.load("employees.xslt");</pre>
+在创建并加载了自由线程的DOM 文档之后，必须将它指定给一个XSL 模板，这也是一个ActiveX对象。而这个模板是用来创建XSL 处理器对象的，后者则是用来转换XML 文档的。同样，也需要使用最新版本来创建这个对象，如下所示：<br />
+<pre>function createXSLTemplate() {
+	if (typeof arguments.callee.activeXString != "string") {
+		var versions = ["MSXML2.XSLTemplate.6.0", "MSXML2.XSLTemplate.3.0", "MSXML2.XSLTemplate"],
+		i,
+		len;
+		for (i = 0, len = versions.length; i &lt; len; i++) {
+			try {
+				new ActiveXObject(versions[i]);
+				arguments.callee.activeXString = versions[i];
+				break;
+			} catch(ex) {
+				//跳过
+			}
+		}
+	}
+	return new ActiveXObject(arguments.callee.activeXString);
+}</pre>
+使用这个createXSLTemplate()函数可以创建这个对象最新版本的实例，用法如下：<br />
+<pre>var template = createXSLTemplate();
+template.stylesheet = xsltdom;
+var processor = template.createProcessor();
+processor.input = xmldom;
+processor.transform();
+var result = processor.output;</pre>
+<a href="http://www.z-ai.net/study/api/s/8812" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在创建了XSL 处理器之后，必须将要转换的节点指定给input 属性。这个值可以是一个文档，也可以是文档中的任何节点。然后，调用transform()方法即可执行转换并将结果作为字符串保存在output 属性中。这些代码实现了与transformNode()相同的功能。<br />
+<blockquote>
+	XSL 模板对象的3.0 和6.0 版本存在显著的差别。在3.0 版本中，必须给input属性指定一个完整的文档；如果指定的是节点，就会导致错误。而在6.0 版本中，则可以为input 属性指定文档中的任何节点。
+</blockquote>
+使用XSL 处理器可以对转换进行更多的控制，同时也支持更高级的XSLT 特性。例如，XSLT 样式表可以接受传入的参数，并将其用作局部变量。以下面的样式表为例：<br />
+<pre>&lt;?xml version="1.0"?&gt;
+&lt;xsl:stylesheet version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+	&lt;xsl:output method="html" /&gt;
+	&lt;xsl:param name="message" /&gt;
+	&lt;xsl:template match="/"&gt;
+		&lt;ul&gt;
+			&lt;xsl:apply-templates select="*" /&gt;
+		&lt;/ul&gt;
+		&lt;p&gt;
+			Message:
+			&lt;xsl:value-of select="$message" /&gt;
+		&lt;/p&gt;
+	&lt;/xsl:template&gt;
+	&lt;xsl:template match="employee"&gt;
+		&lt;li&gt;&lt;xsl:value-of select="name" /&gt;, &lt;em&gt;&lt;xsl:value-of select="@title" /&gt;&lt;/em&gt;&lt;/li&gt;
+	&lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;</pre>
+这个样式表定义了一个名为message 的参数，然后将该参数输出到转换结果中。要设置message的值，可以在调用transform()之前使用addParameter()方法。addParameter()方法接收两个参数：要设置的参数名称（与在&lt;xsl:param&gt;的name 特性中指定的一样）和要指定的值（多数情况下是字符串，但也可以是数值或布尔值）。下面就是这样一个例子。<br />
+<pre>processor.input = xmldom.documentElement;
+processor.addParameter("message", "Hello World!");
+processor.transform();</pre>
+<a href="http://www.z-ai.net/study/api/s/8813" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+通过设置参数的值，这个值就可以在输出中反映出来。<br />
+XSL 处理器的另一个高级特性，就是能够设置一种操作模式。在XSLT 中，可以使用mode 特性为模板定义一种模式。在定义了模式后，如果没有将&lt;xsl:apply-templates&gt;与匹配的mode 特性一起使用，就不会运行该模板。下面来看一个例子。<br />
+<pre>&lt;xsl:stylesheet version="1.0"
+	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"&gt;
+	&lt;xsl:output method="html" /&gt;
+	&lt;xsl:param name="message" /&gt;
+	&lt;xsl:template match="/"&gt;
+		&lt;ul&gt;
+			&lt;xsl:apply-templates select="*" /&gt;
+		&lt;/ul&gt;
+		&lt;p&gt;
+			Message:
+			&lt;xsl:value-of select="$message" /&gt;
+		&lt;/p&gt;
+	&lt;/xsl:template&gt;
+	&lt;xsl:template match="employee"&gt;
+		&lt;li&gt;&lt;xsl:value-of select="name" /&gt;, &lt;em&gt;&lt;xsl:value-of select="@title" /&gt;&lt;/em&gt;&lt;/li&gt;
+	&lt;/xsl:template&gt;
+	&lt;xsl:template match="employee" mode="title-first"&gt;
+		&lt;li&gt;&lt;em&gt;&lt;xsl:value-of select="@title" /&gt;&lt;/em&gt;, &lt;xsl:value-of
+				select="name" /&gt;&lt;/li&gt;
+	&lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;</pre>
+这个样式表定义了一个模板，并将其mode 特性设置为"title-first"（即“先显示职位”）。在这个模板中，首先会输出员工的职位，其次才输出员工的名字。为了使用这个模板，必须也要将&lt;xsl:apply-templates&gt;元素的模式设置为"title-first"。在使用这个样式表时，默认情况下其输出结果与前面一样，先显示员工的名字，再显示员工的职位。但是，如果在使用这个样式表时，使用JavaScript 将模式设置为"title-first"，那么结果就会先输出员工的职位。在JavaScript 中使用setStartMode()方法设置模式的例子如下。<br />
+<pre>processor.input = xmldom;
+processor.addParameter("message", "Hello World!");
+processor.setStartMode("title-first");
+processor.transform();</pre>
+<a href="http://www.z-ai.net/study/api/s/8814" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+setStartMode()方法只接受一个参数，即要为处理器设置的模式。与addParameter()一样，设置模式也必须在调用transform()之前进行。<br />
+如果你打算使用同一个样式表进行多次转换，可以在每次转换之后重置处理器。调用reset()方法后，就会清除原先的输入和输出属性、启动模式及其他指定的参数。调用reset()方法的例子如下：<br />
+processor.reset(); //准备下一次转换<br />
+因为处理器已经编译了XSLT 样式表，所以与使用transformNode()相比，这样进行重复转换的速度会更快一些。<br />
+<blockquote>
+	MSXML 只支持XSLT 1.0。由于微软的战略重点转移到了.NET Framework，因而MSXML 的开发被停止了。我们希望在不久的将来，能够通过JavaScript 访问XML 和XSLT .NET 对象。
+</blockquote>
+<h2>
+	18.3.2 XSLTProcessor类型
+</h2>
+Mozilla 通过在Firefox 中创建新的类型，实现了JavaScript 对XSLT 的支持。开发人员可以通过XSLTProcessor 类型使用XSLT 转换XML 文档，其方式与在IE 中使用XSL 处理器类似。因为这个类型是率先出现的，所以Chrome、Safari 和Opera 都借鉴了相同的实现，最终使XSLTProcessor 成为了通过JavaScript 进行XSLT 转换的事实标准。<br />
+与IE 的实现类似，第一步也是加载两个DOM 文档，一个基于XML，另一个基于XSLT。然后，创建一个新XSLTProcessor 对象，并使用importStylesheet()方法为其指定一个XSLT，如下面的例子所示。<br />
+<pre>var processor = new XSLTProcessor()
+processor.importStylesheet(xsltdom);</pre>
+最后一步就是执行转换。这一步有两种不同的方式，如果想返回一个完整的DOM文档，可以调用transformToDocument()。而通过调用transformToFragment()则可以得到一个文档片段对象。一般来说，使用transformToFragment()的唯一理由，就是你还想把返回的结果添加到另一个DOM文档中。<br />
+在使用transformToDocument()时，只要传入XML DOM，就可以将结果作为一个完全不同的DOM 文档来使用。来看下面的例子。<br />
+<pre>var result = processor.transformToDocument(xmldom);
+alert(serializeXml(result));</pre>
+<a href="http://www.z-ai.net/study/api/s/8815" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+而transformToFragment()方法接收两个参数：要转换的XML DOM 和应该拥有结果片段的文档。换句话说，如果你想将返回的片段插入到页面中，只要将document 作为第二个参数即可。下面来看一个例子。<br />
+<pre>var fragment = processor.transformToDocument(xmldom, document);
+var div = document.getElementById("divResult");
+div.appendChild(fragment);</pre>
+<a href="http://www.z-ai.net/study/api/s/8816" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里，处理器创建了一个由document 对象拥有的片段。这样，就可以将返回的片段添加到页面中已有的&lt;div&gt;元素中了。<br />
+在XSLT 样式表的输出格式为"xml"或"html"的情况下，创建文档或文档片段会非常有用。不过，在输出格式为"text"时，我们通常只希望得到转换的文本结果。可惜的是，没有方法能够直接返回文本。当输出格式为"text"时调用transformToDocument()，仍然会返回一个完整的XML 文档，但这个文档的内容在不同浏览器中却不一样。例如，Safari 会返回一个完整的HTML 文档，而Opera 和Firefox 则会返回一个只包含一个元素的文档，这个元素中包含着输出的文本。<br />
+使用transformToFragment()方法可以解决这个问题，这个方法返回的是只包含一个子节点的文档片段，而子节点中包含着结果文本。然后，使用下列代码就可以取得其中的文本。<br />
+<pre>var fragment = processor.transformToFragment(xmldom, document);
+var text = fragment.firstChild.nodeValue;
+alert(text);</pre>
+以上代码能够在支持的浏览器中一致地运行，而且能够恰好返回转换得到的输出文本。<br />
+<h3>
+	1. 使用参数
+</h3>
+XSLTProcessor 也支持使用setParameter()来设置XSLT 的参数，这个方法接收三个参数：命名空间URI、参数的内部名称和要设置的值。通常，命名空间URI 都是null，而内部名称就是参数的名称。另外，必须在调用transformToDocument()或transformToFragment()之前调用这个方法。下面来看例子。<br />
+<pre>var processor = new XSLTProcessor()
+processor.importStylesheet(xsltdom);
+processor.setParameter(null, "message", "Hello World! ");
+var result = processor.transformToDocument(xmldom);</pre>
+<a href="http://www.z-ai.net/study/api/s/8817" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+还有两个与参数有关的方法，getParameter()和removeParameter()，分别用于取得和移除当前参数的值。这两个方法都要接受命名空间参数（同样，通常是null）和参数的内部名称。例如：<br />
+<pre>var processor = new XSLTProcessor()
+processor.importStylesheet(xsltdom);
+processor.setParameter(null, "message", "Hello World! ");
+alert(processor.getParameter(null, "message")); //输出"Hello World!"
+processor.removeParameter(null, "message");
+var result = processor.transformToDocument(xmldom);</pre>
+这两个方法并不常用，提供它们只是为了方便起见。<br />
+<h3>
+	2. 重置处理器
+</h3>
+每个XSLTProcessor 的实例都可以重用，以便使用不同的XSLT 样式表执行不同的转换。重置处理器时要调用reset()方法，这个方法会从处理器中移除所有参数和样式表。然后，你就可以再次调用importStylesheet()，以加载不同的XSLT 样式表，如下面的例子所示。<br />
+<pre>var processor = new XSLTProcessor()
+processor.importStylesheet(xsltdom);
+//执行转换
+processor.reset();
+processor.importStylesheet(xsltdom2);
+//再执行转换</pre>
+在需要基于多个样式表进行转换时，重用一个XSLTProcessor 可以节省内存。<br />
+<h2>
+	18.3.3 跨浏览器使用XSLT
+</h2>
+IE 对XSLT 转换的支持与XSLTProcessor 的区别实在太大，因此要想重新实现二者所有这方面的功能并不现实。因此，跨浏览器兼容性最好的XSLT 转换技术，只能是返回结果字符串。为此在 IE 中只需在上下文节点上调用transformNode()即可，而在其他浏览器中则需要序列化transformTo-Document()操作的结果。下面这个函数可以在IE、Firefox、Chrome、Safari 和Opera 中使用。<br />
+<pre>function transform(context, xslt) {
+	if (typeof XSLTProcessor != "undefined") {
+		var processor = new XSLTProcessor();
+		processor.importStylesheet(xslt);
+		var result = processor.transformToDocument(context);
+		return (new XMLSerializer()).serializeToString(result);
+	} else if (typeof context.transformNode != "undefined") {
+		return context.transformNode(xslt);
+	} else {
+		throw new Error("No XSLT processor available.");
+	}
+}</pre>
+<a href="http://www.z-ai.net/study/api/s/8818" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个transform()函数接收两个参数：要执行转换的上下文节点和XSLT 文档对象。首先，它检测是否有XSLTProcessor 类型的定义，如果有则使用该类型来进行转换。在调用transformTo-Document()方法之后，将返回的结果序列化为字符串。如果上下文节点中有transformNode()方法，则调用该方法并返回结果。与本章中其他的跨浏览器函数一样，transform()也会在XSLT 处理器无效的情况下抛出错误。下面是使用这个函数的示例。<br />
+<pre>var result = transform(xmldom, xsltdom);</pre>
+使用IE 的transformNode()方法，可以确保不必使用线程安全的DOM文档进行转换。<br />
+<blockquote>
+	注意，由于不同浏览器的XSLT 引擎不一样，因此转换得到的结果在不同浏览器间可能会稍有不同，也可能会差别很大。因此，不能绝对依赖在JavaScript 中使用XSLT进行转换的结果。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15385">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

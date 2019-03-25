@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>16.5 小结</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">16.5 小结</h1>
+	<hr>
+		HTML5 除了定义了新的标记规则，还定义了一些JavaScript API。这些API 是为了让开发人员创建出更好的、能够与桌面应用媲美的用户界面而设计的。本章讨论了如下API。<br />
+<ul>
+	<li>
+		跨文档消息传递API 能够让我们在不降低同源策略安全性的前提下，在来自不同域的文档间传递消息。
+	</li>
+	<li>
+		原生拖放功能让我们可以方便地指定某个元素可拖动，并在操作系统要放置时做出响应。还可以创建自定义的可拖动元素及放置目标。
+	</li>
+	<li>
+		新的媒体元素&lt;audio&gt;和&lt;video&gt;拥有自己的与音频和视频交互的API。并非所有浏览器支持所有的媒体格式，因此应该使用canPlayType()检查浏览器是否支持特定的格式。
+	</li>
+	<li>
+		历史状态管理让我们不必卸载当前页面即可修改浏览器的历史状态栈。有了这种机制，用户就可以通过“后退”和“前进”按钮在页面状态间切换，而这些状态完全由JavaScript 进行控制。
+	</li>
+</ul></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15375">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

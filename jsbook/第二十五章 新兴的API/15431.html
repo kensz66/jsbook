@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>25.6 Web Workers</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">25.6 Web Workers</h1>
+	<hr>
+		随着Web 应用复杂性的与日俱增，越来越复杂的计算在所难免。长时间运行的JavaScript 进程会导致浏览器冻结用户界面，让人感觉屏幕“冻结”了。Web Workers 规范通过让JavaScript 在后台运行解决了这个问题。浏览器实现Web Workers 规范的方式有很多种，可以使用线程、后台进程或者运行在其他处理器核心上的进程，等等。具体的实现细节其实没有那么重要，重要的是开发人员现在可以放心地运行JavaScript，而不必担心会影响用户体验了。<br />
+目前支持Web Workers 的浏览器有IE10+、Firefox 3.5+、Safari 4+、Opera 10.6+、Chrome 和iOS 版的Safari。<br />
+<h2>
+	25.6.1 使用Worker
+</h2>
+实例化Worker 对象并传入要执行的JavaScript 文件名就可以创建一个新的Web Worker。例如：<br />
+<pre>var worker = new Worker("stufftodo.js");</pre>
+这行代码会导致浏览器下载stufftodo.js，但只有Worker 接收到消息才会实际执行文件中的代码。要给Worker 传递消息，可以使用postMessage()方法（与XDM中的postMessage()方法类似）：<br />
+<pre>worker.postMessage(“start! ");</pre>
+消息内容可以是任何能够被序列化的值，不过与XDM 不同的是，在所有支持的浏览器中，postMessage()都能接收对象参数（Safari 4 是支持Web Workers 的浏览器中最后一个只支持字符串参数的）。因此，可以随便传递任何形式的对象数据，如下面的例子所示：<br />
+<pre>worker.postMessage({
+	type: "command",
+	message: "start! "
+});</pre>
+一般来说，可以序列化为JSON 结构的任何值都可以作为参数传递给postMessage()。换句话说，这就意味着传入的值是被复制到Worker 中，而非直接传过去的（与XDM类似）。<br />
+Worker 是通过message 和error 事件与页面通信的。这里的message 事件与XDM中的message事件行为相同，来自Worker 的数据保存在event.data 中。Worker 返回的数据也可以是任何能够被序列化的值：<br />
+<pre>worker.onmessage = function(event) {
+	var data = event.data;
+	//对数据进行处理
+}</pre>
+Worker 不能完成给定的任务时会触发error 事件。具体来说，Worker 内部的JavaScript 在执行过程中只要遇到错误，就会触发error 事件。发生error 事件时，事件对象中包含三个属性：filename、lineno 和message，分别表示发生错误的文件名、代码行号和完整的错误消息。<br />
+<pre>worker.onerror = function(event) {
+	console.log("ERROR: " + event.filename + " (" + event.lineno + "): " + event.message);
+};</pre>
+建议大家在使用Web Workers 时，始终都要使用onerror 事件处理程序，即使这个函数（像上面例子所示的）除了把错误记录到日志中什么也不做都可以。否则，Worker 就会在发生错误时，悄无声息地失败了。<br />
+任何时候，只要调用terminate()方法就可以停止Worker 的工作。而且，Worker 中的代码会立即停止执行，后续的所有过程都不会再发生（包括error 和message 事件也不会再触发）。worker.terminate(); //立即停止Worker 的工作<br />
+<h2>
+	25.6.2 Worker全局作用域
+</h2>
+关于Web Worker，最重要的是要知道它所执行的JavaScript 代码完全在另一个作用域中，与当前网页中的代码不共享作用域。在Web Worker 中，同样有一个全局对象和其他对象以及方法。但是，WebWorker 中的代码不能访问DOM，也无法通过任何方式影响页面的外观。<br />
+Web Worker 中的全局对象是worker 对象本身。也就是说，在这个特殊的全局作用域中，this 和self 引用的都是worker 对象。为便于处理数据，Web Worker 本身也是一个最小化的运行环境。<br />
+<ul>
+	<li>
+		最小化的navigator 对象，包括onLine、appName、appVersion、userAgent 和platform属性；
+	</li>
+	<li>
+		只读的location 对象；
+	</li>
+	<li>
+		setTimeout()、setInterval()、clearTimeout()和clearInterval()方法；
+	</li>
+	<li>
+		XMLHttpRequest 构造函数。
+	</li>
+</ul>
+显然，Web Worker 的运行环境与页面环境相比，功能是相当有限的。<br />
+当页面在worker 对象上调用postMessage()时，数据会以异步方式被传递给worker，进而触发worker 中的message 事件。为了处理来自页面的数据，同样也需要创建一个onmessage 事件处理程序。<br />
+<pre>//Web Worker 内部的代码
+self.onmessage = function(event){
+     var data = event.data;
+     //处理数据
+};</pre>
+大家看清楚，这里的self 引用的是Worker 全局作用域中的worker 对象（与页面中的Worker 对象不同一个对象）。Worker 完成工作后，通过调用postMessage()可以把数据再发回页面。例如，下面的例子假设需要Worker 对传入的数组进行排序，而Worker 在排序之后又将数组发回了页面：<br />
+<pre>//Web Worker 内部的代码
+self.onmessage = function(event) {
+	var data = event.data;
+	//别忘了，默认的sort()方法只比较字符串
+	data.sort(function(a, b) {
+		return a–b;
+	});
+	self.postMessage(data);
+};</pre>
+WebWorkerExample01.js<br />
+传递消息就是页面与Worker 相互之间通信的方式。在Worker 中调用postMessage()会以异步方式触发页面中Worker 实例的message 事件。如果页面想要使用这个Worker，可以这样：<br />
+<pre>//在页面中
+var data = [23, 4, 7, 9, 2, 14, 6, 651, 87, 41, 7798, 24],
+worker = new Worker("WebWorkerExample01.js");
+worker.onmessage = function(event) {
+	var data = event.data;
+	//对排序后的数组进行操作
+};
+//将数组发送给worker 排序
+worker.postMessage(data);</pre>
+<a href="http://www.z-ai.net/study/api/s/8899" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+排序的确是比较消耗时间的操作，因此转交给Worker 做就不会阻塞用户界面了。另外，把彩色图像转换成灰阶图像以及加密解密之类的操作也是相当费时的。<br />
+在Worker 内部，调用close()方法也可以停止工作。就像在页面中调用terminate()方法一样，Worker 停止工作后就不会再有事件发生了。<br />
+<pre>//Web Worker 内部的代码
+self.close();</pre>
+<h2>
+	25.6.3 包含其他脚本
+</h2>
+既然无法在Worker 中动态创建新的&lt;script&gt;元素，那是不是就不能向Worker 中添加其他脚本了呢？不是，Worker 的全局作用域提供这个功能，即我们可以调用importScripts()方法。这个方法接收一个或多个指向JavaScript 文件的URL。每个加载过程都是异步进行的，因此所有脚本加载并执行之后，importScripts()才会执行。例如：<br />
+<pre>//Web Worker 内部的代码
+importScripts("file1.js", "file2.js");</pre>
+即使file2.js 先于file1.js 下载完，执行的时候仍然会按照先后顺序执行。而且，这些脚本是在Worker 的全局作用域中执行，如果脚本中包含与页面有关的JavaScript 代码，那么脚本可能无法正确运行。请记住，Worker 中的脚本一般都具有特殊的用途，不会像页面中的脚本那么功能宽泛。<br />
+<h2>
+	25.6.4 Web Workers的未来
+</h2>
+<p>
+	Web Workers 规范还在继续制定和改进之中。本节所讨论的Worker 目前被称为“专用Worker”（dedicated worker），因为它们是专门为某个特定的页面服务的，不能在页面间共享。该规范的另外一个概念是“共享Worker”（shared worker），这种Worker 可以在浏览器的多个标签中打开的同一个页面间共享。虽然Safari 5、Chrome 和Opera 10.6 都实现了共享Worker，但由于该规范尚未完稿，因此很可能还会有变动。
+</p>
+另外，关于在Worker 内部能访问什么不能访问什么，到如今仍然争论不休。有人认为Worker 应该像页面一样能够访问任意数据，不光是XHR，还有localStorage、sessionStorage、Indexed DB、Web Sockets、Server-Send Events 等。好像支持这个观点的人更多一些，因此未来的Worker 全局作用域很可能会有更大的空间。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15431">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

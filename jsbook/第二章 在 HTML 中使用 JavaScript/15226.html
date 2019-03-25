@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>2.2 嵌入代码与外部文件</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">2.2 嵌入代码与外部文件</h1>
+	<hr>
+		<p>
+	在 HTML 中嵌入 JavaScript 代码虽然没有问题，但一般认为最好的做法还是尽可能使用外部文件来包含 JavaScript 代码。不过，并不存在必须使用外部文件的硬性规定，但支持使用外部文件的人多会强调如下优点。
+</p>
+<ul>
+	<li>
+		可维护性：遍及不同 HTML 页面的 JavaScript 会造成维护问题。但把所有 JavaScript 文件都放在一个文件夹中，维护起来就轻松多了。而且开发人员因此也能够在不触及 HTML 标记的情况下，集中精力编辑 JavaScript 代码。
+	</li>
+	<li>
+		可缓存：浏览器能够根据具体的设置缓存链接的所有外部 JavaScript 文件。也就是说，如果有两个页面都使用同一个文件，那么这个文件只需下载一次。因此，最终结果就是能够加快页面加载的速度。
+	</li>
+	<li>
+		适应未来：通过外部文件来包含 JavaScript 无须使用前面提到 XHTML 或注释 hack。 HTML 和XHTML 包含外部文件的语法是相同的。
+	</li>
+</ul>
+<h2>
+	2.3 文档模式
+</h2>
+<p>
+	IE5.5 引入了文档模式的概念，而这个概念是通过使用文档类型（doctype）切换实现的。最初的两种文档模式是： 混杂模式（quirks mode）①和标准模式（standards mode）。混杂模式会让 IE 的行为与（包含非标准特性的）IE5 相同，而标准模式则让 IE 的行为更接近标准行为。虽然这两种模式主要影响 CSS内容的呈现，但在某些情况下也会影响到 JavaScript 的解释执行。本书将在必要时再讨论这些因文档模式而影响 JavaScript 执行的情况。
+</p>
+<p>
+	在 IE 引入文档模式的概念后，其他浏览器也纷纷效仿。在此之后， IE 又提出一种所谓的准标准模式（almost standards mode）。这种模式下的浏览器特性有很多都是符合标准的，但也不尽然。不标准的地方主要体现在处理图片间隙的时候（在表格中使用图片时问题最明显）。
+</p>
+<p>
+	如果在文档开始处没有发现文档类型声明，则所有浏览器都会默认开启混杂模式。但采用混杂模式不是什么值得推荐的做法，因为不同浏览器在这种模式下的行为差异非常大，如果不使用某些 hack 技术，跨浏览器的行为根本就没有一致性可言。
+</p>
+<p>
+	对于标准模式，可以通过使用下面任何一种文档类型来开启：
+</p>
+<pre>&lt;!-- HTML 4.01 严格型 --&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"&gt;
+&lt;!-- XHTML 1.0 严格型 --&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"&gt;
+&lt;!-- HTML 5 --&gt;
+&lt;!DOCTYPE html&gt;</pre>
+<p>
+	而对于准标准模式，则可以通过使用过渡型（transitional）或框架集型（frameset）文档类型来触发，如下所示：
+</p>
+<pre>&lt;!-- HTML 4.01 过渡型 --&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"&gt;
+&lt;!-- HTML 4.01 框架集型 --&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd"&gt;
+&lt;!-- XHTML 1.0 过渡型 --&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
+&lt;!-- XHTML 1.0 框架集型 --&gt;
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"&gt;</pre>
+<p>
+	准标准模式与标准模式非常接近，它们的差异几乎可以忽略不计。因此，当有人提到“标准模式”时，有可能是指这两种模式中的任何一种。而且，检测文档模式（本书后面将会讨论）时也不会发现什么不同。本书后面提到标准模式时，指的是除混杂模式之外的其他模式。
+</p>
+<blockquote>
+	① 这里 quirks mode 的译法源自 Firefox 3.5.5 中文版。
+</blockquote>
+<h2>
+	2.4 &lt;noscript&gt;元素
+</h2>
+<p>
+	早期浏览器都面临一个特殊的问题，即当浏览器不支持 JavaScript 时如何让页面平稳地退化。对这个问题的最终解决方案就是创造一个&lt;noscript&gt;元素，用以在不支持 JavaScript 的浏览器中显示替代的内容。这个元素可以包含能够出现在文档&lt;body&gt;中的任何 HTML 元素——&lt;script&gt;元素除外。包含在&lt;noscript&gt;元素中的内容只有在下列情况下才会显示出来：
+</p>
+<ul>
+	<li>
+		浏览器不支持脚本；
+	</li>
+	<li>
+		浏览器支持脚本，但脚本被禁用。
+	</li>
+</ul>
+<p>
+	符合上述任何一个条件，浏览器都会显示&lt;noscript&gt;中的内容。而在除此之外的其他情况下，浏览器不会呈现&lt;noscript&gt;中的内容。请看下面这个简单的例子：
+</p>
+<pre>&lt;html&gt;
+	&lt;head&gt;
+		&lt;title&gt;
+			Example HTML Page
+		&lt;/title&gt;
+		&lt;script type="text/javascript" defer="defer" src="example1.js"&gt;&lt;/script&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;script type="text/javascript" defer="defer" src="example2.js"&gt;
+		&lt;/script&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;noscript&gt;
+			&lt;p&gt;本页面需要浏览器支持（启用） JavaScript。
+		&lt;/noscript&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+	这个页面会在脚本无效的情况下向用户显示一条消息。而在启用了脚本的浏览器中，用户永远也不会看到它——尽管它是页面的一部分。
+</p>
+<h2>
+	2.5 小结
+</h2>
+<p>
+	把 JavaScript 插入到 HTML 页面中要使用&lt;script&gt;元素。使用这个元素可以把 JavaScript 嵌入到HTML 页面中，让脚本与标记混合在一起；也可以包含外部的 JavaScript 文件。而我们需要注意的地方有：
+</p>
+<ul>
+	<li>
+		在包含外部 JavaScript 文件时，必须将 src 属性设置为指向相应文件的 URL。而这个文件既可以是与包含它的页面位于同一个服务器上的文件，也可以是其他任何域中的文件。
+	</li>
+	<li>
+		所有&lt;script&gt;元素都会按照它们在页面中出现的先后顺序依次被解析。在不使用 defer 和async 属性的情况下，只有在解析完前面&lt;script&gt;元素中的代码之后，才会开始解析后面&lt;script&gt;元素中的代码。
+	</li>
+	<li>
+		由于浏览器会先解析完不使用 defer 属性的&lt;script&gt;元素中的代码，然后再解析后面的内容，所以一般应该把&lt;script&gt;元素放在页面最后，即主要内容后面， &lt;/body&gt;标签前面。
+	</li>
+	<li>
+		使用 defer 属性可以让脚本在文档完全呈现之后再执行。延迟脚本总是按照指定它们的顺序执行。
+	</li>
+	<li>
+		使用 async 属性可以表示当前脚本不必等待其他脚本，也不必阻塞文档呈现。不能保证异步脚本按照它们在页面中出现的顺序执行。
+	</li>
+</ul>
+另外，使用&lt;noscript&gt;元素可以指定在不支持脚本的浏览器中显示的替代内容。但在启用了脚本的情况下，浏览器不会显示&lt;noscript&gt;元素中的任何内容。<br /></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15226">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

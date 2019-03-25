@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>25.5 Web 计时</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">25.5 Web 计时</h1>
+	<hr>
+		页面性能一直都是Web 开发人员最关注的领域。但直到最近，度量页面性能指标的唯一方式，就是提高代码复杂程度和巧妙地使用JavaScript 的Date 对象。Web Timing API 改变了这个局面，让开发人员通过JavaScript 就能使用浏览器内部的度量结果，通过直接读取这些信息可以做任何想做的分析。<br />
+与本章介绍过的其他API 不同，Web Timing API 实际上已经成为了W3C 的建议标准，只不过目前支持它的浏览器还不够多。<br />
+Web 计时机制的核心是window.performance 对象。对页面的所有度量信息，包括那些规范中已经定义的和将来才能确定的，都包含在这个对象里面。Web Timing 规范一开始就为performance 对象定义了两个属性。<br />
+其中，performance.navigation 属性也是一个对象，包含着与页面导航有关的多个属性，如下所示。<br />
+<ul>
+	<li>
+		redirectCount：页面加载前的重定向次数。
+	</li>
+	<li>
+		type：数值常量，表示刚刚发生的导航类型。
+	</li>
+	<li>
+		performance.navigation.TYPE_NAVIGATE (0)：页面第一次加载。
+	</li>
+	<li>
+		performance.navigation.TYPE_RELOAD (1)：页面重载过。
+	</li>
+	<li>
+		performance.navigation.TYPE_BACK_FORWARD (2)：页面是通过“后退”或“前进”按钮打开的。
+	</li>
+</ul>
+另外，performance.timing 属性也是一个对象，但这个对象的属性都是时间戳（从软件纪元开始经过的毫秒数），不同的事件会产生不同的时间值。这些属性如下所示。<br />
+<ul>
+	<li>
+		navigationStart：开始导航到当前页面的时间。
+	</li>
+	<li>
+		unloadEventStart：前一个页面的unload 事件开始的时间。但只有在前一个页面与当前页面来自同一个域时这个属性才会有值；否则，值为0。
+	</li>
+	<li>
+		unloadEventEnd：前一个页面的unload 事件结束的时间。但只有在前一个页面与当前页面来自同一个域时这个属性才会有值；否则，值为0。
+	</li>
+	<li>
+		redirectStart：到当前页面的重定向开始的时间。但只有在重定向的页面来自同一个域时这个属性才会有值；否则，值为0。
+	</li>
+	<li>
+		redirectEnd：到当前页面的重定向结束的时间。但只有在重定向的页面来自同一个域时这个属性才会有值；否则，值为0。
+	</li>
+	<li>
+		fetchStart：开始通过HTTP GET 取得页面的时间。
+	</li>
+	<li>
+		domainLookupStart：开始查询当前页面DNS 的时间。
+	</li>
+	<li>
+		domainLookupEnd：查询当前页面DNS 结束的时间。
+	</li>
+	<li>
+		connectStart：浏览器尝试连接服务器的时间。
+	</li>
+	<li>
+		connectEnd：浏览器成功连接到服务器的时间。
+	</li>
+	<li>
+		secureConnectionStart：浏览器尝试以SSL 方式连接服务器的时间。不使用SSL 方式连接时，这个属性的值为0。
+	</li>
+	<li>
+		requestStart：浏览器开始请求页面的时间。
+	</li>
+	<li>
+		responseStart：浏览器接收到页面第一字节的时间。
+	</li>
+	<li>
+		responseEnd：浏览器接收到页面所有内容的时间。
+	</li>
+	<li>
+		domLoading：document.readyState 变为"loading"的时间。
+	</li>
+	<li>
+		domInteractive：document.readyState 变为"interactive"的时间。
+	</li>
+	<li>
+		domContentLoadedEventStart：发生DOMContentLoaded 事件的时间。
+	</li>
+	<li>
+		domContentLoadedEventEnd：DOMContentLoaded 事件已经发生且执行完所有事件处理程序的时间。
+	</li>
+	<li>
+		domComplete：document.readyState 变为"complete"的时间。
+	</li>
+	<li>
+		loadEventStart：发生load 事件的时间。
+	</li>
+	<li>
+		loadEventEnd：load 事件已经发生且执行完所有事件处理程序的时间。
+	</li>
+</ul>
+通过这些时间值，就可以全面了解页面在被加载到浏览器的过程中都经历了哪些阶段，而哪些阶段可能是影响性能的瓶颈。给大家推荐一个使用Web Timing API 的绝好示例， 地址是http://webtimingdemo.appspot.com/。支持Web Timing API 的浏览器有IE10+和Chrome。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15430">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>13.2 事件处理程序</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">13.2 事件处理程序</h1>
+	<hr>
+		事件就是用户或浏览器自身执行的某种动作。诸如click、load 和mouseover，都是事件的名字。而响应某个事件的函数就叫做事件处理程序（或事件侦听器）。事件处理程序的名字以"on"开头，因此click 事件的事件处理程序就是onclick，load 事件的事件处理程序就是onload。为事件指定处理程序的方式有好几种。<br />
+<h2>
+	13.2.1 HTML事件处理程序
+</h2>
+某个元素支持的每种事件，都可以使用一个与相应事件处理程序同名的HTML 特性来指定。这个特性的值应该是能够执行的JavaScript 代码。例如，要在按钮被单击时执行一些JavaScript，可以像下面这样编写代码：<br />
+<pre>&lt;input type="button" value="Click Me" onclick="alert('Clicked')" /&gt;</pre>
+当单击这个按钮时，就会显示一个警告框。这个操作是通过指定onclick 特性并将一些JavaScript代码作为它的值来定义的。由于这个值是JavaScript，因此不能在其中使用未经转义的HTML 语法字符，例如和号（&amp;）、双引号（""）、小于号（&lt;）或大于号（&gt;）。为了避免使用HTML 实体，这里使用了单引号。如果想要使用双引号，那么就要将代码改写成如下所示：<br />
+<pre>&lt;input type="button" value="Click Me" onclick="alert(&amp;quot;Clicked&amp;quot;)" /&gt;</pre>
+在HTML 中定义的事件处理程序可以包含要执行的具体动作，也可以调用在页面其他地方定义的脚本，如下面的例子所示：<br />
+<pre>&lt;script type="text/javascript"&gt;
+function showMessage(){
+    alert("Hello world!");
+}
+&lt;/script&gt;
+&lt;input type="button" value="Click Me" onclick="showMessage()" /&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8658" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，单击按钮就会调用showMessage()函数。这个函数是在一个独立的&lt;script&gt;元素中定义的，当然也可以被包含在一个外部文件中。事件处理程序中的代码在执行时，有权访问全局作用域中的任何代码。<br />
+这样指定事件处理程序具有一些独到之处。首先，这样会创建一个封装着元素属性值的函数。这个函数中有一个局部变量event，也就是事件对象（本章稍后讨论）：<br />
+<pre>&lt;!-- 输出 "click" --&gt;
+&lt;input type="button" value="Click Me" onclick="alert(event.type)"&gt;</pre>
+通过event 变量，可以直接访问事件对象，你不用自己定义它，也不用从函数的参数列表中读取。<br />
+在这个函数内部，this 值等于事件的目标元素，例如：<br />
+<pre>&lt;!-- 输出 "Click Me" --&gt;
+&lt;input type="button" value="Click Me" onclick="alert(this.value)"&gt;</pre>
+关于这个动态创建的函数，另一个有意思的地方是它扩展作用域的方式。在这个函数内部，可以像访问局部变量一样访问document 及该元素本身的成员。这个函数使用with 像下面这样扩展作用域：<br />
+<pre>function() {
+	with(document) {
+		with(this) {
+			//元素属性值
+		}
+	}
+}</pre>
+如此一来，事件处理程序要访问自己的属性就简单多了。下面这行代码与前面的例子效果相同：<br />
+<pre>&lt;!-- 输出 "Click Me" --&gt;
+&lt;input type="button" value="Click Me" onclick="alert(value)"&gt;</pre>
+如果当前元素是一个表单输入元素，则作用域中还会包含访问表单元素（父元素）的入口，这个函数就变成了如下所示：<br />
+<pre>function() {
+	with(document) {
+		with(this.form) {
+			with(this) {
+				//元素属性值
+			}
+		}
+	}
+}</pre>
+实际上，这样扩展作用域的方式，无非就是想让事件处理程序无需引用表单元素就能访问其他表单字段。例如：<br />
+<pre>&lt;form method="post"&gt;
+&lt;input type="text" name="username" value=""&gt;
+&lt;input type="button" value="Echo Username" onclick="alert(username.value)"&gt;
+&lt;/form&gt;</pre>
+<a href="http://www.z-ai.net/study/api/s/8659" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+在这个例子中，单击按钮会显示文本框中的文本。值得注意的是，这里直接引用了username 元素。<br />
+不过，在HTML 中指定事件处理程序有两个缺点。首先，存在一个时差问题。因为用户可能会在HTML 元素一出现在页面上就触发相应的事件，但当时的事件处理程序有可能尚不具备执行条件。以前面的例子来说明，假设showMessage()函数是在按钮下方、页面的最底部定义的。如果用户在页面解析showMessage()函数之前就单击了按钮，就会引发错误。为此，很多HTML 事件处理程序都会被封装在一个try-catch 块中，以便错误不会浮出水面，如下面的例子所示：<br />
+<pre>&lt;input type="button" value="Click Me" onclick="try{showMessage();}catch(ex){}"&gt;</pre>
+这样，如果在showMessage()函数有定义之前单击了按钮，用户将不会看到JavaScript 错误，因为在浏览器有机会处理错误之前，错误就被捕获了。<br />
+另一个缺点是，这样扩展事件处理程序的作用域链在不同浏览器中会导致不同结果。不同JavaScript引擎遵循的标识符解析规则略有差异，很可能会在访问非限定对象成员时出错。<br />
+通过HTML 指定事件处理程序的最后一个缺点是HTML 与JavaScript 代码紧密耦合。如果要更换事件处理程序，就要改动两个地方：HTML 代码和JavaScript 代码。而这正是许多开发人员摒弃HTML 事件处理程序，转而使用JavaScript 指定事件处理程序的原因所在。<br />
+<blockquote>
+	要了解关于HTML 事件处理程序缺点的更多信息，请参考Garrett Smith 的文章“Event Handler Scope”（www.jibbering.com/faq/names/event_handler.html）。
+</blockquote>
+<h2>
+	13.2.2 DOM0 级事件处理程序
+</h2>
+<p>
+	通过JavaScript 指定事件处理程序的传统方式，就是将一个函数赋值给一个事件处理程序属性。这种为事件处理程序赋值的方法是在第四代Web 浏览器中出现的，而且至今仍然为所有现代浏览器所支持。原因一是简单，二是具有跨浏览器的优势。要使用JavaScript 指定事件处理程序，首先必须取得一个要操作的对象的引用。
+</p>
+每个元素（包括window 和document）都有自己的事件处理程序属性，这些属性通常全部小写，例如onclick。将这种属性的值设置为一个函数，就可以指定事件处理程序，如下所示：<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+    alert("Clicked");
+}；</pre>
+在此，我们通过文档对象取得了一个按钮的引用，然后为它指定了onclick 事件处理程序。但要注意，在这些代码运行以前不会指定事件处理程序，因此如果这些代码在页面中位于按钮后面，就有可能在一段时间内怎么单击都没有反应。<br />
+使用DOM0 级方法指定的事件处理程序被认为是元素的方法。因此，这时候的事件处理程序是在元素的作用域中运行；换句话说，程序中的this 引用当前元素。来看一个例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.onclick = function(){
+    alert(this.id); //"myBtn"
+};</pre>
+<a href="http://www.z-ai.net/study/api/s/8660" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+单击按钮显示的是元素的ID，这个ID 是通过this.id 取得的。不仅仅是ID，实际上可以在事件处理程序中通过this 访问元素的任何属性和方法。以这种方式添加的事件处理程序会在事件流的冒泡阶段被处理。<br />
+也可以删除通过DOM0 级方法指定的事件处理程序，只要像下面这样将事件处理程序属性的值设置为null 即可：<br />
+<pre>btn.onclick = null; //删除事件处理程序</pre>
+将事件处理程序设置为null 之后，再单击按钮将不会有任何动作发生。<br />
+如果你使用HTML 指定事件处理程序，那么onclick 属性的值就是一个包含着在同名HTML 特性中指定的代码的函数。而将相应的属性设置为null，也可以删除以这种方式指定的事件处理程序。<br />
+<h2>
+	13.2.3 DOM2 级事件处理程序
+</h2>
+“DOM2级事件”定义了两个方法，用于处理指定和删除事件处理程序的操作：addEventListener()和removeEventListener()。所有DOM节点中都包含这两个方法，并且它们都接受3 个参数：要处理的事件名、作为事件处理程序的函数和一个布尔值。最后这个布尔值参数如果是true，表示在捕获阶段调用事件处理程序；如果是false，表示在冒泡阶段调用事件处理程序。<br />
+要在按钮上为click 事件添加事件处理程序，可以使用下列代码：<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.addEventListener("click", function(){
+    alert(this.id);
+}, false);</pre>
+上面的代码为一个按钮添加了onclick 事件处理程序，而且该事件会在冒泡阶段被触发（因为最后一个参数是false）。与DOM0 级方法一样，这里添加的事件处理程序也是在其依附的元素的作用域中运行。使用DOM2 级方法添加事件处理程序的主要好处是可以添加多个事件处理程序。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.addEventListener("click",
+function() {
+	alert(this.id);
+},
+false);
+btn.addEventListener("click",
+function() {
+	alert("Hello world!");
+},
+f alse);</pre>
+<a href="http://www.z-ai.net/study/api/s/8661" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里为按钮添加了两个事件处理程序。这两个事件处理程序会按照添加它们的顺序触发，因此首先会显示元素的ID，其次会显示"Hello world!"消息。<br />
+通过addEventListener()添加的事件处理程序只能使用removeEventListener()来移除；移除时传入的参数与添加处理程序时使用的参数相同。这也意味着通过addEventListener()添加的匿名函数将无法移除，如下面的例子所示。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.addEventListener("click",
+function() {
+	alert(this.id);
+},
+false);
+//这里省略了其他代码
+btn.removeEventListener("click",
+function() { //没有用！
+	alert(this.id);
+},
+false);</pre>
+在这个例子中，我们使用addEventListener()添加了一个事件处理程序。虽然调用remove-EventListener()时看似使用了相同的参数，但实际上，第二个参数与传入addEventListener()中的那一个是完全不同的函数。而传入removeEventListener()中的事件处理程序函数必须与传入addEventListener()中的相同，如下面的例子所示。<br />
+<pre>var btn = document.getElementById("myBtn");
+var handler = function() {
+	alert(this.id);
+};
+btn.addEventListener("click", handler, false);
+//这里省略了其他代码
+btn.removeEventListener("click", handler, false); //有效！</pre>
+<a href="http://www.z-ai.net/study/api/s/8661" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+重写后的这个例子没有问题，是因为在addEventListener()和removeEventListener()中使用了相同的函数。<br />
+大多数情况下，都是将事件处理程序添加到事件流的冒泡阶段，这样可以最大限度地兼容各种浏览器。最好只在需要在事件到达目标之前截获它的时候将事件处理程序添加到捕获阶段。如果不是特别需要，我们不建议在事件捕获阶段注册事件处理程序。<br />
+<blockquote>
+	IE9、Firefox、Safari、Chrome 和Opera 支持DOM2 级事件处理程序。
+</blockquote>
+<h2>
+	13.2.4 IE事件处理程序
+</h2>
+IE 实现了与DOM 中类似的两个方法：attachEvent()和detachEvent()。这两个方法接受相同的两个参数：事件处理程序名称与事件处理程序函数。由于IE8 及更早版本只支持事件冒泡，所以通过attachEvent()添加的事件处理程序都会被添加到冒泡阶段。<br />
+要使用attachEvent()为按钮添加一个事件处理程序，可以使用以下代码。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.attachEvent("onclick", function(){
+    alert("Clicked");
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8662" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+注意，attachEvent()的第一个参数是"onclick"，而非DOM 的addEventListener()方法中的"click"。<br />
+在IE 中使用attachEvent()与使用DOM0 级方法的主要区别在于事件处理程序的作用域。在使用DOM0 级方法的情况下，事件处理程序会在其所属元素的作用域内运行；在使用attachEvent()方法的情况下，事件处理程序会在全局作用域中运行，因此this 等于window。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.attachEvent("onclick", function(){
+    alert(this === window); //true
+});</pre>
+<br />
+在编写跨浏览器的代码时，牢记这一区别非常重要。<br />
+与addEventListener()类似，attachEvent()方法也可以用来为一个元素添加多个事件处理程序。来看下面的例子。<br />
+<pre>var btn = document.getElementById("myBtn");
+btn.attachEvent("onclick", function(){
+    alert("Clicked");
+});
+btn.attachEvent("onclick", function(){
+    alert("Hello world!");
+});</pre>
+<a href="http://www.z-ai.net/study/api/s/8662" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这里调用了两次attachEvent()，为同一个按钮添加了两个不同的事件处理程序。不过，与DOM方法不同的是，这些事件处理程序不是以添加它们的顺序执行，而是以相反的顺序被触发。单击这个例子中的按钮，首先看到的是"Hello world!"，然后才是"Clicked"。使用attachEvent()添加的事件可以通过detachEvent()来移除，条件是必须提供相同的参数。<br />
+与DOM 方法一样，这也意味着添加的匿名函数将不能被移除。不过，只要能够将对相同函数的引用传给detachEvent()，就可以移除相应的事件处理程序。例如：<br />
+<pre>var btn = document.getElementById("myBtn");
+var handler = function(){
+    alert("Clicked");
+};
+btn.attachEvent("onclick", handler);
+//这里省略了其他代码
+btn.detachEvent("onclick", handler);</pre>
+<a href="http://www.z-ai.net/study/api/s/8663" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+这个例子将保存在变量handler 中的函数作为事件处理程序。因此，后面的detachEvent()可以使用相同的函数来移除事件处理程序。<br />
+<blockquote>
+	支持IE 事件处理程序的浏览器有IE 和Opera。
+</blockquote>
+<h2>
+	13.2.5 跨浏览器的事件处理程序
+</h2>
+为了以跨浏览器的方式处理事件，不少开发人员会使用能够隔离浏览器差异的JavaScript 库，还有一些开发人员会自己开发最合适的事件处理的方法。自己编写代码其实也不难，只要恰当地使用能力检测即可（能力检测在第9 章介绍过）。要保证处理事件的代码能在大多数浏览器下一致地运行，只需关注冒泡阶段。<br />
+第一个要创建的方法是addHandler()，它的职责是视情况分别使用DOM0 级方法、DOM2 级方法或IE 方法来添加事件。这个方法属于一个名叫EventUtil 的对象，本书将使用这个对象来处理浏览器间的差异。addHandler()方法接受3 个参数：要操作的元素、事件名称和事件处理程序函数。<br />
+与addHandler()对应的方法是removeHandler()，它也接受相同的参数。这个方法的职责是移除之前添加的事件处理程序——无论该事件处理程序是采取什么方式添加到元素中的，如果其他方法无效，默认采用DOM0 级方法。<br />
+EventUtil 的用法如下所示。<br />
+<pre>var EventUtil = {
+	addHandler: function(element, type, handler) {
+		if (element.addEventListener) {
+			element.addEventListener(type, handler, false);
+		} else if (element.attachEvent) {
+			element.attachEvent("on" + type, handler);
+		} else {
+			element["on" + type] = handler;
+		}
+	},
+	removeHandler: function(element, type, handler) {
+		if (element.removeEventListener) {
+			element.removeEventListener(type, handler, false);
+		} else if (element.detachEvent) {
+			element.detachEvent("on" + type, handler);
+		} else {
+			element["on" + type] = null;
+		}
+	}
+};</pre>
+这两个方法首先都会检测传入的元素中是否存在DOM2 级方法。如果存在DOM2 级方法，则使用该方法：传入事件类型、事件处理程序函数和第三个参数false（表示冒泡阶段）。如果存在的是IE 的方法，则采取第二种方案。注意，为了在IE8 及更早版本中运行，此时的事件类型必须加上"on"前缀。<br />
+<p>
+	最后一种可能就是使用DOM0 级方法（在现代浏览器中，应该不会执行这里的代码）。此时，我们使用的是方括号语法来将属性名指定为事件处理程序，或者将属性设置为null。
+</p>
+<p>
+	可以像下面这样使用EventUtil 对象：
+</p>
+<pre>var btn = document.getElementById("myBtn");
+var handler = function() {
+	alert("Clicked");
+};
+EventUtil.addHandler(btn, "click", handler);
+//这里省略了其他代码
+EventUtil.removeHandler(btn, "click", handler);</pre>
+<a href="http://www.z-ai.net/study/api/s/8664" target="_blank" class="btn btn-sm btn-success">运行一下</a><br />
+addHandler()和removeHandler()没有考虑到所有的浏览器问题，例如在IE 中的作用域问题。<br />
+不过，使用它们添加和移除事件处理程序还是足够了。此外还要注意，DOM0 级对每个事件只支持一个事件处理程序。好在，只支持DOM0 级的浏览器已经没有那么多了，因此这对你而言应该不是什么问题。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15322">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

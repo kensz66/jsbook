@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>16.4 历史状态管理</title>
+<link rel="stylesheet" type="text/css" href="../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../style/love.css" />
+<script type="text/javascript" src="../style/jquery.min.js"></script>
+<script type="text/javascript" src="../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">16.4 历史状态管理</h1>
+	<hr>
+		历史状态管理是现代Web 应用开发中的一个难点。在现代Web 应用中，用户的每次操作不一定会打开一个全新的页面，因此“后退”和“前进”按钮也就失去了作用，导致用户很难在不同状态间切换。<br />
+要解决这个问题，首选使用hashchange 事件（第13 章曾讨论过）。HTML5 通过更新history 对象为管理历史状态提供了方便。<br />
+通过hashchange 事件，可以知道URL 的参数什么时候发生了变化，即什么时候该有所反应。而通过状态管理API ， 能够在不加载新页面的情况下改变浏览器的URL 。为此， 需要使用history.pushState()方法，该方法可以接收三个参数：状态对象、新状态的标题和可选的相对URL。<br />
+例如：<br />
+<pre>history.pushState({name:"Nicholas"}, "Nicholas' page", "nicholas.html");</pre>
+执行pushState()方法后，新的状态信息就会被加入历史状态栈，而浏览器地址栏也会变成新的相对URL。但是，浏览器并不会真的向服务器发送请求，即使状态改变之后查询location.href 也会返回与地址栏中相同的地址。另外，第二个参数目前还没有浏览器实现，因此完全可以只传入一个空字符串，或者一个短标题也可以。而第一个参数则应该尽可能提供初始化页面状态所需的各种信息。<br />
+因为pushState()会创建新的历史状态，所以你会发现“后退”按钮也能使用了。按下“后退”按钮，会触发window 对象的popstate 事件①。popstate 事件的事件对象有一个state 属性，这个属性就包含着当初以第一个参数传递给pushState()的状态对象。<br />
+<pre>EventUtil.addHandler(window, "popstate",
+function(event) {
+	var state = event.state;
+	if (state) { //第一个页面加载时state 为空
+		processState(state);
+	}
+});</pre>
+得到这个状态对象后，必须把页面重置为状态对象中的数据表示的状态（因为浏览器不会自动为你做这些）。记住，浏览器加载的第一个页面没有状态，因此单击“后退”按钮返回浏览器加载的第一个页面时，event.state 值为null。<br />
+要更新当前状态，可以调用replaceState()，传入的参数与pushState()的前两个参数相同。调用这个方法不会在历史状态栈中创建新状态，只会重写当前状态。<br />
+<pre>history.replaceState({name:"Greg"}, "Greg's page");</pre>
+支持HTML5 历史状态管理的浏览器有Firefox 4+、Safari 5+、Opera 11.5+和Chrome。在Safari 和Chrome 中，传递给pushState()或replaceState()的状态对象中不能包含DOM 元素。而Firefox支持在状态对象中包含DOM 元素。Opera 还支持一个history.state 属性，它返回当前状态的状态对象。<br />
+<blockquote>
+	在使用HTML5 的状态管理机制时，请确保使用pushState()创造的每一个“假”URL，在Web 服务器上都有一个真的、实际存在的URL 与之对应。否则，单击“刷新”按钮会导致404 错误。
+</blockquote></div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15374">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>

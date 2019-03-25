@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, minimumscale=1.0, maximum-scale=1.0" />
+<meta name="language" content="zh-cn" />
+<meta name="renderer" content="webkit" />
+<title>9.3.1 用户代理字符串的历史</title>
+<link rel="stylesheet" type="text/css" href="../../style/prettify.css" />
+<link rel="stylesheet" type="text/css" href="../../style/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="../../style/love.css" />
+<script type="text/javascript" src="../../style/jquery.min.js"></script>
+<script type="text/javascript" src="../../style/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../style/prettify.js"></script>
+</head>
+<body>
+<div id="post-content" class="m-bg">
+	<h1 class="text-center">9.3.1 用户代理字符串的历史</h1>
+	<hr>
+		HTTP 规范（包括1.0 和1.1 版）明确规定，浏览器应该发送简短的用户代理字符串，指明浏览器的名称和版本号。RFC 2616（即HTTP 1.1 协议规范）是这样描述用户代理字符串的：“产品标识符常用于通信应用程序标识自身，由软件名和版本组成。使用产品标识符的大多数领域也允许列出作为应用程序主要部分的子产品，由空格分隔。按照惯例，产品要按照相应的重要程度依次列出，以便标识应用程序。”<br />
+上述规范进一步规定，用户代理字符串应该以一组产品的形式给出，字符串格式为：标识符/产品版本号。但是，现实中的用户代理字符串则绝没有如此简单。<br />
+<h2>
+	1. 早期的浏览器
+</h2>
+1993 年，美国NCSA（National Center for Supercomputing Applications，国家超级计算机中心）发布了世界上第一款Web 浏览器Mosaic。这款浏览器的用户代理字符串非常简单，类似如下所示。<br />
+<code>Mosaic/0.9</code><br />
+尽管这个字符串在不同操作系统和不同平台下会有所变化，但其基本格式还是简单明了的。正斜杠前面的文本表示产品名称（有时候会出现NCSA Mosaic 或其他类似字样），而斜杠后面的文本是产品的版本号。<br />
+Netscape Communications 公司介入浏览器开发领域后，遂将自己产品的代号定名为Mozilla（MosaicKiller 的简写，意即Mosaic 杀手）。该公司第一个公开发行版，Netscape Navigator 2 的用户代理字符串具有如下格式。<br />
+Mozilla/版本号 [语言] (平台; 加密类型)Netscape 在坚持将产品名和版本号作为用户代理字符串开头的基础上，又在后面依次添加了下列信息。<br />
+<ul>
+	<li>
+		语言：即语言代码，表示应用程序针对哪种语言设计。
+	</li>
+	<li>
+		平台：即操作系统和（或）平台，表示应用程序的运行环境。
+	</li>
+	<li>
+		加密类型：即安全加密的类型。可能的值有U（128 位加密）、I（40 位加密）和N（未加密）。
+	</li>
+</ul>
+典型的Netscape Navigator 2 的用户代理字符串如下所示。<br />
+<code>Mozilla/2.02 [fr] (WinNT; I)</code><br />
+这个字符串表示浏览器是Netscape Navigator 2.02，为法语国家编译，运行在Windows NT 平台下，加密类型为40 位。那个时候，通过用户代理字符串中的产品名称，至少还能够轻易地确定用户使用的是什么浏览器。<br />
+<h2>
+	2. Netscape Navigator 3 和Internet Explorer 3
+</h2>
+1996 年，Netscape Navigator 3 发布，随即超越Mosaic 成为当时最流行的Web 浏览器。而用户代理字符串只作了一些小的改变，删除了语言标记，同时允许添加操作系统或系统使用的CPU 等可选信息。<br />
+于是，格式变成如下所示。<br />
+<code>Mozilla/版本号 (平台; 加密类型 [; 操作系统或CPU 说明])</code><br />
+运行在Windows 系统下的Netscape Navigator 3 的用户代理字符串大致如下。<br />
+<code>Mozilla/3.0 (Win95; U)</code><br />
+这个字符串表示Netscape Navigator 3 运行在Windows 95 中，采用了128 位加密技术。可见，在Windows 系统中，字符串中的操作系统或CPU 说明被省略了。<br />
+Netscape Navigator 3 发布后不久，微软也发布了其第一款赢得用户广泛认可的Web 浏览器，即Internet Explorer 3。由于Netscape 浏览器在当时占绝对市场份额，许多服务器在提供网页之前都要专门检测该浏览器。如果用户通过IE 打不开相关网页，那么这个新生的浏览器很可能就会夭折。于是，微软决定将IE 的用户代理字符串修改成兼容Netscape 的形式，结果如下：<br />
+<code>Mozilla/2.0 (compatible; MSIE 版本号; 操作系统)</code><br />
+例如，Windows 95 平台下的Internet Explorer 3.02 带有如下用户代理字符串：<br />
+<code>Mozilla/2.0 (compatible; MSIE 3.02; Windows 95)</code><br />
+由于当时的大多数浏览器嗅探程序只检测用户代理字符串中的产品名称部分，结果IE 就成功地将自己标识为Mozilla，从而伪装成Netscape Navigator。微软的这一做法招致了很多批评，因为它违反了浏览器标识的惯例。更不规范的是，IE 将真正的浏览器版本号插入到了字符串的中间。<br />
+字符串中另外一个有趣的地方是标识符Mozilla 2.0（而不是3.0）。毕竟，当时的主流版本是3.0，改成3.0 应该对微软更有利才对。但真正的谜底到现在还没有揭开——但很可能只是人为疏忽所致。<br />
+<h2>
+	3. Netscape Communicator 4 和IE4～IE8
+</h2>
+1997 年8 月，Netscapte Communicator 4 发布（这一版将浏览器名字中的Navigator 换成了Communicator）。Netscape 继续遵循了第3 版时的用户代理字符串格式：<br />
+<code>Mozilla/版本号 (平台; 加密类型 [; 操作系统或CPU 说明])</code><br />
+因此，Windows 98 平台中第4 版的用户代理字符串如下所示：<br />
+<code>Mozilla/4.0 (Win98; I)</code><br />
+Netscape 在发布补丁时，子版本号也会相应提高，用户代理字符串如下面的4.79 版所示：<br />
+<code>Mozilla/4.79 (Win98; I)</code><br />
+但是，微软在发布Internet Explorer 4 时，顺便将用户代理字符串修改成了如下格式：<br />
+<code>Mozilla/4.0 (compatible; MSIE 版本号; 操作系统)</code><br />
+换句话说，对于Windows 98 中运行的IE4 而言，其用户代理字符串为：<br />
+<code>Mozilla/4.0 (compatible; MSIE 4.0; Windows 98)</code><br />
+经过此番修改，Mozilla 版本号就与实际的IE 版本号一致了，为识别它们的第四代浏览器提供了方便。但令人遗憾的是，两者的一致性仅限于这一个版本。在Internet Explorer 4.5 发布时（只针对Macs），虽然Mozilla 版本号还是4，但IE 版本号则改成了如下所示：<br />
+<code>Mozilla/4.0 (compatible; MSIE 4.5; Mac_PowerPC)</code><br />
+此后，IE 的版本一直到7 都沿袭了这个模式：<br />
+<code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)</code><br />
+而IE8 的用户代理字符串中添加了呈现引擎（Trident）的版本号：<br />
+<code>Mozilla/4.0 (compatible; MSIE 版本号; 操作系统; Trident/Trident 版本号)</code><br />
+例如：<br />
+<code>Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)</code><br />
+这个新增的Trident 记号是为了让开发人员知道IE8 是不是在兼容模式下运行。如果是，则MSIE 的版本号会变成7，但Trident 及版本号还会留在用户代码字符串中：<br />
+<code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Trident/4.0)</code><br />
+增加这个记号有助于分辨浏览器到底是IE7（没有Trident 记号），还是运行在兼容模式下的IE8。<br />
+IE9 对字符串格式做了一点调整。Mozilla 版本号增加到了5.0，而Trident 的版本号也升到了5.0。IE9默认的用户代理字符串如下：<br />
+<code>Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)</code><br />
+如果IE9 运行在兼容模式下，字符串中的Mozilla 版本号和MSIE 版本号会恢复旧的值，但Trident的版本号仍然是5.0。例如，下面就是IE9 运行在IE7 兼容模式下的用户代理字符串：<br />
+<code>Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.1; Trident/5.0)</code><br />
+所有这些变化都是为了确保过去的用户代理检测脚本能够继续发挥作用，同时还能给新脚本提供更丰富的信息。<br />
+<h2>
+	4. Gecko
+</h2>
+Gecko 是Firefox 的呈现引擎。当初的Gecko 是作为通用Mozilla 浏览器的一部分开发的，而第一个采用Gecko 引擎的浏览器是Netscape 6。为Netscape 6 编写的一份规范中规定了未来版本中用户代理字符串的构成。这个新格式与4.x 版本中相对简单的字符串相比，有着非常大的区别，如下所示：<br />
+<code>Mozilla/Mozilla 版本号 (平台; 加密类型; 操作系统或CPU; 语言; 预先发行版本)</code><br />
+Gecko/Gecko 版本号 应用程序或产品/应用程序或产品版本号这个明显复杂了很多的用户代理字符串中蕴含很多新想法。下表列出了字符串中各项的用意。<br />
+<img src="../../image/4091bffe0e6.gif" alt="" /><br />
+应用程序或产品版本号 否 应用程序或产品的版本号；用于区分Mozilla版本号和Gecko版本号为了帮助读者更好地理解Gecko 的用户代理字符串，下面我们来看几个从基于Gecko 的浏览器中取得的字符串。<br />
+<pre>Windows XP 下的Netscape 6.21：
+Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4) Gecko/20011128 Netscape6/6.2.1
+Linux 下的SeaMonkey 1.1a：
+Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1b2) Gecko/20060823 SeaMonkey/1.1a
+Windows XP 下的Firefox 2.0.0.11：
+Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11
+Mac OS X 下的Camino 1.5.1：
+Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en; rv:1.8.1.6) Gecko/20070809 Camino/1.5.1</pre>
+以上这些用户代理字符串都取自基于Gecko 的浏览器（只是版本有所不同）。很多时候，检测特定的浏览器还不如搞清楚它是否基于Gecko 更重要。每个字符串中的Mozilla 版本都是5.0，自从第一个基于Gecko 的浏览器发布时修改成这个样子，至今就没有改变过；而且，看起来以后似乎也不会有什么变化。<br />
+随着Firefox 4 发布，Mozilla 简化了这个用户代理字符串。主要改变包括以下几方面。<br />
+<ul>
+	<li>
+		删除了“语言”记号（例如，前面例子中的“en-US”）。
+	</li>
+	<li>
+		在浏览器使用强加密（默认设置）时，不显示“加密类型”。也就是说，Mozilla 用户代理字符串中不会再出现“U”，而“I”和“N”还会照常出现。
+	</li>
+	<li>
+		“平台”记号从Windows 用户代理字符串中删除了，“操作系统或CPU”中始终都包含“Windows”字符串。
+	</li>
+	<li>
+		“Gecko 版本号”固定为“Gecko/20100101”。
+	</li>
+</ul>
+最后，Firefox 4 用户代理字符串变成了下面这个样子：<br />
+<code>Mozilla/5.0 (Windows NT 6.1; rv:2.0.1) Gecko/20100101 Firefox 4.0.1</code><br />
+<h2>
+	5. WebKit
+</h2>
+<p>
+	2003 年，Apple 公司宣布要发布自己的Web 浏览器，名字定为Safari。Safari 的呈现引擎叫WebKit，是Linux 平台中Konqueror 浏览器的呈现引擎KHTML 的一个分支。几年后，WebKit 独立出来成为了一个开源项目，专注于呈现引擎的开发。
+</p>
+<p>
+	这款新浏览器和呈现引擎的开发人员也遇到了与Internet Explorer 3.0 类似的问题：如何确保这款浏览器不被流行的站点拒之门外？答案就是向用户代理字符串中放入足够多的信息，以便站点能够信任它与其他流行的浏览器是兼容的。于是，WebKit 的用户代理字符串就具备了如下格式：
+</p>
+<pre>Mozilla/5.0 (平台; 加密类型; 操作系统或CPU; 语言) AppleWebKit/AppleWebKit 版本号 (KHTML, like Gecko) Safari/Safari 版本号</pre>
+以下就是一个示例：<br />
+<pre>Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/124 (KHTML, like Gecko)  Safari/125.1</pre>
+<p>
+	显然，这又是一个很长的用户代理字符串。其中不仅包含了Apple WebKit 的版本号，也包含了Safari的版本号。出于兼容性的考虑，有关人员很快就决定了将Safari 标识为Mozilla。至今，基于WebKit 的所有浏览器都将自己标识为Mozilla 5.0，与基于Gecko 的浏览器完全一样。但Safari 的版本号则通常是浏览器的编译版本号，不一定与发布时的版本号对应。换句话说，虽然Safari 1.25 的用户代理字符串中包含数字125.1，但两者却不一一对应。
+</p>
+<p>
+	Safari 预发行1.0 版用户代理字符串中最耐人寻味，也是最饱受诟病的部分就是字符串"(KHTML,like Gecko)"。Apple 因此收到许多开发人员的反馈，他们认为这个字符串明显是在欺骗客户端和服务器，实际上是想让它们把Safari 当成Gecko（好像光添加Mozilla/5.0 还嫌不够）。Apple 的回应与微软在IE 的用户代理字符串遭到责难时如出一辙：Safari 与Mozilla 兼容，因此网站不应该将Safari 用户拒之门外，否则用户就会认为自己的浏览器不受支持。
+</p>
+<p>
+	到了Safari 3.0 发布时，其用户代理字符串又稍微变长了一点。下面这个新增的Version 记号一直到现在都被用来标识Safari 实际的版本号：
+</p>
+<pre>Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/522.15.5 (KHTML, likeGecko) Version/3.0.3 Safari/522.15.5</pre>
+需要注意的是，这个变化只在Safari 中有，在WebKit 中没有。换句话说，其他基于WebKit 的浏览器可能没有这个变化。一般来说，确定浏览器是否基于WebKit 要比确定它是不是Safari 更有价值，就像针对Gecko 一样。<br />
+<h2>
+	6. Konqueror
+</h2>
+与KDE Linux 集成的Konqueror，是一款基于KHTML 开源呈现引擎的浏览器。尽管Konqueror 只能在Linux 中使用，但它也有数量可观的用户。为确保最大限度的兼容性，Konqueror 效仿IE 选择了如下用户代理字符串格式：<br />
+<pre>Mozilla/5.0 (compatible; Konqueror/ 版本号; 操作系统或CPU )</pre>
+不过，为了与WebKit 的用户代理字符串的变化保持一致，Konqueror 3.2 又有了变化，以如下格式<br />
+将自己标识为KHTML：<br />
+<pre>Mozilla/5.0 (compatible; Konqueror/ 版本号; 操作系统或CPU) KHTML/ KHTML 版本号 (like Gecko)</pre>
+下面是一个例子：<br />
+<pre>Mozilla/5.0 (compatible; Konqueror/3.5; SunOS) KHTML/3.5.0 (like Gecko)</pre>
+其中，Konqueror 与KHTML 的版本号比较一致，即使有差别也很小，例如Konqueror 3.5 使用KHTML3.5.1。<br />
+<h2>
+	7. Chrome
+</h2>
+<p>
+	谷歌公司的Chrome 浏览器以WebKit 作为呈现引擎，但使用了不同的JavaScript 引擎。在Chrome 0.2这个最初的 beta 版中，用户代理字符串完全取自WebKit，只添加了一段表示Chrome 版本号的信息，格式如下：
+</p>
+<p>
+	Mozilla/5.0 ( 平台; 加密类型; 操作系统或CPU; 语言) AppleWebKit/AppleWebKit 版本号 (KHTML,like Gecko) Chrome/ Chrome 版本号 Safari/ Safari 版本Chrome 7 的完整的用户代理字符串如下：
+</p>
+<pre>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/534.7 (KHTML,like Gecko) Chrome/7.0.517.44 Safari/534.7</pre>
+其中，WebKit 版本与Safari 版本看起来似乎始终会保持一致，尽管没有十分的把握。<br />
+<h2>
+	8. Opera
+</h2>
+仅就用户代理字符串而言，Opera 应该是最有争议的一款浏览器了。Opera 默认的用户代理字符串是所有现代浏览器中最合理的——正确地标识了自身及其版本号。在Opera 8.0 之前，其用户代理字符串采用如下格式：<br />
+<pre>Opera/ 版本号 (操作系统或CPU; 加密类型) [语言]</pre>
+Windows XP 中的Opera 7.54 会显示下面的用户代理字符串：<br />
+<pre>Opera/7.54 (Windows NT 5.1; U) [en]</pre>
+Opera 8 发布后，用户代理字符串的“语言”部分被移到圆括号内，以便更好地与其他浏览器匹配，如下所示：<br />
+<pre>Opera/ 版本号 (操作系统或CPU; 加密类型; 语言)</pre>
+Windows XP 中的Opera 8 会显示下面的用户代理字符串：<br />
+<pre>Opera/8.0 (Windows NT 5.1; U; en)</pre>
+<p>
+	默认情况下，Opera 会以上面这种简单的格式返回一个用户代理字符串。目前来看，Opera 也是主要浏览器中唯一一个使用产品名和版本号来完全彻底地标识自身的浏览器。可是，与其他浏览器一样，Opera 在使用自己的用户代理字符串时也遇到了问题。即使技术上正确，但因特网上仍然有不少浏览器嗅探代码，只钟情于报告Mozilla 产品名的那些用户代理字符串。另外还有相当数量的代码则只对IE 或Gecko 感兴趣。Opera 没有选择通过修改自身的用户代理字符串来迷惑嗅探代码，而是干脆选择通过修改自身的用户代理字符串将自身标识为一个完全不同的浏览器。
+</p>
+<p>
+	Opera 9 以后，出现了两种修改用户代理字符串的方式。一种方式是将自身标识为另外一个浏览器，如Firefox 或者IE。在这种方式下，用户代理字符串就如同Firefox 或IE 的用户代理字符串一样，只不过末尾追加了字符串Opera 及Opera 的版本号。下面是一个例子：
+</p>
+<pre>Mozilla/5.0 (Windows NT 5.1; U; en; rv:1.8.1) Gecko/20061208 Firefox/2.0.0 Opera 9.50
+Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.50</pre>
+<p>
+	第一个字符串将Opera 9.5 标识为Firefox 2，同时带有Opera 版本信息。第二个字符串将Opera 9.5标识为IE6，也包含了Opera 版本信息。这两个用户代理字符串可以通过针对Firefox 或IE 的大多数测试，不过还是为识别Opera 留下了余地。
+</p>
+<p>
+	Opera 标识自身的另一种方式，就是把自己装扮成Firefox 或IE。在这种隐瞒真实身份的情况下，用户代理字符串实际上与其他浏览器返回的相同——既没有Opera 字样，也不包含Opera 版本信息。换句话说，在启用了身份隐瞒功能的情况下，无法将Opera 和其他浏览器区别开来。另外，由于Opera 喜欢在不告知用户的情况下针对站点来设置用户代理字符串，因此问题就更复杂化了。例如，打开MyYahoo!站点（http://my.yahoo.com）会自动导致Opera 将自己装扮成Firefox。如此一来，要想识别Opera就难上加难了。
+</p>
+在Opera 7 以前的版本中，Opera 会解析Windows 操作系统字符串的含义。例如，Windows NT 5.1 实际上就是Windows XP，因此Opera 会在用户代理字符串中包含Windows XP 而非Windows NT 5.1。为了与其他浏览器更兼容，Opera 7 开始包含正式的操作系统版本，而非解析后的版本。<br />
+<p>
+	Opera 10 对代理字符串进行了修改。现在的格式是：
+</p>
+<p>
+</p>
+<pre>Opera/9.80 (操作系统或CPU; 加密类型; 语言) Presto/Presto 版本号 Version/版本号</pre>
+<p>
+</p>
+注意，初始的版本号Opera/9.80 是固定不变的。实际并没有Opera 9.8，但工程师们担心写得不好的浏览器嗅探脚本会将Opera/10.0 错误的解释为Opera 1，而不是Opera 10。因此，Opera 10 又增加了Presto记号（Presto 是Opera 的呈现引擎）和Version 记号，后者用以保存实际的版本号。以下是Windows7 中Opera 10.63 的用户代理字符串：<br />
+<pre>Opera/9.80 (Windows NT 6.1; U; en) Presto/2.6.30 Version/10.63</pre>
+<h2>
+	9. iOS 和Android
+</h2>
+移动操作系统iOS 和Android 默认的浏览器都基于WebKit，而且都像它们的桌面版一样，共享相同的基本用户代理字符串格式。iOS 设备的基本格式如下：<br />
+<pre>Mozilla/5.0 (平台; 加密类型; 操作系统或CPU like Mac OS X; 语言)
+AppleWebKit/AppleWebKit 版本号 (KHTML, like Gecko) Version/浏览器版本号
+Mobile/移动版本号 Safari/Safari 版本号</pre>
+注意用于辅助确定Mac 操作系统的"like Mac OS X"和额外的Mobile 记号。一般来说，Mobile记号的版本号（移动版本号）没什么用，主要是用来确定WebKit 是移动版，而非桌面版。而平台则可能是"iPhone"、"iPod"或"iPad"。例如：<br />
+<pre>Mozilla/5.0 (iPhone; U; CPU iPhone OS 3_0 like Mac OS X; en-us)
+AppleWebKit/528.18 (KHTML, like Gecko) Version/4.0 Mobile/7A341 Safari/528.16</pre>
+在iOS 3 之前，用户代理字符串中不会出现操作系统版本号。<br />
+Android 浏览器中的默认格式与iOS 的格式相似，没有移动版本号（但有Mobile 记号）。例如：<br />
+<pre>Mozilla/5.0 (Linux; U; Android 2.2; en-us; Nexus One Build/FRF91)
+AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1</pre>
+这是Google Nexus One 手机的用户代理字符串。不过，其他Android 设备的模式也一样。</div>
+
+<script type="text/javascript">
+$(function(){
+	$("pre").addClass("prettyprint linenums");
+	//代码高亮
+	prettyPrint();
+	$("table").attr('class','table table-striped table-bordered table-condensed');
+	$('.runsl').each(function() {
+	      var runsl = this,button = '<a class="btn btn-sm btn-success margin-b-5" target="_blank" href="http://www.z-ai.net/api/view/a/15290">运行一下</a>';
+	      $(button).insertAfter(runsl).bind('click', function(){
+
+	      });
+	});
+});
+</script>
+</body>
+</html>
